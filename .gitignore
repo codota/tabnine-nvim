@@ -1,0 +1,9 @@
+binaries/*
+
+**.DS_Store
+
+registration_key
+sig
+auth
+.idea/
+*.iml
