@@ -1,19 +1,6 @@
 local M = {}
 
----Validates args for `throttle()` and  `debounce()`.
-local function td_validate(fn, ms)
-    vim.validate {
-        fn = {fn, 'f'},
-        ms = {
-            ms, function(ms) return type(ms) == 'number' and ms > 0 end,
-            "number > 0"
-        }
-    }
-end
-
 function M.debounce_trailing(fn, ms, first)
-    print("here!")
-    td_validate(fn, ms)
     local timer = vim.loop.new_timer()
     local wrapped_fn
 
@@ -39,4 +26,27 @@ function M.debounce_trailing(fn, ms, first)
     end
     return wrapped_fn, timer
 end
+
+function M.str_to_lines(str)
+    local result = {}
+    for line in str:gmatch '[^\n]+' do table.insert(result, line) end
+    return result
+end
+
+function M.fif(condition, if_true, if_false)
+    if condition then
+        return if_true
+    else
+        return if_false
+    end
+end
+
+function M.map(tbl, f)
+    local t = {}
+    for k, v in pairs(tbl) do t[k] = f(v) end
+    return t
+end
+
+function M.subset(tbl, from, to) return {unpack(tbl, from, to)} end
+
 return M

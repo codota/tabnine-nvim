@@ -1,6 +1,6 @@
 local uv = vim.loop
 local fn = vim.fn
-local tabnine_binary = {}
+local M = {}
 
 -- TODO order by semver
 local tabnine_binary_path =
@@ -8,13 +8,13 @@ local tabnine_binary_path =
 local stdin = uv.new_pipe()
 local stdout = uv.new_pipe()
 local stderr = uv.new_pipe()
-local handle, pid = uv.spawn(tabnine_binary_path, {
+
+local _, _ = uv.spawn(tabnine_binary_path, {
     args = {'--client', 'vscode'},
     stdio = {stdin, stdout, stderr}
-}, function(code) print("process existed") end)
+}, function() print("process existed") end)
 
-function tabnine_binary.on_response(callback)
-    local response = ""
+function M.on_response(callback)
     uv.read_start(stdout, function(error, chunk)
         if chunk then
             -- may need to split by lines
@@ -26,9 +26,9 @@ function tabnine_binary.on_response(callback)
 
 end
 
-function tabnine_binary.request(request)
+function M.request(request)
     uv.write(stdin,
              fn.json_encode({request = request, version = "1.1.1"}) .. "\n")
 end
 
-return tabnine_binary;
+return M;
