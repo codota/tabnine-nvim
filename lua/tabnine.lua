@@ -9,26 +9,6 @@ local tabnine_ns = 0
 local requests_counter = 0
 local current_completion = {}
 
-local function auto_complete_request()
-    local before_table = api.nvim_buf_get_text(0, 0, 0, fn.line(".") - 1,
-                                               fn.col(".") - 1, {})
-    local before = table.concat(before_table, "\n")
-
-    tabnine_binary.request({
-        Autocomplete = {
-            before = before,
-            after = "",
-            filename = fn.expand("%:t"),
-            region_includes_beginning = true,
-            region_includes_end = false,
-            max_num_results = 1,
-            correlation_id = requests_counter
-        }
-    })
-
-    requests_counter = requests_counter + 1
-end
-
 local function auto_complete_response(response)
     if response.results[1] and response.results[1].new_prefix then
         current_completion = utils.str_to_lines(response.results[1].new_prefix)
@@ -52,6 +32,25 @@ local function auto_complete_response(response)
             virt_lines = other_lines
         })
     end
+
+end
+
+local function auto_complete_request()
+    local before_table = api.nvim_buf_get_text(0, 0, 0, fn.line(".") - 1,
+                                               fn.col(".") - 1, {})
+    local before = table.concat(before_table, "\n")
+
+    tabnine_binary.request({
+        Autocomplete = {
+            before = before,
+            after = "",
+            filename = fn.expand("%:t"),
+            region_includes_beginning = true,
+            region_includes_end = false,
+            max_num_results = 1,
+            correlation_id = requests_counter
+        }
+    }, auto_complete_response)
 
 end
 
@@ -93,7 +92,6 @@ function M.setup()
         end
     })
 
-    tabnine_binary.on_response(auto_complete_response)
 end
 
 return M

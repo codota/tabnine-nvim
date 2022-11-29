@@ -14,11 +14,14 @@ local _, _ = uv.spawn(tabnine_binary_path, {
     stdio = {stdin, stdout, stderr}
 }, function() print("process existed") end)
 
-function M.on_response(callback)
+local function read_response(callback)
     uv.read_start(stdout, function(error, chunk)
         if chunk then
             -- may need to split by lines
-            vim.schedule(function() callback(fn.json_decode(chunk)) end)
+            vim.schedule(function()
+                uv.read_stop(stdout)
+                callback(fn.json_decode(chunk))
+            end)
         elseif error then
             print("read_start error", error)
         end
@@ -26,9 +29,10 @@ function M.on_response(callback)
 
 end
 
-function M.request(request)
+function M.request(request, on_response)
     uv.write(stdin,
              fn.json_encode({request = request, version = "1.1.1"}) .. "\n")
+    read_response(on_response)
 end
 
 return M;
