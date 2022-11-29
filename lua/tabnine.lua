@@ -18,7 +18,7 @@ local function auto_complete_request()
         Autocomplete = {
             before = before,
             after = "",
-            filename = "test.ts",
+            filename = fn.expand("%:t"),
             region_includes_beginning = true,
             region_includes_end = false,
             max_num_results = 1,
@@ -60,14 +60,10 @@ local function accept()
         api.nvim_buf_set_text(0, fn.line(".") - 1, fn.col(".") - 1,
                               fn.line(".") - 1, fn.col(".") - 1,
                               current_completion)
-        print("cursor", fn.json_encode {
-            fn.line(".") + #current_completion - 2,
-            fn.col(".") + string.len(current_completion[#current_completion]) -
-                1
-        })
 
         api.nvim_win_set_cursor(0, {
-            fn.line(".") + #current_completion - 2,
+            utils.fif(#current_completion > 1,
+                      fn.line(".") + #current_completion - 2, fn.line(".")),
             fn.col(".") + string.len(current_completion[#current_completion]) -
                 1
         })
