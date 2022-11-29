@@ -10,16 +10,15 @@ local requests_counter = 0
 local current_completion = {}
 
 local function auto_complete_response(response)
-    if response.results[1] and response.results[1].new_prefix then
+    if response.results and response.results[1] and
+        #response.results[1].new_prefix > 0 then
         current_completion = utils.str_to_lines(response.results[1].new_prefix)
-        local old_prefix = response.old_prefix
+        current_completion[1] = utils.fif(#response.old_prefix > 0, string.sub(
+                                              current_completion[1],
+                                              #response.old_prefix + 1, -1),
+                                          current_completion[1])
 
-        local first_line = {
-            utils.fif(response.old_prefix ~= "", string.sub(
-                          current_completion[1], string.len(old_prefix) + 2, -1),
-                      current_completion[1]), 'LineNr'
-        }
-
+        local first_line = {{current_completion[1], 'LineNr'}}
         local other_lines = utils.map(utils.subset(current_completion, 2),
                                       function(line)
             return {{line, 'LineNr'}}
@@ -27,7 +26,7 @@ local function auto_complete_response(response)
 
         api.nvim_buf_set_extmark(0, tabnine_ns, fn.line(".") - 1,
                                  fn.col(".") - 1, {
-            virt_text = {first_line},
+            virt_text = first_line,
             virt_text_pos = "overlay",
             virt_lines = other_lines
         })
@@ -50,7 +49,7 @@ local function auto_complete_request()
             max_num_results = 1,
             correlation_id = requests_counter
         }
-    }, auto_complete_response)
+    })
 
 end
 
@@ -61,19 +60,22 @@ local function accept()
                               current_completion)
 
         api.nvim_win_set_cursor(0, {
-            utils.fif(#current_completion > 1,
-                      fn.line(".") + #current_completion - 2, fn.line(".")),
-            fn.col(".") + string.len(current_completion[#current_completion]) -
-                1
+            fn.line("."), fn.col(".") + #current_completion[#current_completion]
         })
+
+        current_completion = nil
     end
 end
 
 local function hub() tabnine_binary.request({Configuration = {quiet = false}}) end
 
 function M.setup()
+
+    tabnine_binary.on_response(auto_complete_response)
+
     local debounced_auto_complete_request =
         utils.debounce_trailing(auto_complete_request, 300, false)
+
     api.nvim_create_autocmd("TextChangedI", {
         pattern = "*",
         callback = function()
@@ -87,8 +89,8 @@ function M.setup()
 
     api.nvim_set_keymap("i", "<Tab>", "", {
         callback = function()
-            api.nvim_buf_clear_namespace(0, tabnine_ns, 0, -1)
             accept()
+            api.nvim_buf_clear_namespace(0, tabnine_ns, 0, -1)
         end
     })
 

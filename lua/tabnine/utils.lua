@@ -1,3 +1,5 @@
+local fn = vim.fn
+
 local M = {}
 
 function M.debounce_trailing(fn, ms, first)
@@ -28,9 +30,10 @@ function M.debounce_trailing(fn, ms, first)
 end
 
 function M.str_to_lines(str)
-    local result = {}
-    for line in str:gmatch '[^\n]+' do table.insert(result, line) end
-    return result
+    -- local result = {}
+    -- for line in str:gmatch '[^\n]+' do table.insert(result, line) end
+    -- return result
+    return fn.split(str, '\n')
 end
 
 function M.fif(condition, if_true, if_false)
