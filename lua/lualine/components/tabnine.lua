@@ -1,8 +1,14 @@
 local M = require('lualine.component'):extend()
+local tabnine = require('tabnine')
 local status_prefix = "⌬ tabnine"
-local status = status_prefix .. ": disabled";
 
-function M.update_service_level(service_level)
+function M.init(self, options) M.super.init(self, options) end
+
+function M.update_status()
+    local service_level = tabnine.service_level()
+
+    if not service_level then return status_prefix .. " disabled" end
+
     if service_level == "Pro" or service_level == "Trial" then
         service_level = "pro"
     elseif service_level == "Business" then
@@ -11,11 +17,7 @@ function M.update_service_level(service_level)
         service_level = "free"
     end
 
-    status = status_prefix .. " " .. service_level
+    return status_prefix .. " " .. service_level
 end
-
-function M.init(self, options) M.super.init(self, options) end
-
-function M.update_status() return status end
 
 return M

@@ -3,13 +3,13 @@ local uv = vim.loop
 local fn = vim.fn
 local tabnine_binary = require('tabnine.binary')
 local utils = require('tabnine.utils')
-local lualine_component = require('lualine.components.tabnine')
 
 local M = {}
 MAX_CHARS = 3000;
 local tabnine_ns = 0
 local requests_counter = 0
 local current_completion = nil
+local service_level = nil
 
 local function auto_complete_response(response)
     if response.results and response.results[1] and
@@ -70,6 +70,8 @@ end
 
 local function hub() tabnine_binary.request({Configuration = {quiet = false}}) end
 
+function M.service_level() return service_level end
+
 function M.setup(config)
     config = vim.tbl_extend("force", {
         disable_auto_comment = false,
@@ -86,7 +88,7 @@ function M.setup(config)
             #response.results[1].new_prefix > 0 then
             auto_complete_response(response)
         elseif response.service_level then
-            lualine_component.update_service_level(response.service_level)
+            service_level = response.service_level
         end
     end)
 
