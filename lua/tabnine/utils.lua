@@ -44,12 +44,11 @@ function M.fif(condition, if_true, if_false)
     end
 end
 
-function M.map(tbl, f)
-    local t = {}
-    for k, v in pairs(tbl) do t[k] = f(v) end
-    return t
-end
-
 function M.subset(tbl, from, to) return {unpack(tbl, from, to)} end
+
+function M.script_path()
+    local str = debug.getinfo(2, "S").source:sub(2)
+    return str:match("(.*/)")
+end
 
 return M
