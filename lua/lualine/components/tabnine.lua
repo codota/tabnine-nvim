@@ -1,4 +1,3 @@
--- if lualine does not exists
 local M = require('lualine.component'):extend()
 local status_prefix = "⌬ tabnine"
 local status = status_prefix .. ": disabled";

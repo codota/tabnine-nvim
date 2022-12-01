@@ -74,7 +74,7 @@ function M.setup(config)
     config = vim.tbl_extend("force", {
         disable_auto_comment = false,
         accept_keymap = "<Tab>"
-    }, config)
+    }, config or {})
 
     local timer = uv.new_timer()
     timer:start(0, 5000, function()
