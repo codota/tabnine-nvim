@@ -2,6 +2,8 @@
 
 Tabnine client for neovim
 
+![Tabnine neovim client](examples/javascript.gif)
+
 ## Install
 
 Using [vimplug](https://github.com/junegunn/vim-plug)
