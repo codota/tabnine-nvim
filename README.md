@@ -2,7 +2,7 @@
 
 Tabnine client for neovim
 
-![Tabnine neovim client](examples/javascript.gif)
+![Tabnine neovim client](https://github.com/codota/tabnine-nvim/blob/master/expamples/javascript.gif)
 
 ## Install
 
