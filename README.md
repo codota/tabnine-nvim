@@ -41,3 +41,7 @@ require'lualine'.setup {
     sections = {lualine_c = {'lsp_progress'}, lualine_x = {'tabnine'}}
 }
 ```
+
+## Known issues
+
+Windows isn't supported yet. PR are welcome!
