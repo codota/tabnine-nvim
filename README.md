@@ -46,4 +46,4 @@ require'lualine'.setup {
 
 ## Known issues
 
-Windows isn't supported yet. PR are welcome!
+Windows isn't supported yet. PRs are welcome!
