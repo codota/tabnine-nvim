@@ -14,7 +14,7 @@ function M.update_status()
     elseif service_level == "Business" then
         service_level = "business"
     else
-        service_level = "free"
+        service_level = "starter"
     end
 
     return status_prefix .. " " .. service_level
