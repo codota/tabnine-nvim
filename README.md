@@ -20,6 +20,10 @@ require('tabnine').setup({
 })
 ```
 
+## Activate Tabnine Pro
+
+`:TabnineHub` - to open Tabnine Hub and log in to your account
+
 ## lualine integration
 
 This plugin exposes a lualine `tabnine` component. e.g:
