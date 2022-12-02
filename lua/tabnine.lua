@@ -1,15 +1,16 @@
 local api = vim.api
 local uv = vim.loop
 local fn = vim.fn
-local tabnine_binary = require('tabnine.binary')
+local TabnineBinary = require('tabnine.binary')
 local utils = require('tabnine.utils')
 
 local M = {}
-MAX_CHARS = 3000;
-local tabnine_ns = 0
+local max_chars = 3000;
+local tabnine_namespace = 0
 local requests_counter = 0
 local current_completion = nil
 local service_level = nil
+local tabnine_binary = TabnineBinary:new()
 
 local function auto_complete_response(response)
     if response.results and response.results[1] and
@@ -25,50 +26,100 @@ local function auto_complete_response(response)
             return {{line, 'LineNr'}}
         end, utils.subset(current_completion, 2))
 
-        api.nvim_buf_set_extmark(0, tabnine_ns, fn.line(".") - 1,
+        api.nvim_buf_set_extmark(0, tabnine_namespace, fn.line(".") - 1,
                                  fn.col(".") - 1, {
+            virt_text_win_col = fn.virtcol('.') - 1,
+            hl_mode = "combine",
             virt_text = first_line,
-            virt_text_pos = "overlay",
             virt_lines = other_lines
         })
     end
 
 end
 
-local function auto_complete_request()
-    local before_table = api.nvim_buf_get_text(0, 0, 0, fn.line(".") - 1,
-                                               fn.col(".") - 1, {})
-    local before = table.concat(before_table, "\n")
+local function poll_service_level()
+    local timer = uv.new_timer()
+    timer:start(0, 5000, function()
+        vim.schedule(function() tabnine_binary:request({State = {}}) end)
+    end)
+end
 
-    tabnine_binary.request({
-        Autocomplete = {
-            before = before,
-            after = "",
-            filename = fn.expand("%:t"),
-            region_includes_beginning = true,
-            region_includes_end = false,
-            max_num_results = 1,
-            correlation_id = requests_counter
-        }
+local function dispatch_binary_responses()
+    tabnine_binary:on_response(function(response)
+        if response.results and response.results[1] and
+            #response.results[1].new_prefix > 0 then
+            auto_complete_response(response)
+        elseif response.service_level then
+            service_level = response.service_level
+        end
+    end)
+end
+
+local function bind_to_document_changed()
+    local function auto_complete_request()
+        local before_table = api.nvim_buf_get_text(0, 0, 0, fn.line(".") - 1,
+                                                   fn.col(".") - 1, {})
+        local before = table.concat(before_table, "\n")
+
+        tabnine_binary:request({
+            Autocomplete = {
+                before = before,
+                after = "",
+                filename = fn.expand("%:t"),
+                region_includes_beginning = true,
+                region_includes_end = false,
+                max_num_results = 1,
+                correlation_id = requests_counter
+            }
+        })
+
+    end
+
+    local debounced_auto_complete_request =
+        utils.debounce_trailing(auto_complete_request, 300, false)
+
+    api.nvim_create_autocmd("TextChangedI", {
+        pattern = "*",
+        callback = function()
+            tabnine_namespace = api.nvim_create_namespace('tabnine')
+            api.nvim_buf_clear_namespace(0, tabnine_namespace, 0, -1)
+            debounced_auto_complete_request()
+        end
     })
 
 end
 
-local function accept()
-    if current_completion then
-        api.nvim_buf_set_text(0, fn.line(".") - 1, fn.col(".") - 1,
-                              fn.line(".") - 1, fn.col(".") - 1,
-                              current_completion)
+local function bind_to_accept(accept_keymap)
+    local function accept()
+        if current_completion then
+            api.nvim_buf_set_text(0, fn.line(".") - 1, fn.col(".") - 1,
+                                  fn.line(".") - 1, fn.col(".") - 1,
+                                  current_completion)
 
-        api.nvim_win_set_cursor(0, {
-            fn.line("."), fn.col(".") + #current_completion[#current_completion]
-        })
+            api.nvim_win_set_cursor(0, {
+                fn.line("."),
+                fn.col(".") + #current_completion[#current_completion]
+            })
 
-        current_completion = nil
+            current_completion = nil
+        end
     end
+
+    api.nvim_set_keymap("i", accept_keymap, "", {
+        noremap = true,
+        callback = function()
+            accept()
+            api.nvim_buf_clear_namespace(0, tabnine_namespace, 0, -1)
+        end
+    })
+
 end
 
-local function hub() tabnine_binary.request({Configuration = {quiet = false}}) end
+local function create_user_commands()
+    api.nvim_create_user_command("TabnineHub", function()
+        tabnine_binary:request({Configuration = {}})
+    end, {})
+end
 
 function M.service_level() return service_level end
 
@@ -78,46 +129,20 @@ function M.setup(config)
         accept_keymap = "<Tab>"
     }, config or {})
 
-    local timer = uv.new_timer()
-    timer:start(0, 5000, function()
-        vim.schedule(function() tabnine_binary.request({State = {}}) end)
-    end)
+    dispatch_binary_responses()
 
-    tabnine_binary.on_response(function(response)
-        if response.results and response.results[1] and
-            #response.results[1].new_prefix > 0 then
-            auto_complete_response(response)
-        elseif response.service_level then
-            service_level = response.service_level
-        end
-    end)
+    poll_service_level()
 
-    local debounced_auto_complete_request =
-        utils.debounce_trailing(auto_complete_request, 300, false)
+    bind_to_document_changed()
 
-    api.nvim_create_autocmd("TextChangedI", {
-        pattern = "*",
-        callback = function()
-            tabnine_ns = api.nvim_create_namespace('tabnine')
-            api.nvim_buf_clear_namespace(0, tabnine_ns, 0, -1)
-            debounced_auto_complete_request()
-        end
-    })
+    bind_to_accept(config.accept_keymap)
+
+    create_user_commands()
 
     api.nvim_create_autocmd("ModeChanged", {
         pattern = "*",
         callback = function()
-            api.nvim_buf_clear_namespace(0, tabnine_ns, 0, -1)
-        end
-    })
-
-    api.nvim_create_user_command("TabnineHub", hub, {})
-
-    api.nvim_set_keymap("i", config.accept_keymap, "", {
-        noremap = true,
-        callback = function()
-            accept()
-            api.nvim_buf_clear_namespace(0, tabnine_ns, 0, -1)
+            api.nvim_buf_clear_namespace(0, tabnine_namespace, 0, -1)
         end
     })
 

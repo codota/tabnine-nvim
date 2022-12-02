@@ -7,6 +7,7 @@ local M = {}
 
 json.encode_empty_table_as_object(true)
 
+local api_version = "4.4.71"
 local binaries_path = utils.script_path() .. '../../binaries'
 
 local function arch_and_platform()
@@ -35,49 +36,58 @@ local function binary_path()
                arch_and_platform() .. '/TabNine'
 end
 
-local stdin = uv.new_pipe()
-local stdout = uv.new_pipe()
-local stderr = uv.new_pipe()
-local callbacks = {}
-local restart_counter = 0
-local handle, pid
-
-local function start()
-    handle, pid = uv.spawn(binary_path(), {
+function M:start()
+    self.handle, self.pid = uv.spawn(binary_path(), {
         args = {
             '--client', 'nvim', '--client-metadata',
-            'ide-restart-counter=' .. restart_counter
+            'ide-restart-counter=' .. self.restart_counter
         },
-        stdio = {stdin, stdout, stderr}
+        stdio = {self.stdin, self.stdout, self.stderr}
     }, function()
-        handle, pid = nil, nil
-        uv.read_stop(stdout)
+        self.handle, self.pid = nil, nil
+        uv.read_stop(self.stdout)
     end)
 
-    uv.read_start(stdout, function(error, chunk)
+    uv.read_start(self.stdout, function(error, chunk)
         if chunk then
             vim.schedule(function()
                 for _, line in pairs(utils.str_to_lines(chunk)) do
-                    for _, callback in pairs(callbacks) do
+                    for _, callback in pairs(self.callbacks) do
                         callback(json.decode(line))
                     end
                 end
             end)
         elseif error then
-            print("read_start error", error)
+            print("tabnine binary read_start error", error)
         end
     end)
 
 end
 
-function M.on_response(callback) table.insert(callbacks, callback) end
+function M:new(o)
+    o = o or {}
+    setmetatable(o, self)
+    self.__index = self
+    self.stdin = uv.new_pipe()
+    self.stdout = uv.new_pipe()
+    self.stderr = uv.new_pipe()
+    self.callbacks = {}
+    self.restart_counter = 0
+    self.handle = nil
+    self.pid = nil
 
-function M.request(request)
-    if not pid then
-        restart_counter = restart_counter + 1
-        start()
+    return o
+end
+
+function M:on_response(callback) table.insert(self.callbacks, callback) end
+
+function M:request(request)
+    if not self.pid then
+        self.restart_counter = self.restart_counter + 1
+        self:start()
     end
-    uv.write(stdin, json.encode({request = request, version = "1.1.1"}) .. "\n")
+    uv.write(self.stdin,
+             json.encode({request = request, version = api_version}) .. "\n")
 end
 
 return M;

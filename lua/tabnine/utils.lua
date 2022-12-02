@@ -29,12 +29,7 @@ function M.debounce_trailing(fn, ms, first)
     return wrapped_fn, timer
 end
 
-function M.str_to_lines(str)
-    -- local result = {}
-    -- for line in str:gmatch '[^\n]+' do table.insert(result, line) end
-    -- return result
-    return fn.split(str, '\n')
-end
+function M.str_to_lines(str) return fn.split(str, '\n') end
 
 function M.fif(condition, if_true, if_false)
     if condition then
