@@ -5,13 +5,13 @@ local TabnineBinary = require('tabnine.binary')
 local utils = require('tabnine.utils')
 
 local M = {}
-local client_version = "0.0.1"
+local plugin_version = "0.0.1"
 local max_chars = 3000
 local tabnine_namespace = 0
 local requests_counter = 0
 local current_completion = nil
 local service_level = nil
-local tabnine_binary = TabnineBinary:new({client_version = client_version})
+local tabnine_binary = TabnineBinary:new({plugin_version = plugin_version})
 
 local function auto_complete_response(response)
     if response.results and response.results[1] and

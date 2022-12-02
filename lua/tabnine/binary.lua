@@ -43,7 +43,7 @@ function M:start()
         args = {
             '--client', 'nvim', '--client-metadata',
             'ide-restart-counter=' .. self.restart_counter,
-            'clientVersion=' .. self.client_version
+            'pluginVersion=' .. self.plugin_version
         },
         stdio = {self.stdin, self.stdout, self.stderr}
     }, function()
@@ -71,7 +71,7 @@ function M:new(o)
     o = o or {}
     setmetatable(o, self)
     self.__index = self
-    self.client_version = o.client_version
+    self.plugin_version = o.plugin_version
     self.stdin = uv.new_pipe()
     self.stdout = uv.new_pipe()
     self.stderr = uv.new_pipe()
