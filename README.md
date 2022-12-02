@@ -1,3 +1,5 @@
+__Note:__ This plugin is in alpha and considered to be unstable. Please do let us know if you're expereicing any issues.
+
 # tabnine-nvim
 
 Tabnine client for neovim
