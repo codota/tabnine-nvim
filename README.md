@@ -14,10 +14,10 @@ Plug 'codota/tabnine-nvim', { 'do': './dl_binaries.sh' }
 
 Basic configuration activation:
 ```lua
-require('tabnine').setup({
+require('tabnine').setup{
   disable_auto_comment=true,
   accept_keymap="<Tab>"
-})
+}
 ```
 
 ## Activate Tabnine Pro
