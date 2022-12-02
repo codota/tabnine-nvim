@@ -42,7 +42,8 @@ function M:start()
     self.handle, self.pid = uv.spawn(binary_path(), {
         args = {
             '--client', 'nvim', '--client-metadata',
-            'ide-restart-counter=' .. self.restart_counter
+            'ide-restart-counter=' .. self.restart_counter,
+            'clientVersion=' .. self.client_version
         },
         stdio = {self.stdin, self.stdout, self.stderr}
     }, function()
@@ -70,6 +71,7 @@ function M:new(o)
     o = o or {}
     setmetatable(o, self)
     self.__index = self
+    self.client_version = o.client_version
     self.stdin = uv.new_pipe()
     self.stdout = uv.new_pipe()
     self.stderr = uv.new_pipe()
