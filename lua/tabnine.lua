@@ -12,6 +12,7 @@ local requests_counter = 0
 local current_completion = nil
 local service_level = nil
 local tabnine_binary = TabnineBinary:new({plugin_version = plugin_version})
+local tabnine_hl_group = "TabnineSuggestion"
 
 local function auto_complete_response(response)
     if response.results and response.results[1] and
@@ -22,9 +23,9 @@ local function auto_complete_response(response)
                                               #response.old_prefix + 1, -1),
                                           current_completion[1])
 
-        local first_line = {{current_completion[1], 'LineNr'}}
+        local first_line = {{current_completion[1], tabnine_hl_group}}
         local other_lines = vim.tbl_map(function(line)
-            return {{line, 'LineNr'}}
+            return {{line, tabnine_hl_group}}
         end, utils.subset(current_completion, 2))
 
         api.nvim_buf_set_extmark(0, tabnine_namespace, fn.line(".") - 1,
@@ -127,7 +128,8 @@ function M.service_level() return service_level end
 function M.setup(config)
     config = vim.tbl_extend("force", {
         disable_auto_comment = false,
-        accept_keymap = "<Tab>"
+        accept_keymap = "<Tab>",
+        suggestion_color = {gui = "#808080", cterm = 244}
     }, config or {})
 
     dispatch_binary_responses()
@@ -154,6 +156,15 @@ function M.setup(config)
         })
     end
 
+    api.nvim_create_autocmd('VimEnter,ColorScheme', {
+        pattern = "*",
+        callback = function()
+            api.nvim_set_hl(tabnine_namespace, tabnine_hl_group, {
+                fg = config.suggestion_color.gui,
+                ctermfg = config.suggestion_color.cterm
+            })
+        end
+    })
 end
 
 return M
