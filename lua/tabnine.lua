@@ -123,25 +123,7 @@ local function create_user_commands()
     end, {})
 end
 
-function M.service_level() return service_level end
-
-function M.setup(config)
-    config = vim.tbl_extend("force", {
-        disable_auto_comment = false,
-        accept_keymap = "<Tab>",
-        suggestion_color = {gui = "#808080", cterm = 244}
-    }, config or {})
-
-    dispatch_binary_responses()
-
-    poll_service_level()
-
-    bind_to_document_changed()
-
-    bind_to_accept(config.accept_keymap)
-
-    create_user_commands()
-
+local function create_auto_commands(config)
     api.nvim_create_autocmd("ModeChanged", {
         pattern = "*",
         callback = function()
@@ -165,6 +147,30 @@ function M.setup(config)
             })
         end
     })
+
+end
+
+function M.service_level() return service_level end
+
+function M.setup(config)
+    config = vim.tbl_extend("force", {
+        disable_auto_comment = false,
+        accept_keymap = "<Tab>",
+        suggestion_color = {gui = "#808080", cterm = 244}
+    }, config or {})
+
+    dispatch_binary_responses()
+
+    poll_service_level()
+
+    bind_to_document_changed()
+
+    bind_to_accept(config.accept_keymap)
+
+    create_user_commands()
+
+    create_auto_commands(config)
+
 end
 
 return M
