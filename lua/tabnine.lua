@@ -4,16 +4,20 @@ local fn = vim.fn
 local TabnineBinary = require('tabnine.binary')
 local utils = require('tabnine.utils')
 local M = {}
-local plugin_version = "0.0.1"
+local plugin_version = "0.0.2"
 local max_chars = 3000
 local tabnine_namespace = api.nvim_create_namespace('tabnine')
-local tabnine_extmark_id = 0
 local requests_counter = 0
 local current_completion = nil
 local service_level = nil
 local tabnine_binary = TabnineBinary:new({plugin_version = plugin_version})
 local valid_end_of_line_regex = vim.regex("^\\s*[)}\\]\"'`]*\\s*[:{;,]*\\s*$")
 local tabnine_hl_group = "TabnineSuggestion"
+
+local function end_of_line()
+    return api.nvim_buf_get_text(0, fn.line(".") - 1, fn.col(".") - 1,
+                                 fn.line(".") - 1, fn.col("$"), {})[1]
+end
 
 local function auto_complete_response(response)
     if response.results and response.results[1] and
@@ -23,15 +27,16 @@ local function auto_complete_response(response)
                                           current_completion[1]:sub(
                                               #response.old_prefix + 1, -1),
                                           current_completion[1])
+        current_completion[1] = utils.remove_matching_suffix(
+                                    current_completion[1], end_of_line())
 
         local first_line = {{current_completion[1], tabnine_hl_group}}
         local other_lines = vim.tbl_map(function(line)
             return {{line, tabnine_hl_group}}
         end, utils.subset(current_completion, 2))
 
-        tabnine_extmark_id = api.nvim_buf_set_extmark(0, tabnine_namespace,
-                                                      fn.line(".") - 1,
-                                                      fn.col(".") - 1, {
+        api.nvim_buf_set_extmark(0, tabnine_namespace, fn.line(".") - 1,
+                                 fn.col(".") - 1, {
             virt_text_win_col = fn.virtcol('.') - 1,
             hl_mode = "combine",
             virt_text = first_line,
@@ -60,7 +65,7 @@ local function dispatch_binary_responses()
 end
 
 local function clear_suggestion()
-    api.nvim_buf_del_extmark(0, tabnine_namespace, tabnine_extmark_id)
+    api.nvim_buf_clear_namespace(0, tabnine_namespace, 0, -1)
 end
 
 local function bind_to_document_changed()
@@ -85,11 +90,7 @@ local function bind_to_document_changed()
 
     local debounced_auto_complete_request =
         utils.debounce_trailing(function()
-            local end_of_line = api.nvim_buf_get_text(0, fn.line(".") - 1,
-                                                      fn.col(".") - 1,
-                                                      fn.line(".") - 1,
-                                                      fn.col("$"), {})
-            if valid_end_of_line_regex:match_str(end_of_line[1]) then
+            if valid_end_of_line_regex:match_str(end_of_line()) then
                 auto_complete_request()
             end
         end, 300, false)
