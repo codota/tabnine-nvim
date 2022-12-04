@@ -3,15 +3,16 @@ local uv = vim.loop
 local fn = vim.fn
 local TabnineBinary = require('tabnine.binary')
 local utils = require('tabnine.utils')
-
 local M = {}
 local plugin_version = "0.0.1"
 local max_chars = 3000
-local tabnine_namespace = 0
+local tabnine_namespace = api.nvim_create_namespace('tabnine')
+local tabnine_extmark_id = 0
 local requests_counter = 0
 local current_completion = nil
 local service_level = nil
 local tabnine_binary = TabnineBinary:new({plugin_version = plugin_version})
+local valid_end_of_line_regex = vim.regex("^\\s*[)}\\]\"'`]*\\s*[:{;,]*\\s*$")
 local tabnine_hl_group = "TabnineSuggestion"
 
 local function auto_complete_response(response)
@@ -28,8 +29,9 @@ local function auto_complete_response(response)
             return {{line, tabnine_hl_group}}
         end, utils.subset(current_completion, 2))
 
-        api.nvim_buf_set_extmark(0, tabnine_namespace, fn.line(".") - 1,
-                                 fn.col(".") - 1, {
+        tabnine_extmark_id = api.nvim_buf_set_extmark(0, tabnine_namespace,
+                                                      fn.line(".") - 1,
+                                                      fn.col(".") - 1, {
             virt_text_win_col = fn.virtcol('.') - 1,
             hl_mode = "combine",
             virt_text = first_line,
@@ -57,6 +59,10 @@ local function dispatch_binary_responses()
     end)
 end
 
+local function clear_suggestion()
+    api.nvim_buf_del_extmark(0, tabnine_namespace, tabnine_extmark_id)
+end
+
 local function bind_to_document_changed()
     local function auto_complete_request()
         local before_table = api.nvim_buf_get_text(0, 0, 0, fn.line(".") - 1,
@@ -78,13 +84,20 @@ local function bind_to_document_changed()
     end
 
     local debounced_auto_complete_request =
-        utils.debounce_trailing(auto_complete_request, 300, false)
+        utils.debounce_trailing(function()
+            local end_of_line = api.nvim_buf_get_text(0, fn.line(".") - 1,
+                                                      fn.col(".") - 1,
+                                                      fn.line(".") - 1,
+                                                      fn.col("$"), {})
+            if valid_end_of_line_regex:match_str(end_of_line[1]) then
+                auto_complete_request()
+            end
+        end, 300, false)
 
     api.nvim_create_autocmd("TextChangedI", {
         pattern = "*",
         callback = function()
-            tabnine_namespace = api.nvim_create_namespace('tabnine')
-            api.nvim_buf_clear_namespace(0, tabnine_namespace, 0, -1)
+            clear_suggestion()
             debounced_auto_complete_request()
         end
     })
@@ -92,7 +105,7 @@ local function bind_to_document_changed()
 end
 
 local function bind_to_accept(accept_keymap)
-    local function accept()
+    local function accept_suggestion()
         if current_completion then
             api.nvim_buf_set_text(0, fn.line(".") - 1, fn.col(".") - 1,
                                   fn.line(".") - 1, fn.col(".") - 1,
@@ -110,8 +123,8 @@ local function bind_to_accept(accept_keymap)
     api.nvim_set_keymap("i", accept_keymap, "", {
         noremap = true,
         callback = function()
-            accept()
-            api.nvim_buf_clear_namespace(0, tabnine_namespace, 0, -1)
+            clear_suggestion()
+            accept_suggestion()
         end
     })
 
@@ -124,12 +137,8 @@ local function create_user_commands()
 end
 
 local function create_auto_commands(config)
-    api.nvim_create_autocmd("ModeChanged", {
-        pattern = "*",
-        callback = function()
-            api.nvim_buf_clear_namespace(0, tabnine_namespace, 0, -1)
-        end
-    })
+    api.nvim_create_autocmd("ModeChanged",
+                            {pattern = "*", callback = clear_suggestion})
 
     if config.disable_auto_comment then
         api.nvim_create_autocmd('FileType', {
@@ -141,7 +150,7 @@ local function create_auto_commands(config)
     api.nvim_create_autocmd('VimEnter,ColorScheme', {
         pattern = "*",
         callback = function()
-            api.nvim_set_hl(tabnine_namespace, tabnine_hl_group, {
+            api.nvim_set_hl(0, tabnine_hl_group, {
                 fg = config.suggestion_color.gui,
                 ctermfg = config.suggestion_color.cterm
             })
