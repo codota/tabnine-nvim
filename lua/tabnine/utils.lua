@@ -33,9 +33,7 @@ function M.str_to_lines(str) return fn.split(str, '\n') end
 
 function M.remove_matching_suffix(str, suffix)
     if suffix == "" then return str end
-    if (suffix:sub(-#suffix) == suffix) then
-        return str:sub(1, -#suffix - 1)
-    end
+    if (suffix:sub(-#suffix) == suffix) then return str:sub(1, -#suffix - 1) end
     return str
 end
 
