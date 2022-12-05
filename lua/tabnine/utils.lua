@@ -32,15 +32,9 @@ end
 function M.str_to_lines(str) return fn.split(str, '\n') end
 
 function M.remove_matching_suffix(str, suffix)
-    print("completion", str)
-    print("end_of_line", suffix)
-
     if suffix == "" then return str end
     if (suffix:sub(-#suffix) == suffix) then
-
-        print("sub", str:sub(1, -#suffix - 1))
         return str:sub(1, -#suffix - 1)
-
     end
     return str
 end
