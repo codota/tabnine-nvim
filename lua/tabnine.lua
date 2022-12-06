@@ -4,7 +4,7 @@ local fn = vim.fn
 local TabnineBinary = require('tabnine.binary')
 local utils = require('tabnine.utils')
 local M = {}
-local plugin_version = "0.0.2"
+local plugin_version = "0.1.0"
 local max_chars = 3000
 local tabnine_namespace = api.nvim_create_namespace('tabnine')
 local requests_counter = 0
@@ -68,7 +68,7 @@ local function clear_suggestion()
     api.nvim_buf_clear_namespace(0, tabnine_namespace, 0, -1)
 end
 
-local function bind_to_document_changed()
+local function bind_to_document_changed(debounce_ms)
     local function auto_complete_request()
         local before_table = api.nvim_buf_get_text(0, 0, 0, fn.line(".") - 1,
                                                    fn.col(".") - 1, {})
@@ -93,7 +93,7 @@ local function bind_to_document_changed()
             if valid_end_of_line_regex:match_str(end_of_line()) then
                 auto_complete_request()
             end
-        end, 300, false)
+        end, debounce_ms, false)
 
     api.nvim_create_autocmd("TextChangedI", {
         pattern = "*",
@@ -166,6 +166,7 @@ function M.setup(config)
     config = vim.tbl_extend("force", {
         disable_auto_comment = false,
         accept_keymap = "<Tab>",
+        debounce_ms = 300,
         suggestion_color = {gui = "#808080", cterm = 244}
     }, config or {})
 
@@ -173,7 +174,7 @@ function M.setup(config)
 
     poll_service_level()
 
-    bind_to_document_changed()
+    bind_to_document_changed(config.debounce_ms)
 
     bind_to_accept(config.accept_keymap)
 
