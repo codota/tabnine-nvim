@@ -14,6 +14,11 @@ Using [vimplug](https://github.com/junegunn/vim-plug)
 Plug 'codota/tabnine-nvim', { 'do': './dl_binaries.sh' }
 ```
 
+Using [packer](https://github.com/wbthomason/packer.nvim)
+```lua
+  use { 'codota/tabnine-nvim', run = "./dl_binaries.sh" }
+```
+
 Basic configuration activation:
 ```lua
 require('tabnine').setup({
