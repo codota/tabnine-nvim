@@ -20,29 +20,26 @@ local function end_of_line()
 end
 
 local function auto_complete_response(response)
-    if response.results and response.results[1] and
-        #response.results[1].new_prefix > 0 then
-        current_completion = utils.str_to_lines(response.results[1].new_prefix)
-        current_completion[1] = utils.fif(#response.old_prefix > 0,
-                                          current_completion[1]:sub(
-                                              #response.old_prefix + 1, -1),
-                                          current_completion[1])
-        current_completion[1] = utils.remove_matching_suffix(
-                                    current_completion[1], end_of_line())
+    current_completion = utils.str_to_lines(response.results[1].new_prefix)
+    current_completion[1] = utils.fif(#response.old_prefix > 0,
+                                      current_completion[1]:sub(
+                                          #response.old_prefix + 1, -1),
+                                      current_completion[1])
+    current_completion[1] = utils.remove_matching_suffix(current_completion[1],
+                                                         end_of_line())
 
-        local first_line = {{current_completion[1], tabnine_hl_group}}
-        local other_lines = vim.tbl_map(function(line)
-            return {{line, tabnine_hl_group}}
-        end, utils.subset(current_completion, 2))
+    local first_line = {{current_completion[1], tabnine_hl_group}}
+    local other_lines = vim.tbl_map(function(line)
+        return {{line, tabnine_hl_group}}
+    end, utils.subset(current_completion, 2))
 
-        api.nvim_buf_set_extmark(0, tabnine_namespace, fn.line(".") - 1,
-                                 fn.col(".") - 1, {
-            virt_text_win_col = fn.virtcol('.') - 1,
-            hl_mode = "combine",
-            virt_text = first_line,
-            virt_lines = other_lines
-        })
-    end
+    api.nvim_buf_set_extmark(0, tabnine_namespace, fn.line(".") - 1,
+                             fn.col(".") - 1, {
+        virt_text_win_col = fn.virtcol('.') - 1,
+        hl_mode = "combine",
+        virt_text = first_line,
+        virt_lines = other_lines
+    })
 
 end
 
@@ -55,7 +52,7 @@ end
 
 local function dispatch_binary_responses()
     tabnine_binary:on_response(function(response)
-        if response.results and response.results[1] and
+        if not utils.pumvisible() and response.results and response.results[1] and
             #response.results[1].new_prefix > 0 then
             auto_complete_response(response)
         elseif response.service_level then

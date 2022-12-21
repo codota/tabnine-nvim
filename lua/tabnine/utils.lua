@@ -52,4 +52,19 @@ function M.script_path()
     return str:match("(.*/)")
 end
 
+function M.prequire(...)
+    local status, lib = pcall(require, ...)
+    if status then return lib end
+    return nil
+end
+
+function M.pumvisible()
+    local cmp = M.prequire("cmp")
+    if cmp then
+        return cmp.visible()
+    else
+        return vim.fn.pumvisible() > 0
+    end
+end
+
 return M
