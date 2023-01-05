@@ -131,6 +131,15 @@ local function bind_to_accept(accept_keymap)
 	})
 end
 
+local function bind_to_dismiss(dismiss_keymap)
+	api.nvim_set_keymap("i", dismiss_keymap, "", {
+		noremap = true,
+		callback = function()
+			clear_suggestion()
+		end,
+	})
+end
+
 local function create_user_commands()
 	api.nvim_create_user_command("TabnineHub", function()
 		tabnine_binary:request({ Configuration = {} })
@@ -166,6 +175,7 @@ function M.setup(config)
 	config = vim.tbl_extend("force", {
 		disable_auto_comment = false,
 		accept_keymap = "<Tab>",
+		dismiss_keymap = "<C-]>",
 		debounce_ms = 300,
 		suggestion_color = { gui = "#808080", cterm = 244 },
 	}, config or {})
@@ -177,6 +187,8 @@ function M.setup(config)
 	bind_to_document_changed(config.debounce_ms)
 
 	bind_to_accept(config.accept_keymap)
+
+	bind_to_dismiss(config.dismiss_keymap)
 
 	create_user_commands()
 
