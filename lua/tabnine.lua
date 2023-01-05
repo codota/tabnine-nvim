@@ -135,7 +135,7 @@ local function create_user_commands()
 end
 
 local function create_auto_commands(config)
-    api.nvim_create_autocmd("ModeChanged",
+    api.nvim_create_autocmd("ModeChanged,CursorChangedI",
                             {pattern = "*", callback = clear_suggestion})
 
     if config.disable_auto_comment then

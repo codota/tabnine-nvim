@@ -12,7 +12,7 @@ function M.update_status()
     if service_level == "Pro" or service_level == "Trial" then
         service_level = "pro"
     elseif service_level == "Business" then
-        service_level = "business"
+        service_level = "enterprise"
     else
         service_level = "starter"
     end
