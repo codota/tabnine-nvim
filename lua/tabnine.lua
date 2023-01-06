@@ -66,6 +66,7 @@ end
 
 local function clear_suggestion()
 	api.nvim_buf_clear_namespace(0, tabnine_namespace, 0, -1)
+	current_completion = nil
 end
 
 local function bind_to_document_changed(debounce_ms)
@@ -103,41 +104,38 @@ end
 
 local function bind_to_accept(accept_keymap)
 	local function accept_suggestion()
-		if current_completion then
-			api.nvim_buf_set_text(
-				0,
-				fn.line(".") - 1,
-				fn.col(".") - 1,
-				fn.line(".") - 1,
-				fn.col(".") - 1,
-				current_completion
-			)
+		api.nvim_buf_set_text(
+			0,
+			fn.line(".") - 1,
+			fn.col(".") - 1,
+			fn.line(".") - 1,
+			fn.col(".") - 1,
+			current_completion
+		)
 
-			api.nvim_win_set_cursor(0, {
-				fn.line("."),
-				fn.col(".") + #current_completion[#current_completion],
-			})
+		api.nvim_win_set_cursor(0, {
+			fn.line("."),
+			fn.col(".") + #current_completion[#current_completion],
+		})
 
-			current_completion = nil
-		end
+		current_completion = nil
 	end
 
-	api.nvim_set_keymap("i", accept_keymap, "", {
-		noremap = true,
-		callback = function()
-			clear_suggestion()
-			accept_suggestion()
-		end,
-	})
+	vim.keymap.set("i", accept_keymap, function()
+		if not current_completion then
+			return accept_keymap
+		end
+		vim.schedule(accept_suggestion)
+	end, { expr = true })
 end
 
 local function bind_to_dismiss(dismiss_keymap)
-	api.nvim_set_keymap("i", dismiss_keymap, "", {
-		noremap = true,
-		callback = function()
-			clear_suggestion()
-		end,
-	})
+	vim.keymap.set("i", dismiss_keymap, function()
+		if not current_completion then
+			return dismiss_keymap
+		end
+		vim.schedule(clear_suggestion)
+	end, { expr = true })
 end
 
 local function create_user_commands()
