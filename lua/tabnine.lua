@@ -69,7 +69,7 @@ local function clear_suggestion()
 	current_completion = nil
 end
 
-local function bind_to_document_changed(debounce_ms)
+local function bind_to_document_changed(config)
 	local function auto_complete_request()
 		local before_table = api.nvim_buf_get_text(0, 0, 0, fn.line(".") - 1, fn.col(".") - 1, {})
 		local before = table.concat(before_table, "\n")
@@ -88,10 +88,13 @@ local function bind_to_document_changed(debounce_ms)
 	end
 
 	local debounced_auto_complete_request = utils.debounce_trailing(function()
-		if valid_end_of_line_regex:match_str(end_of_line()) then
+		if
+			not vim.tbl_contains(config.execlude_filetypes, vim.bo.filetype)
+			and valid_end_of_line_regex:match_str(end_of_line())
+		then
 			auto_complete_request()
 		end
-	end, debounce_ms, false)
+	end, config.debounce_ms, false)
 
 	api.nvim_create_autocmd("TextChangedI", {
 		pattern = "*",
@@ -176,13 +179,14 @@ function M.setup(config)
 		dismiss_keymap = "<C-]>",
 		debounce_ms = 300,
 		suggestion_color = { gui = "#808080", cterm = 244 },
+		execlude_filetypes = { "TelescopePrompt" },
 	}, config or {})
 
 	dispatch_binary_responses()
 
 	poll_service_level()
 
-	bind_to_document_changed(config.debounce_ms)
+	bind_to_document_changed(config)
 
 	bind_to_accept(config.accept_keymap)
 
