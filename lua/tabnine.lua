@@ -4,11 +4,14 @@ local fn = vim.fn
 local TabnineBinary = require("tabnine.binary")
 local utils = require("tabnine.utils")
 local M = {}
+local MAX_NUM_RESULTS = 5
 local plugin_version = "0.3.0"
 local max_chars = 3000
 local tabnine_namespace = api.nvim_create_namespace("tabnine")
 local requests_counter = 0
 local current_completion = nil
+local tabnine_response = nil
+local current_suggestion = 1
 local service_level = nil
 local tabnine_binary = TabnineBinary:new({ plugin_version = plugin_version })
 local valid_end_of_line_regex = vim.regex("^\\s*[)}\\]\"'`]*\\s*[:{;,]*\\s*$")
@@ -18,8 +21,8 @@ local function end_of_line()
 	return api.nvim_buf_get_text(0, fn.line(".") - 1, fn.col(".") - 1, fn.line(".") - 1, fn.col("$"), {})[1]
 end
 
-local function auto_complete_response(response)
-	current_completion = utils.str_to_lines(response.results[1].new_prefix)
+local function auto_complete_response(response, result)
+	current_completion = utils.str_to_lines(result.new_prefix)
 	current_completion[1] = utils.fif(
 		#response.old_prefix > 0,
 		current_completion[1]:sub(#response.old_prefix + 1, -1),
@@ -49,15 +52,23 @@ local function poll_service_level()
 	end)
 end
 
+local function create_suggestions_from_response(response, no)
+	if 
+		not utils.pumvisible()
+		and response.results
+		and response.results[no]
+		and #response.results[no].new_prefix > 0
+	then
+		auto_complete_response(response, response.results[no])
+	end
+end
+
 local function dispatch_binary_responses()
 	tabnine_binary:on_response(function(response)
-		if
-			not utils.pumvisible()
-			and response.results
-			and response.results[1]
-			and #response.results[1].new_prefix > 0
-		then
-			auto_complete_response(response)
+		if response and response.results then
+			current_suggestions = 1;
+			tabnine_response = response;
+			create_suggestions_from_response(response, current_suggestion);
 		elseif response.service_level then
 			service_level = response.service_level
 		end
@@ -67,6 +78,31 @@ end
 local function clear_suggestion()
 	api.nvim_buf_clear_namespace(0, tabnine_namespace, 0, -1)
 	current_completion = nil
+end
+
+local function next_suggestion()
+	if tabnine_response and tabnine_response.results and #tabnine_response.results > 0 then
+		current_suggestion = math.fmod(current_suggestion, #tabnine_response.results) + 1;
+
+		clear_suggestion();
+		create_suggestions_from_response(tabnine_response, current_suggestion);
+	end
+end
+
+local function prev_suggestion()
+	if 
+                tabnine_response
+		and tabnine_response.results
+		and #tabnine_response.results > 0
+	then
+		current_suggestion = current_suggestion - 1;
+		if (current_suggestion < 1) then
+			current_suggestion = #tabnine_response.results;
+		end
+
+		clear_suggestion();
+		create_suggestions_from_response(tabnine_response, current_suggestion);
+	end
 end
 
 local function bind_to_document_changed(config)
@@ -81,7 +117,7 @@ local function bind_to_document_changed(config)
 				filename = fn.expand("%:t"),
 				region_includes_beginning = true,
 				region_includes_end = false,
-				max_num_results = 1,
+				max_num_results = MAX_NUM_RESULTS,
 				correlation_id = requests_counter,
 			},
 		})
@@ -141,6 +177,24 @@ local function bind_to_dismiss(dismiss_keymap)
 	end, { expr = true })
 end
 
+local function bind_to_next(next_suggestion_keymap)
+    vim.keymap.set("i", next_suggestion_keymap, function()
+            if not current_completion then
+                        return next_suggestion_keymap
+            end
+	    vim.schedule(next_suggestion)
+    end, { expr = true })
+end
+
+local function bind_to_prev(prev_suggestion_keymap)
+    vim.keymap.set("i", prev_suggestion_keymap, function()
+            if not current_completion then
+                        return prev_suggestion_keymap
+            end
+            vim.schedule(prev_suggestion)
+    end, { expr = true })
+end
+
 local function create_user_commands()
 	api.nvim_create_user_command("TabnineHub", function()
 		tabnine_binary:request({ Configuration = {} })
@@ -177,6 +231,8 @@ function M.setup(config)
 		disable_auto_comment = false,
 		accept_keymap = "<Tab>",
 		dismiss_keymap = "<C-]>",
+                prev_keymap = "<C-p>",
+                next_keymap = "<C-n>",
 		debounce_ms = 300,
 		suggestion_color = { gui = "#808080", cterm = 244 },
 		execlude_filetypes = { "TelescopePrompt" },
@@ -191,6 +247,10 @@ function M.setup(config)
 	bind_to_accept(config.accept_keymap)
 
 	bind_to_dismiss(config.dismiss_keymap)
+
+        bind_to_next(config.next_keymap)
+
+        bind_to_prev(config.prev_keymap)
 
 	create_user_commands()
 
