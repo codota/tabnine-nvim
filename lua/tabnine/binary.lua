@@ -2,8 +2,9 @@ local uv = vim.loop
 local fn = vim.fn
 local json = vim.json
 local utils = require("tabnine.utils")
+local consts = require("tabnine.consts")
 local semver = require("tabnine.third_party.semver.semver")
-local M = {}
+local TabnineBinary = {}
 
 json.encode_empty_table_as_object(true)
 
@@ -38,14 +39,14 @@ local function binary_path()
 	return binaries_path .. "/" .. tostring(paths[#paths]) .. "/" .. arch_and_platform() .. "/TabNine"
 end
 
-function M:start()
+function TabnineBinary:start()
 	self.handle, self.pid = uv.spawn(binary_path(), {
 		args = {
 			"--client",
 			"nvim",
 			"--client-metadata",
 			"ide-restart-counter=" .. self.restart_counter,
-			"pluginVersion=" .. self.plugin_version,
+			"pluginVersion=" .. consts.plugin_version,
 		},
 		stdio = { self.stdin, self.stdout, self.stderr },
 	}, function()
@@ -53,47 +54,43 @@ function M:start()
 		uv.read_stop(self.stdout)
 	end)
 
-	uv.read_start(self.stdout, function(error, chunk)
-		if chunk then
-			vim.schedule(function()
+	uv.read_start(
+		self.stdout,
+		vim.schedule_wrap(function(error, chunk)
+			if chunk then
 				for _, line in pairs(utils.str_to_lines(chunk)) do
-					for _, callback in pairs(self.callbacks) do
-						callback(json.decode(line))
-					end
+					local callback = table.remove(self.callbacks)
+					callback(vim.json.decode(line))
 				end
-			end)
-		elseif error then
-			print("tabnine binary read_start error", error)
-		end
-	end)
+			elseif error then
+				print("tabnine binary read_start error", error)
+			end
+		end)
+	)
 end
 
-function M:new(o)
+function TabnineBinary:new(o)
 	o = o or {}
 	setmetatable(o, self)
 	self.__index = self
-	self.plugin_version = o.plugin_version
 	self.stdin = uv.new_pipe()
 	self.stdout = uv.new_pipe()
 	self.stderr = uv.new_pipe()
-	self.callbacks = {}
 	self.restart_counter = 0
 	self.handle = nil
 	self.pid = nil
+	self.callbacks = {}
 
 	return o
 end
 
-function M:on_response(callback)
-	table.insert(self.callbacks, callback)
-end
-
-function M:request(request)
+function TabnineBinary:request(request, on_response)
 	if not self.pid then
 		self.restart_counter = self.restart_counter + 1
 		self:start()
 	end
 	uv.write(self.stdin, json.encode({ request = request, version = api_version }) .. "\n")
+	table.insert(self.callbacks, 1, on_response)
 end
 
-return M
+return TabnineBinary:new()

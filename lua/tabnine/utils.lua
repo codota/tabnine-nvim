@@ -1,54 +1,28 @@
 local fn = vim.fn
+local api = vim.api
 
 local M = {}
-
-function M.debounce_trailing(fn, ms, first)
-	local timer = vim.loop.new_timer()
-	local wrapped_fn
-
-	if not first then
-		function wrapped_fn(...)
-			local argv = { ... }
-			local argc = select("#", ...)
-
-			timer:start(ms, 0, function()
-				pcall(vim.schedule_wrap(fn), unpack(argv, 1, argc))
-			end)
-		end
-	else
-		local argv, argc
-		function wrapped_fn(...)
-			argv = argv or { ... }
-			argc = argc or select("#", ...)
-
-			timer:start(ms, 0, function()
-				pcall(vim.schedule_wrap(fn), unpack(argv, 1, argc))
-			end)
-		end
-	end
-	return wrapped_fn, timer
-end
 
 function M.str_to_lines(str)
 	return fn.split(str, "\n")
 end
 
-function M.remove_matching_suffix(str, suffix)
-	if suffix == "" then
-		return str
-	end
-	if str:sub(-#suffix) == suffix then
-		return str:sub(1, -#suffix - 1)
-	end
-	return str
+function M.lines_to_str(lines)
+	return fn.join(lines, "\n")
 end
 
-function M.fif(condition, if_true, if_false)
-	if condition then
-		return if_true
-	else
-		return if_false
+function M.remove_matching_suffix(str, suffix)
+	if not M.ends_with(str, suffix) then
+		return str
 	end
+	return str:sub(1, -#suffix - 1)
+end
+
+function M.remove_matching_prefix(str, prefix)
+	if not M.starts_with(str, prefix) then
+		return str
+	end
+	return str:sub(#prefix)
 end
 
 function M.subset(tbl, from, to)
@@ -75,6 +49,34 @@ function M.pumvisible()
 	else
 		return vim.fn.pumvisible() > 0
 	end
+end
+
+function M.current_position()
+	return { fn.line("."), fn.col(".") }
+end
+
+function M.ends_with(str, suffix)
+	if str == "" then
+		return true
+	end
+
+	return str:sub(-#suffix) == suffix
+end
+
+function M.starts_with(str, prefix)
+	if str == "" then
+		return true
+	end
+
+	return str:sub(1, #prefix) == prefix
+end
+
+function M.is_end_of_line()
+	return fn.col(".") == fn.col("$")
+end
+
+function M.end_of_line()
+	return api.nvim_buf_get_text(0, fn.line(".") - 1, fn.col(".") - 1, fn.line(".") - 1, fn.col("$"), {})[1]
 end
 
 return M
