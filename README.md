@@ -1,4 +1,4 @@
-__Note:__ This plugin is in alpha and considered to be unstable. Please do let us know if you're expereicing any issues.
+__Note:__ We've recently made a huge refactor - still in BETA. check out our [beta](https://github.com/codota/tabnine-nvim/tree/beta) branch and share your feedback [here](https://github.com/codota/tabnine-nvim/issues/26)
 
 # tabnine-nvim
 
