@@ -32,7 +32,9 @@ function M.accept()
 end
 
 function M.clear()
-	state.completion_timer:stop()
+	if state.cancel_completion then
+		state.cancel_completion()
+	end
 	state.debounce_timer:stop()
 	api.nvim_buf_clear_namespace(0, consts.tabnine_namespace, 0, -1)
 end
@@ -51,7 +53,7 @@ function M.complete()
 		api.nvim_buf_get_text(0, fn.line(".") - 1, fn.col(".") - 1, fn.line("$") - 1, fn.col("$,$") - 1, {})
 	local after = table.concat(after_table, "\n")
 
-	tabnine_binary:request({
+	state.cancel_completion = tabnine_binary:request({
 		Autocomplete = {
 			before = before,
 			after = after,

@@ -60,7 +60,9 @@ function TabnineBinary:start()
 			if chunk then
 				for _, line in pairs(utils.str_to_lines(chunk)) do
 					local callback = table.remove(self.callbacks)
-					callback(vim.json.decode(line))
+					if not callback.cancelled then
+						callback.callback(vim.json.decode(line))
+					end
 				end
 			elseif error then
 				print("tabnine binary read_start error", error)
@@ -90,7 +92,13 @@ function TabnineBinary:request(request, on_response)
 		self:start()
 	end
 	uv.write(self.stdin, json.encode({ request = request, version = api_version }) .. "\n")
-	table.insert(self.callbacks, 1, on_response)
+	local callback = { cancelled = false, callback = on_response }
+	local function cancel()
+		callback.cancelled = true
+	end
+
+	table.insert(self.callbacks, 1, callback)
+	return cancel
 end
 
 return TabnineBinary:new()
