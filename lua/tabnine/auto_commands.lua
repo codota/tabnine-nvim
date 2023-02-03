@@ -32,7 +32,7 @@ function M.setup()
 			state.completion_timer:stop()
 			state.debounce_timer:stop()
 			if completion.should_complete() then
-				state.completion_timer:start(0, 0, vim.schedule_wrap(completion.complete))
+				completion.complete()
 			end
 		end,
 	})
