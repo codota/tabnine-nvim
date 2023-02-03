@@ -16,7 +16,7 @@ function M.accept()
 	local lines = utils.str_to_lines(state.rendered_completion)
 
 	if utils.starts_with(state.rendered_completion, "\n") then
-		api.nvim_buf_set_lines(0, fn.line("."), fn.line(".") + #lines, false, lines)
+		api.nvim_buf_set_lines(0, fn.line("."), fn.line("."), false, lines)
 		api.nvim_win_set_cursor(0, {
 			fn.line(".") + #lines,
 			fn.col(".") + #lines[#lines],
