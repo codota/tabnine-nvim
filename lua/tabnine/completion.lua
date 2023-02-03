@@ -1,6 +1,7 @@
 local M = {}
 local api = vim.api
 local fn = vim.fn
+local uv = vim.loop
 local state = require("tabnine.state")
 local consts = require("tabnine.consts")
 local utils = require("tabnine.utils")
@@ -29,6 +30,7 @@ function M.accept()
 		fn.line("."),
 		fn.col(".") + #lines[#lines],
 	})
+	state.completions_cache = nil
 end
 
 function M.clear()
@@ -45,6 +47,7 @@ function M.should_complete()
 end
 
 function M.complete()
+	local now = uv.now()
 	local changedtick = vim.b.changedtick
 	local before_table = api.nvim_buf_get_text(0, 0, 0, fn.line(".") - 1, fn.col(".") - 1, {})
 	local before = table.concat(before_table, "\n")
@@ -79,8 +82,9 @@ function M.complete()
 		end
 
 		state.completions_cache = response
+		local debounce_ms = math.max(0, config.get_config().debounce_ms - (uv.now() - now))
 		state.debounce_timer:start(
-			config.get_config().debounce_ms,
+			debounce_ms,
 			0,
 			vim.schedule_wrap(function()
 				M.render(response.results[1].new_prefix, response.old_prefix, changedtick)
