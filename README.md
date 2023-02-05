@@ -1,5 +1,3 @@
-__Note:__ We've recently made a huge refactor - still in BETA. check out our [beta](https://github.com/codota/tabnine-nvim/tree/beta) branch and share your feedback [here](https://github.com/codota/tabnine-nvim/issues/26)
-
 # tabnine-nvim
 
 Tabnine client for neovim
