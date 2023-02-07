@@ -16,7 +16,7 @@ call plug#end()
 2. Restart neovim and run `:PluginInstall`
 
 Using [packer](https://github.com/wbthomason/packer.nvim)
-1. Add the following inside `init.lua`:
+1. Add the following in your`init.lua`:
 ```lua
 require("packer").startup(function(use)
   use { 'codota/tabnine-nvim', run = "./dl_binaries.sh" }
