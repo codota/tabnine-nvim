@@ -7,20 +7,29 @@ Tabnine client for neovim
 ## Install
 
 Using [vimplug](https://github.com/junegunn/vim-plug)
-
-```
+1. Add the following in your `init.vim`
+```vim
+call plug#begin()
 Plug 'codota/tabnine-nvim', { 'do': './dl_binaries.sh' }
+call plug#end()
 ```
+2. Restart neovim and run `:PluginInstall`
 
 Using [packer](https://github.com/wbthomason/packer.nvim)
+1. Add the following inside `init.lua`:
 ```lua
+require("packer").startup(function(use)
   use { 'codota/tabnine-nvim', run = "./dl_binaries.sh" }
+end)
 ```
+2. Restart Neovim and run `:PackerInstall`
 
-Basic configuration activation:
+## Activate (mandatory)
+add this later in your `init.lua`:
+
 ```lua
 require('tabnine').setup({
-  disable_auto_comment=true,
+  disable_auto_comment=true, 
   accept_keymap="<Tab>",
   dismiss_keymap = "<C-]>",
   debounce_ms = 800,
@@ -29,7 +38,12 @@ require('tabnine').setup({
 })
 ```
 
-
+`init.vim` users - the activate script is `lua` code. make sure to have it inside `lua` block, e.g:
+```vim
+lua <<EOF
+" activate tabnine here
+EOF
+```
 
 ## Activate Tabnine Pro
 
