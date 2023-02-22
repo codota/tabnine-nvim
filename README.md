@@ -6,6 +6,8 @@ Tabnine client for neovim
 
 ## Install
 
+### Unix (Linux, MacOS)
+
 Using [vimplug](https://github.com/junegunn/vim-plug)
 1. Add the following in your `init.vim`
 ```vim
@@ -23,6 +25,38 @@ require("packer").startup(function(use)
 end)
 ```
 2. Restart Neovim and run `:PackerInstall`
+
+Using [lazy.nvim](https://github.com/folke/lazy.nvim)
+
+1. Add the following in your 'init.lua'
+
+```lua
+require("lazy").setup({
+  { 'codota/tabnine-nvim', build = "./dl_binaries.sh" },
+})
+```
+2. Restart Neovim and run `:Lazy`
+
+
+### Windows
+
+<!-- > **Note:**
+> For Please see below for Windows installation instructions -->
+
+Windows installations need to be adjusted to utilize PowerShell. This can be accomplished by changing the `do`/`run`/`build` parameter in your plugin manager's configuration from: `"./dl_binaries.sh"` to: `"pwsh.exe -file .\\dl_binaries.ps1"`
+
+```Lua
+-- Example using lazy.nvim
+-- pwsh.exe for PowerShell Core
+-- powershell.exe for Windows PowerShell
+
+require("lazy").setup({
+  { 'codota/tabnine-nvim', build = "pwsh.exe -file .\\dl_binaries.ps1" },
+})
+```
+
+
+---
 
 ## Activate (mandatory)
 add this later in your `init.lua`:

@@ -11,6 +11,8 @@ json.encode_empty_table_as_object(true)
 local api_version = "4.4.71"
 local binaries_path = utils.script_path() .. "../../binaries"
 
+os.is_win = package.config:sub(1, 1) == "\\"
+
 local function arch_and_platform()
 	local os_uname = uv.os_uname()
 
@@ -21,7 +23,12 @@ local function arch_and_platform()
 	elseif os_uname.sysname == "Darwin" then
 		return "x86_64-apple-darwin"
 	elseif fn.has("win32") then
-		return "windows-gnu"
+		local arch = os.getenv"PROCESSOR_ARCHITECTURE"
+		if (arch or ""):match"64" then
+			return "x86_64-pc-windows-gnu"
+		else
+			return "i686-pc-windows-gnu"
+		end
 	end
 end
 
@@ -36,7 +43,14 @@ local function binary_path()
 
 	table.sort(paths)
 
-	return binaries_path .. "/" .. tostring(paths[#paths]) .. "/" .. arch_and_platform() .. "/TabNine"
+	local binary_name
+	if os.is_win then
+		binary_name = "/TabNine.exe"
+	else
+		binary_name = "/TabNine"
+	end
+
+	return binaries_path .. "/" .. tostring(paths[#paths]) .. "/" .. arch_and_platform() .. binary_name
 end
 
 function TabnineBinary:start()
