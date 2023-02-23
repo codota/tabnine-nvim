@@ -26,10 +26,7 @@ function M.accept()
 	end
 
 	api.nvim_buf_set_text(0, fn.line(".") - 1, fn.col(".") - 1, fn.line(".") - 1, fn.col(".") - 1, lines)
-	api.nvim_win_set_cursor(0, {
-		fn.line("."),
-		fn.col(".") + #lines[#lines],
-	})
+	api.nvim_win_set_cursor(0, { fn.line("."), fn.col(".") + #lines[#lines] })
 	state.completions_cache = nil
 end
 
@@ -42,7 +39,7 @@ function M.clear()
 end
 
 function M.should_complete()
-	return not vim.tbl_contains(config.get_config().execlude_filetypes, vim.bo.filetype)
+	return not vim.tbl_contains(config.get_config().exclude_filetypes, vim.bo.filetype)
 		and consts.valid_end_of_line_regex:match_str(utils.end_of_line())
 end
 
@@ -105,9 +102,13 @@ function M.render(completion, old_prefix, changedtick)
 			return { { line, consts.tabnine_hl_group } }
 		end, lines)
 
-		api.nvim_buf_set_extmark(0, consts.tabnine_namespace, fn.line(".") - 1, fn.col(".") - 1, {
-			virt_lines = other_lines,
-		})
+		api.nvim_buf_set_extmark(
+			0,
+			consts.tabnine_namespace,
+			fn.line(".") - 1,
+			fn.col(".") - 1,
+			{ virt_lines = other_lines }
+		)
 
 		state.rendered_completion = completion
 		return

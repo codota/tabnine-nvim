@@ -34,7 +34,7 @@ require('tabnine').setup({
   dismiss_keymap = "<C-]>",
   debounce_ms = 800,
   suggestion_color = {gui = "#808080", cterm = 244},
-  execlude_filetypes = {"TelescopePrompt"}
+  exclude_filetypes = {"TelescopePrompt"}
 })
 ```
 
