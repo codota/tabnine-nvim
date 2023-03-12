@@ -43,7 +43,7 @@ require("lazy").setup({
 <!-- > **Note:**
 > For Please see below for Windows installation instructions -->
 
-Windows installations need to be adjusted to utilize PowerShell. This can be accomplished by changing the `do`/`run`/`build` parameter in your plugin manager's configuration from: `"./dl_binaries.sh"` to: `"pwsh.exe -file .\\dl_binaries.ps1"`
+Windows installations need to be adjusted to utilize PowerShell. This can be accomplished by changing the `do/run/build` parameter in your plugin manager's configuration from: `./dl_binaries.sh` to `pwsh.exe -file .\\dl_binaries.ps"`
 
 ```Lua
 -- Example using lazy.nvim
