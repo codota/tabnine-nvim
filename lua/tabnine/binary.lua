@@ -32,7 +32,7 @@ local function binary_name()
 	if os_uname.sysname == "Windows_NT" then
 		return "TabNine.exe"
 	else
-		return "/TabNine"
+		return "TabNine"
 	end
 end
 
@@ -47,7 +47,7 @@ local function binary_path()
 
 	table.sort(paths)
 
-	return binaries_path .. "/" .. tostring(paths[#paths]) .. "/" .. arch_and_platform() .. binary_name()
+	return binaries_path .. "/" .. tostring(paths[#paths]) .. "/" .. arch_and_platform() .. "/" .. binary_name()
 end
 
 function TabnineBinary:start()
