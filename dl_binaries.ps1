@@ -24,6 +24,12 @@ $targets | foreach-object {
 
     echo "downloading $path"    
     invoke-webrequest -uri "https://update.tabnine.com/bundles/$path/TabNine.zip" -outfile "binaries/$path/TabNine.zip"
-    expand-archive -path "binaries/$path/TabNine.zip" -outputpath "binaries/$path"
+
+    if ($PSVersionTable.PSEdition -ne "Core") { 
+      expand-archive -path "binaries/$path/TabNine.zip" -destinationpath "binaries/$path" 
+    } else { 
+      expand-archive -path "binaries/$path/TabNine.zip" -outputpath "binaries/$path" 
+    }
+
     remove-item -path "binaries/$path/TabNine.zip"
 }
