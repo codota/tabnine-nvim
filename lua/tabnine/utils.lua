@@ -2,7 +2,6 @@ local fn = vim.fn
 local api = vim.api
 
 local M = {}
-
 function M.str_to_lines(str)
 	return fn.split(str, "\n")
 end

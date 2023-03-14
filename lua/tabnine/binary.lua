@@ -20,8 +20,19 @@ local function arch_and_platform()
 		return "aarch64-apple-darwin"
 	elseif os_uname.sysname == "Darwin" then
 		return "x86_64-apple-darwin"
-	elseif fn.has("win32") then
-		return "windows-gnu"
+	elseif os_uname.sysname == "Windows_NT" and os_uname.machine == "x86_64" then
+		return "x86_64-pc-windows-gnu"
+	elseif os_uname.sysname == "Windows_NT" then
+		return "i686-pc-windows-gnu"
+	end
+end
+
+local function binary_name()
+	local os_uname = uv.os_uname()
+	if os_uname.sysname == "Windows_NT" then
+		return "TabNine.exe"
+	else
+		return "TabNine"
 	end
 end
 
@@ -36,7 +47,7 @@ local function binary_path()
 
 	table.sort(paths)
 
-	return binaries_path .. "/" .. tostring(paths[#paths]) .. "/" .. arch_and_platform() .. "/TabNine"
+	return binaries_path .. "/" .. tostring(paths[#paths]) .. "/" .. arch_and_platform() .. "/" .. binary_name()
 end
 
 function TabnineBinary:start()
