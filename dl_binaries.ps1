@@ -5,10 +5,7 @@
 $version = invoke-webrequest -uri 'https://update.tabnine.com/bundles/version' -usebasicparsing
 $targets = @(
     'i686-pc-windows-gnu'
-    'x86_64-apple-darwin'
     'x86_64-pc-windows-gnu'
-    'x86_64-unknown-linux-musl'
-    'aarch64-apple-darwin'
 )
 
 if (test-path -path "binaries/$version") {
