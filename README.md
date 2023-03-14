@@ -101,7 +101,3 @@ require('lualine').setup({
 })
 ```
 
-## Known issues
-
-Windows isn't supported yet. PRs are welcome!
-
