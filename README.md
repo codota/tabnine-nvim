@@ -28,7 +28,7 @@ end)
 
 Using [lazy.nvim](https://github.com/folke/lazy.nvim)
 
-1. Add the following in your 'init.lua'
+1. Add the following in your `init.lua`:
 
 ```lua
 require("lazy").setup({
