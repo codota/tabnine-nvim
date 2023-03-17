@@ -9,21 +9,27 @@ Tabnine client for neovim
 ### Unix (Linux, MacOS)
 
 Using [vimplug](https://github.com/junegunn/vim-plug)
+
 1. Add the following in your `init.vim`
+
 ```vim
 call plug#begin()
 Plug 'codota/tabnine-nvim', { 'do': './dl_binaries.sh' }
 call plug#end()
 ```
+
 2. Restart neovim and run `:PluginInstall`
 
 Using [packer](https://github.com/wbthomason/packer.nvim)
+
 1. Add the following in your `init.lua`:
+
 ```lua
 require("packer").startup(function(use)
   use { 'codota/tabnine-nvim', run = "./dl_binaries.sh" }
 end)
 ```
+
 2. Restart Neovim and run `:PackerInstall`
 
 Using [lazy.nvim](https://github.com/folke/lazy.nvim)
@@ -35,8 +41,8 @@ require("lazy").setup({
   { 'codota/tabnine-nvim', build = "./dl_binaries.sh" },
 })
 ```
-2. Restart Neovim and run `:Lazy`
 
+2. Restart Neovim and run `:Lazy`
 
 ### Windows
 
@@ -55,15 +61,15 @@ require("lazy").setup({
 })
 ```
 
-
 ---
 
 ## Activate (mandatory)
+
 add this later in your `init.lua`:
 
 ```lua
 require('tabnine').setup({
-  disable_auto_comment=true, 
+  disable_auto_comment=true,
   accept_keymap="<Tab>",
   dismiss_keymap = "<C-]>",
   debounce_ms = 800,
@@ -73,6 +79,7 @@ require('tabnine').setup({
 ```
 
 `init.vim` users - the activation script is `lua` code. make sure to have it inside `lua` block. e.g:
+
 ```vim
 lua <<EOF
 " activate tabnine here
@@ -82,6 +89,8 @@ EOF
 ## Activate Tabnine Pro
 
 `:TabnineHub` - to open Tabnine Hub and log in to your account
+
+**Note** Sometimes Tabnine may fail to open the browser on Tabnine Hub, in this case use `:TabnineHubUrl` to get Tabnine Hub url
 
 ## lualine integration
 
@@ -100,4 +109,3 @@ require('lualine').setup({
     sections = {lualine_c = {'lsp_progress'}, lualine_x = {'tabnine'}}
 })
 ```
-
