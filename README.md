@@ -90,7 +90,7 @@ EOF
 
 `:TabnineHub` - to open Tabnine Hub and log in to your account
 
-**Note** Sometimes Tabnine may fail to open the browser on Tabnine Hub, in this case use `:TabnineHubUrl` to get Tabnine Hub url
+Sometimes Tabnine may fail to open the browser on Tabnine Hub, in this case use `:TabnineHubUrl` to get Tabnine Hub url
 
 ## lualine integration
 
