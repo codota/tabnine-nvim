@@ -49,6 +49,14 @@ require("lazy").setup({
 <!-- > **Note:**
 > For Please see below for Windows installation instructions -->
 
+The build script needs a set execution policy. 
+Here is an example on how to set it 
+```Powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+For more information visit 
+[the official documentation](https://learn.microsoft.com/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-7.2)
+
 Windows installations need to be adjusted to utilize PowerShell. This can be accomplished by changing the `do`/`run`/`build` parameter in your plugin manager's configuration from `./dl_binaries.sh` to `pwsh.exe -file .\\dl_binaries.ps1`
 
 ```Lua
