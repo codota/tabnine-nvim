@@ -69,6 +69,22 @@ require("lazy").setup({
 })
 ```
 
+If you need to use tabnine on windows and unix you can change the config as follows
+```Lua
+-- Get platform depended build script
+local function get_tabnine_build_string()
+  if (vim.fn.has('win32') == 1) then
+    -- use special windows path
+    return "pwsh.exe -file .\\dl_binaries.ps1"
+  else
+    -- unix path
+    return "./dl_binaries.sh"
+  end
+end
+require("lazy").setup({
+  { 'codota/tabnine-nvim', build = get_tabnine_build_string()},
+})
+```
 ---
 
 ## Activate (mandatory)
