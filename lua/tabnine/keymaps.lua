@@ -19,7 +19,10 @@ function M.setup()
 		if not state.completions_cache then
 			return dismiss_keymap
 		end
-		vim.schedule(completion.clear)
+		vim.schedule(function()
+			completion.clear()
+			state.completions_cache = nil
+		end)
 	end, { expr = true })
 end
 
