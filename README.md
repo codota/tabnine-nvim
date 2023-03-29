@@ -18,7 +18,7 @@ Plug 'codota/tabnine-nvim', { 'do': './dl_binaries.sh' }
 call plug#end()
 ```
 
-2. Restart neovim and run `:PluginInstall`
+2. Restart neovim and run `:PlugInstall`
 
 Using [packer](https://github.com/wbthomason/packer.nvim)
 
