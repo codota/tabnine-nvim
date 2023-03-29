@@ -31,6 +31,9 @@ function M.setup()
 		callback = function()
 			if completion.should_complete() then
 				completion.complete()
+			else
+				completion.clear()
+				state.completions_cache = nil
 			end
 		end,
 	})
