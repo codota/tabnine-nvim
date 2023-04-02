@@ -1,7 +1,7 @@
 local api = vim.api
 
 return {
-	plugin_version = "1.1.0",
+	plugin_version = "1.3.0",
 	max_chars = 3000,
 	tabnine_hl_group = "TabnineSuggestion",
 	tabnine_namespace = api.nvim_create_namespace("tabnine"),

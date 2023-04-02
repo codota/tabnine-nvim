@@ -2,6 +2,8 @@ local fn = vim.fn
 local api = vim.api
 
 local M = {}
+local last_changedtick = vim.b.changedtick
+
 function M.str_to_lines(str)
 	return fn.split(str, "\n")
 end
@@ -76,6 +78,12 @@ end
 
 function M.end_of_line()
 	return api.nvim_buf_get_text(0, fn.line(".") - 1, fn.col(".") - 1, fn.line(".") - 1, fn.col("$"), {})[1]
+end
+
+function M.document_changed()
+	local current_changedtick = last_changedtick
+	last_changedtick = vim.b.changedtick
+	return last_changedtick > current_changedtick
 end
 
 return M
