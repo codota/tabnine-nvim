@@ -69,7 +69,7 @@ require("lazy").setup({
 })
 ```
 
-If you need to use Tabnine on Windows and UNIX you can change the config as follows
+If you need to use Tabnine on Windows and Unix you can change the config as follows
 ```lua
 -- Get platform dependant build script
 local function tabnine_build_path()
