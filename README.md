@@ -5,6 +5,7 @@ Tabnine client for neovim
 ![Tabnine neovim client](https://github.com/codota/tabnine-nvim/blob/master/examples/javascript.gif)
 
 ## Install
+__Note__ this plugin requires having [neovim](https://github.com/neovim/neovim) version >= v0.7
 
 ### Unix (Linux, MacOS)
 
