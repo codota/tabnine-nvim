@@ -21,6 +21,9 @@ function M.setup()
 	api.nvim_create_user_command("TabnineDisable", function()
 		state.active = false
 	end, {})
+	api.nvim_create_user_command("TabnineToggle", function()
+		state.active = not state.active
+	end, {})
 end
 
 return M
