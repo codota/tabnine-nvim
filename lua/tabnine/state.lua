@@ -1,6 +1,4 @@
 local uv = vim.loop
-local fn = vim.fn
-local utils = require("tabnine.utils")
 
 return {
 	requests_counter = 0,
