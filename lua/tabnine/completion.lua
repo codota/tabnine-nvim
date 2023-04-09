@@ -39,7 +39,8 @@ function M.clear()
 end
 
 function M.should_complete()
-	return utils.document_changed()
+	return state.active
+		and utils.document_changed()
 		and not vim.tbl_contains(config.get_config().exclude_filetypes, vim.bo.filetype)
 		and consts.valid_end_of_line_regex:match_str(utils.end_of_line())
 end

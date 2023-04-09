@@ -9,7 +9,7 @@ local TabnineBinary = {}
 json.encode_empty_table_as_object(true)
 
 local api_version = "4.4.71"
-local binaries_path = utils.script_path() .. "../../binaries"
+local binaries_path = utils.script_path() .. "/binaries"
 
 local function arch_and_platform()
 	local os_uname = uv.os_uname()

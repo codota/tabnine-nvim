@@ -1,6 +1,4 @@
 local M = {}
-local api = vim.api
-local fn = vim.fn
 local state = require("tabnine.state")
 local config = require("tabnine.config")
 local completion = require("tabnine.completion")

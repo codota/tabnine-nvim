@@ -7,4 +7,5 @@ return {
 	cancel_completion = nil,
 	debounce_timer = uv.new_timer(),
 	debounce_ms = 0,
+	active = nil,
 }

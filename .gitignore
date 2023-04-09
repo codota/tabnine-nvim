@@ -1,6 +1,7 @@
 binaries/*
 
 **.DS_Store
+.disabled
 
 registration_key
 sig
