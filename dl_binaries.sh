@@ -12,20 +12,23 @@ else
     "Darwin")
         if [ "$(uname -m)" = "arm64" ]; then
             targets="aarch64-apple-darwin"
-        else
-            targets="$(uname -m)-apple-darwin"
+        elif [ "$(uname -m)" = "x86_64" ]; then
+            targets="x86_64-apple-darwin"
         fi
         ;;
     "Linux")
-        targets="$(uname -m)-unknown-linux-musl"
-        ;;
-    *)
-        echo "Infrastructure detection failed. Installing all versions"
-        targets='x86_64-apple-darwin
-    x86_64-unknown-linux-musl
-    aarch64-apple-darwin'
+        if [ "$(uname -m)" = "x86_64" ]; then
+            targets="x86_64-unknown-linux-musl"
+        fi
         ;;
     esac
+fi
+
+if [ -z "$targets" ]; then
+    echo "Infrastructure detection failed. Installing all versions"
+    targets='x86_64-apple-darwin
+    x86_64-unknown-linux-musl
+    aarch64-apple-darwin'
 fi
 
 rm -rf ./binaries
