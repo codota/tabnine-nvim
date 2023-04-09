@@ -34,11 +34,20 @@ Further configuration can be passed to the setup function (|CONFIGURATION|)
 ==============================================================================
 COMMANDS
 
+Print Tabnine status
+:TabnineStatus
+
 Activate Tabnine Pro 
 :TabnineHub - to open Tabnine Hub and log in to your account
 
 Sometimes Tabnine may fail to open the browser on Tabnine Hub
 :TabnineHubUrl - to get Tabnine Hub url
+
+Disable Tabnine
+:TabnineDisable
+
+Enable Tabnine
+:TabnineEnable
 
 ==============================================================================
 CONFIGURATION                                       *tabnine-nvim-configuration*

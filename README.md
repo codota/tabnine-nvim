@@ -5,7 +5,8 @@ Tabnine client for neovim
 ![Tabnine neovim client](https://github.com/codota/tabnine-nvim/blob/master/examples/javascript.gif)
 
 ## Install
-__Note__ this plugin requires having [neovim](https://github.com/neovim/neovim) version >= v0.7
+
+**Note** this plugin requires having [neovim](https://github.com/neovim/neovim) version >= v0.7
 
 ### Unix (Linux, MacOS)
 
@@ -50,12 +51,14 @@ require("lazy").setup({
 <!-- > **Note:**
 > For Please see below for Windows installation instructions -->
 
-The build script needs a set execution policy. 
-Here is an example on how to set it 
+The build script needs a set execution policy.
+Here is an example on how to set it
+
 ```Powershell
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
-For more information visit 
+
+For more information visit
 [the official documentation](https://learn.microsoft.com/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-7.2)
 
 Windows installations need to be adjusted to utilize PowerShell. This can be accomplished by changing the `do`/`run`/`build` parameter in your plugin manager's configuration from `./dl_binaries.sh` to `pwsh.exe -file .\\dl_binaries.ps1`
@@ -71,6 +74,7 @@ require("lazy").setup({
 ```
 
 If you need to use Tabnine on Windows and Unix you can change the config as follows
+
 ```lua
 -- Get platform dependant build script
 local function tabnine_build_path()
@@ -84,6 +88,7 @@ require("lazy").setup({
   { 'codota/tabnine-nvim', build = tabnine_build_path()},
 })
 ```
+
 ---
 
 ## Activate (mandatory)
@@ -114,6 +119,12 @@ EOF
 `:TabnineHub` - to open Tabnine Hub and log in to your account
 
 Sometimes Tabnine may fail to open the browser on Tabnine Hub, in this case use `:TabnineHubUrl` to get Tabnine Hub url
+
+## Additional commands
+
+- `:TabnineStatus` - to print Tabnine status
+- `:TabnineDisable` - to disable Tabnine
+- `:TabnineEnable` - to enable Tabnine
 
 ## lualine integration
 
