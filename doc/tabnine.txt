@@ -13,8 +13,8 @@ Configuration                                      |tabnine-nvim-configuration|
 ==============================================================================
 INTRODUCTION                                        *tabnine-nvim-introduction*
 
-tabnine-nvim is a client for neovim to interact with the TabNine completion
-service. It is installed like any other plugin, and after setup in your rc
+tabnine-nvim is a client for neovim to interact with the Tabnine completion
+engine. It is installed like any other plugin, and after setup in your rc
 file, runs in the background to provide tab completions while you edit in
 neovim.
 
