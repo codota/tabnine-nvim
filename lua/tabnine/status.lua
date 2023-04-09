@@ -30,7 +30,7 @@ function M.setup()
 end
 
 function M.status()
-	if not state.active then
+	if state.active == false then
 		return status_prefix .. " disabled"
 	end
 

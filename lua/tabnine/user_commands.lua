@@ -19,7 +19,8 @@ function M.setup()
 		end)
 	end, {})
 
-	state.active = pcall(fn.filereadable, DISABLED_FILE) == 0
+	_, disabled_file_exists = pcall(fn.filereadable, DISABLED_FILE)
+	state.active = disabled_file_exists == 0
 
 	api.nvim_create_user_command("TabnineEnable", function()
 		pcall(fn.delete, DISABLED_FILE)
