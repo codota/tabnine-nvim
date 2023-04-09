@@ -1,0 +1,86 @@
+*tabnine-nvim.txt* Tabnine client for neovim
+
+Website: https://www.tabnine.com/
+Repository: https://github.com/codota/tabnine-nvim
+==============================================================================
+CONTENTS                                                *tabnine-nvim-contents*
+
+Introduction                                       |tabnine-nvim-introduction|
+Usage                                              |tabnine-nvim-usage|
+Commands                                           |tabnine-nvim-commands|
+Configuration                                      |tabnine-nvim-configuration|
+
+==============================================================================
+INTRODUCTION                                        *tabnine-nvim-introduction*
+
+tabnine-nvim is a client for neovim to interact with the TabNine completion
+service. It is installed like any other plugin, and after setup in your rc
+file, runs in the background to provide tab completions while you edit in
+neovim.
+
+==============================================================================
+USAGE                                                      *tabnine-nvim-usage*
+
+NOTE: NeoVim version >= v0.7 is required.
+Add in init.lua: >
+  require('tabnine').setup()
+or if using VimScript (ie init.vim): >
+  lua <<EOF
+	require('tabnine').setup()
+  EOF
+This will initialize and setup the plugin to start using completion.
+Further configuration can be passed to the setup function (|CONFIGURATION|)
+
+==============================================================================
+COMMANDS
+
+Activate Tabnine Pro 
+:TabnineHub - to open Tabnine Hub and log in to your account
+
+Sometimes Tabnine may fail to open the browser on Tabnine Hub
+:TabnineHubUrl - to get Tabnine Hub url
+
+==============================================================================
+CONFIGURATION                                       *tabnine-nvim-configuration*
+
+The setup function (|USAGE|) accepts an optional configuration object: >
+  require('tabnine').setup({
+	disable_auto_comment=true,
+  })
+Properties allowed on this object are:
+* |disable_auto_comment|
+* |accept_keymap|
+* |dismiss_keymap|
+* |debounce_ms|
+* |suggestion_color|
+* |exclude_filetypes|
+
+
+*disable_auto_comment* - Boolean - Default: false
+if `true`, disables automatic comment insertion when typing new lines.
+
+See https://vim.fandom.com/wiki/Disable_automatic_comment_insertion
+
+*accept_keymap* - String - Default: "<Tab>"
+The key to press to accept the current completion.
+
+*dismiss_keymap* - String - Default: "<C-]>"
+The key to press to hide the current completion.
+
+*debounce_ms* - Integer - Default: 800 - Minumum: 0
+The number of milliseconds to wait between keystrokes before giving
+completions. Higher values will be more performant, while lower values will
+give faster suggestions.
+
+*suggestion_color* - Object - Default: { gui = "#808080", cterm = 244 }
+An object representing the color to display completions in.
+Set using |nvim_set_hl()|
+`gui`: fg color name or "#RRGGBB"
+`cterm`: Sets foreground of cterm color (|cterm-colors|)
+
+*exclude_filetypes* - Array - Default: { "TelescopePrompt" }
+A list of file types to exclude from completions. (|filetype|)
+Use :|setfiletype| <C-d> to see available file types.
+
+==============================================================================
+vim:tw=78:ts=4:ft=help:norl:noet:fen:noet:
