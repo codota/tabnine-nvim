@@ -29,7 +29,7 @@ function M.setup()
 	api.nvim_create_autocmd("CursorMovedI", {
 		pattern = "*",
 		callback = function()
-			if state.active and completion.should_complete() then
+			if completion.should_complete() then
 				completion.complete()
 			else
 				completion.clear()
