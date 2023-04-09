@@ -1,6 +1,9 @@
 local uv = vim.loop
+local fn = vim.fn
+local utils = require("tabnine.utils")
 
 local M = {}
+local DISABLED_FILE = utils.script_path() .. "/.disabled"
 local tabnine_binary = require("tabnine.binary")
 local state = require("tabnine.state")
 local service_level = nil
@@ -27,6 +30,26 @@ end
 
 function M.setup()
 	poll_service_level()
+	local _, disabled_file_exists = pcall(fn.filereadable, DISABLED_FILE)
+	active = disabled_file_exists == 0
+end
+
+function M.enable_tabnine()
+	pcall(fn.delete, DISABLED_FILE)
+	state.active = true
+end
+
+function M.disable_tabnine()
+	pcall(fn.writefile, { "" }, DISABLED_FILE, "b")
+	state.active = false
+end
+
+function M.toggle_tabnine()
+	if state.active then
+		M.disable_tabnine()
+	else
+		M.enable_tabnine()
+	end
 end
 
 function M.status()

@@ -49,6 +49,9 @@ Disable Tabnine
 Enable Tabnine
 :TabnineEnable
 
+Toggle enable/disable
+:TabnineToggle
+
 ==============================================================================
 CONFIGURATION                                       *tabnine-nvim-configuration*
 

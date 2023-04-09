@@ -125,6 +125,7 @@ Sometimes Tabnine may fail to open the browser on Tabnine Hub, in this case use 
 - `:TabnineStatus` - to print Tabnine status
 - `:TabnineDisable` - to disable Tabnine
 - `:TabnineEnable` - to enable Tabnine
+- `:TabnineToggle` - to toggle enable/disable
 
 ## lualine integration
 
