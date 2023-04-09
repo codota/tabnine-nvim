@@ -144,3 +144,13 @@ require('lualine').setup({
     sections = {lualine_c = {'lsp_progress'}, lualine_x = {'tabnine'}}
 })
 ```
+
+## other statusline integrations
+
+To render tabnine status widget use:
+
+```lua
+require('tabnine.status').status()
+```
+
+
