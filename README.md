@@ -145,7 +145,7 @@ require('lualine').setup({
 })
 ```
 
-## other statusline integrations
+## Other statusline integrations
 
 To render tabnine status widget use:
 
