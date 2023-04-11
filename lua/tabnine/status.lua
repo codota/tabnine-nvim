@@ -31,7 +31,7 @@ end
 function M.setup()
 	poll_service_level()
 	local _, disabled_file_exists = pcall(fn.filereadable, DISABLED_FILE)
-	active = disabled_file_exists == 0
+	state.active = disabled_file_exists == 0
 end
 
 function M.enable_tabnine()
