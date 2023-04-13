@@ -120,12 +120,18 @@ EOF
 
 Sometimes Tabnine may fail to open the browser on Tabnine Hub, in this case use `:TabnineHubUrl` to get Tabnine Hub url
 
-## Additional commands
+## Commands
 
 - `:TabnineStatus` - to print Tabnine status
 - `:TabnineDisable` - to disable Tabnine
 - `:TabnineEnable` - to enable Tabnine
 - `:TabnineToggle` - to toggle enable/disable
+
+## `<Tab>` and `nvim-cmp`
+
+`nvim-cmp` maps `<Tab>` to navigating through pop menu items (see [here](https://github.com/hrsh7th/nvim-cmp/blob/777450fd0ae289463a14481673e26246b5e38bf2/lua/cmp/config/mapping.lua#L86)) This conflicts with Tabnine `<Tab>` for inline completion. To get this sorted you can either:
+- Bind Tabnine inline completion to a different key using `accept_keymap`
+- Bind `cmp.select_next_item()` & `cmp.select_prev_item()` to different keys, e.g: `<C-k>` & `<C-j>`
 
 ## lualine integration
 
