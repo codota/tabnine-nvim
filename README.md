@@ -102,7 +102,8 @@ require('tabnine').setup({
   dismiss_keymap = "<C-]>",
   debounce_ms = 800,
   suggestion_color = {gui = "#808080", cterm = 244},
-  exclude_filetypes = {"TelescopePrompt"}
+  exclude_filetypes = {"TelescopePrompt"},
+  log_file_path = nil, -- absolute path to Tabnine log file
 })
 ```
 
@@ -130,6 +131,7 @@ Sometimes Tabnine may fail to open the browser on Tabnine Hub, in this case use 
 ## `<Tab>` and `nvim-cmp`
 
 `nvim-cmp` maps `<Tab>` to navigating through pop menu items (see [here](https://github.com/hrsh7th/nvim-cmp/blob/777450fd0ae289463a14481673e26246b5e38bf2/lua/cmp/config/mapping.lua#L86)) This conflicts with Tabnine `<Tab>` for inline completion. To get this sorted you can either:
+
 - Bind Tabnine inline completion to a different key using `accept_keymap`
 - Bind `cmp.select_next_item()` & `cmp.select_prev_item()` to different keys, e.g: `<C-k>` & `<C-j>`
 
@@ -158,5 +160,3 @@ To render tabnine status widget use:
 ```lua
 require('tabnine.status').status()
 ```
-
-
