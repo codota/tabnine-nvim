@@ -5,6 +5,7 @@ local utils = require("tabnine.utils")
 local consts = require("tabnine.consts")
 local semver = require("tabnine.third_party.semver.semver")
 local TabnineBinary = {}
+local config = require("tabnine.config")
 
 json.encode_empty_table_as_object(true)
 
@@ -50,15 +51,24 @@ local function binary_path()
 	return binaries_path .. "/" .. tostring(paths[#paths]) .. "/" .. arch_and_platform() .. "/" .. binary_name()
 end
 
+local function optional_args()
+	local config = config.get_config()
+	local args = {}
+	if config.log_file_path then
+		table.insert(args, "--log-file-path=" .. config.log_file_path)
+	end
+	return args
+end
+
 function TabnineBinary:start()
 	self.handle, self.pid = uv.spawn(binary_path(), {
-		args = {
+		args = vim.list_extend({
 			"--client",
 			"nvim",
 			"--client-metadata",
 			"ide-restart-counter=" .. self.restart_counter,
 			"pluginVersion=" .. consts.plugin_version,
-		},
+		}, optional_args()),
 		stdio = { self.stdin, self.stdout, self.stderr },
 	}, function()
 		self.handle, self.pid = nil, nil
