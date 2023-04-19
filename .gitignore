@@ -1,4 +1,5 @@
 binaries/*
+doc/tags
 
 **.DS_Store
 .disabled
