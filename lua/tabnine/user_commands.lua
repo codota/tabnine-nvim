@@ -6,7 +6,7 @@ local status = require("tabnine.status")
 
 function M.setup()
 	api.nvim_create_user_command("TabnineHub", function()
-		tabnine_binary:request({ Configuration = {} }, function() end)
+		tabnine_binary:request({ Configuration = { quiet = false } }, function() end)
 	end, {})
 
 	api.nvim_create_user_command("TabnineHubUrl", function()

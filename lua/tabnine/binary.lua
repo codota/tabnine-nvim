@@ -7,8 +7,6 @@ local semver = require("tabnine.third_party.semver.semver")
 local TabnineBinary = {}
 local config = require("tabnine.config")
 
-json.encode_empty_table_as_object(true)
-
 local api_version = "4.4.71"
 local binaries_path = utils.script_path() .. "/binaries"
 
