@@ -21,14 +21,14 @@ else {
 
 if (test-path -path "binaries/$version") {
     remove-item -path binaries -recurse -force | out-null
-    mkdir binaries/$version -force | out-null
+    New-Item -Path "binaries/$version" -ItemType Directory -force | out-null
 }
 
 $targets | foreach-object {
     $target = $_
     $path = "$version/$target"
 
-    if (!(test-path -path "binaries/$version/$target")) { mkdir "binaries/$version/$target" -force | out-null }
+    if (!(test-path -path "binaries/$version/$target")) { New-Item -Path "binaries/$version/$target" -ItemType Directory -force | out-null }
 
     Write-Output "downloading $path"    
     invoke-webrequest -uri "https://update.tabnine.com/bundles/$path/TabNine.zip" -outfile "binaries/$path/TabNine.zip"
