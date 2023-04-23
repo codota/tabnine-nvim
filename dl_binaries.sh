@@ -37,7 +37,7 @@ else
 fi
 
 if [ -z "$targets" ]; then
-  echo "Infrastructure detection failed. Installing all versions"
+  echo "Target detection failed. Installing all targets"
   targets='x86_64-apple-darwin
     x86_64-unknown-linux-musl
     aarch64-apple-darwin'
