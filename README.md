@@ -10,7 +10,7 @@ Tabnine client for Neovim
 
 ### Unix (Linux, MacOS)
 
-Using [vimplug](https://github.com/junegunn/vim-plug)
+Using [vim-plug](https://github.com/junegunn/vim-plug)
 
 1. Add the following in your `init.vim`
 
