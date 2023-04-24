@@ -7,7 +7,7 @@ Tabnine client for Neovim
 ## Install
 
 **Note** this plugin requires having [Neovim](https://github.com/neovim/neovim) version >= v0.7
-The _Unix_ build script requires `curl` and `unzip` to be installed somewhere in your PATH
+The _Unix_ build script requires `curl` and `unzip` to be installed somewhere in your `$PATH`
 
 ### Unix (Linux, MacOS)
 
