@@ -107,7 +107,7 @@ require('tabnine').setup({
 })
 ```
 
-`init.vim` users - the activation script is `lua` code. make sure to have it inside `lua` block. e.g:
+`init.vim` users - the activation script is `lua` code. Make sure to have it inside `lua` block:
 
 ```vim
 lua <<EOF
