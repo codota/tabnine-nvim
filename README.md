@@ -93,7 +93,7 @@ require("lazy").setup({
 
 ## Activate (mandatory)
 
-add this later in your `init.lua`:
+Add this later in your `init.lua`:
 
 ```lua
 require('tabnine').setup({
@@ -119,7 +119,7 @@ EOF
 
 `:TabnineHub` - to open Tabnine Hub and log in to your account
 
-Sometimes Tabnine may fail to open the browser on Tabnine Hub, in this case use `:TabnineHubUrl` to get Tabnine Hub url
+Sometimes Tabnine may fail to open the browser on Tabnine Hub, in this case use `:TabnineHubUrl` to get Tabnine Hub URL
 
 ## Commands
 
