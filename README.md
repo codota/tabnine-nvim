@@ -1,12 +1,12 @@
 # tabnine-nvim
 
-Tabnine client for neovim
+Tabnine client for Neovim
 
-![Tabnine neovim client](https://github.com/codota/tabnine-nvim/blob/master/examples/javascript.gif)
+![Tabnine Neovim client](https://github.com/codota/tabnine-nvim/blob/master/examples/javascript.gif)
 
 ## Install
 
-**Note** this plugin requires having [neovim](https://github.com/neovim/neovim) version >= v0.7
+**Note** this plugin requires having [Neovim](https://github.com/neovim/neovim) version >= v0.7
 
 ### Unix (Linux, MacOS)
 
@@ -20,7 +20,7 @@ Plug 'codota/tabnine-nvim', { 'do': './dl_binaries.sh' }
 call plug#end()
 ```
 
-2. Restart neovim and run `:PlugInstall`
+2. Restart Neovim and run `:PlugInstall`
 
 Using [packer](https://github.com/wbthomason/packer.nvim)
 
