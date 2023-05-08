@@ -19,7 +19,7 @@ function M.setup()
 	api.nvim_create_autocmd("VimEnter,ColorScheme", {
 		pattern = "*",
 		callback = function()
-			if config.get_config.suggestion_color == nil then
+			if config.get_config().suggestion_color == nil then
 				vim.api.nvim_command(
 					"highlight default link TabnineSuggestion " .. config.get_config().suggestion_hl_group
 				)
