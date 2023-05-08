@@ -7,7 +7,8 @@ function M.set_config(o)
 		accept_keymap = "<Tab>",
 		dismiss_keymap = "<C-]>",
 		debounce_ms = 800,
-		suggestion_color = { gui = "#808080", cterm = 244 },
+    suggestion_hl_group = "Comment",
+		suggestion_color = nil,
 		exclude_filetypes = { "TelescopePrompt" },
 		log_file_path = nil,
 	}, o or {})

@@ -128,6 +128,7 @@ function M.render(completion, old_prefix, changedtick)
 		virt_text_win_col = fn.virtcol(".") - 1,
 		virt_text = first_line,
 		virt_lines = other_lines,
+    hl_mode = "combine",
 	})
 
 	state.rendered_completion = utils.lines_to_str(lines)
