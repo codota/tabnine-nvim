@@ -19,10 +19,15 @@ function M.setup()
 	api.nvim_create_autocmd("VimEnter,ColorScheme", {
 		pattern = "*",
 		callback = function()
-			api.nvim_set_hl(0, consts.tabnine_hl_group, {
-				fg = config.get_config().suggestion_color.gui,
-				ctermfg = config.get_config().suggestion_color.cterm,
-			})
+			if config.get_config().suggestion_color then
+				api.nvim_set_hl(0, consts.tabnine_hl_group, {
+					fg = config.get_config().suggestion_color.gui,
+					ctermfg = config.get_config().suggestion_color.cterm,
+				})
+			end
+			if config.get_config().suggestion_hl_group then
+				api.nvim_command("highlight default link TabnineSuggestion " .. config.get_config().suggestion_hl_group)
+			end
 		end,
 	})
 
