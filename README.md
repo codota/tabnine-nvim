@@ -162,3 +162,27 @@ To render tabnine status widget use:
 ```lua
 require('tabnine.status').status()
 ```
+
+## Tabnine Enterprise customers
+
+In your `init.lua`:
+
+```lua
+local tabnine_enterprise_host = "https://tabnine.customer.com"
+
+require("packer").startup(function(use)
+  use { 'codota/tabnine-nvim', run = "./dl_binaries.sh " .. tabnine_enterprise_host .. "/update" }
+end)
+
+require('tabnine').setup({
+  disable_auto_comment=true,
+  accept_keymap="<Tab>",
+  dismiss_keymap = "<C-]>",
+  debounce_ms = 800,
+  suggestion_color = {gui = "#808080", cterm = 244},
+  exclude_filetypes = {"TelescopePrompt"},
+  log_file_path = nil, -- absolute path to Tabnine log file,
+  tabnine_enterprise_host = tabnine_enterprise_host
+})
+```
+
