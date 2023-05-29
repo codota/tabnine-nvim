@@ -6,6 +6,7 @@ local M = {}
 local DISABLED_FILE = utils.script_path() .. "/.disabled"
 local tabnine_binary = require("tabnine.binary")
 local state = require("tabnine.state")
+local config = require("tabnine.config")
 local service_level = nil
 local status_prefix = "⌬ tabnine"
 
@@ -29,7 +30,11 @@ local function poll_service_level()
 end
 
 function M.setup()
-	poll_service_level()
+	if config.is_enterprise() then
+		service_level = "enterprise"
+	else
+		poll_service_level()
+	end
 	local _, disabled_file_exists = pcall(fn.filereadable, DISABLED_FILE)
 	state.active = disabled_file_exists == 0
 end

@@ -7,7 +7,7 @@ local semver = require("tabnine.third_party.semver.semver")
 local TabnineBinary = {}
 local config = require("tabnine.config")
 
-local api_version = "4.4.71"
+local api_version = "4.4.223"
 local binaries_path = utils.script_path() .. "/binaries"
 
 local function arch_and_platform()
@@ -54,6 +54,9 @@ local function optional_args()
 	local args = {}
 	if config.log_file_path then
 		table.insert(args, "--log-file-path=" .. config.log_file_path)
+	end
+	if config.tabnine_enterprise_host then
+		table.insert(args, "--cloud2_url=" .. config.tabnine_enterprise_host)
 	end
 	return args
 end

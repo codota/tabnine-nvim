@@ -10,11 +10,16 @@ function M.set_config(o)
 		suggestion_color = { gui = "#808080", cterm = 244 },
 		exclude_filetypes = { "TelescopePrompt" },
 		log_file_path = nil,
+		tabnine_enterprise_host = nil,
 	}, o or {})
 end
 
 function M.get_config()
 	return config
+end
+
+function M.is_enterprise()
+	return config.tabnine_enterprise_host ~= nil
 end
 
 return M

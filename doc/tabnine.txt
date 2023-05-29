@@ -37,8 +37,14 @@ COMMANDS
 Print Tabnine status
 :TabnineStatus
 
-Activate Tabnine Pro 
-:TabnineHub - to open Tabnine Hub and log in to your account
+Login and activate Tabnine Pro
+:TabnineLogin
+
+Logout
+:TabnineLogout
+
+Open Tabnine Hub
+:TabnineHub - to open Tabnine Hub in the browser
 
 Sometimes Tabnine may fail to open the browser on Tabnine Hub
 :TabnineHubUrl - to get Tabnine Hub url
