@@ -167,6 +167,8 @@ require('tabnine.status').status()
 
 In your `init.lua`:
 
+_these instructions are made for packer, but are pretty much the same with all package managers_
+
 ```lua
 local tabnine_enterprise_host = "https://tabnine.customer.com"
 
