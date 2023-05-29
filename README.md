@@ -163,7 +163,7 @@ To render tabnine status widget use:
 require('tabnine.status').status()
 ```
 
-## Tabnine Enterprise customers
+## Tabnine Enterprise customers (self hosted only)
 
 In your `init.lua`:
 
