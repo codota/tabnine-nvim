@@ -9,10 +9,14 @@ local M = {}
 function M.setup(o)
 	config.set_config(o)
 
-	if vim.version.lt(vim.version(), { 0, 7, 1 }) then
+	local min_version = "0.7.1"
+	if vim.version.lt(vim.version(), vim.version.parse(min_version) or {}) then
 		local v = string.match(tostring(vim.cmd.version()), ".*\n")
 
-		vim.notify_once("tabnine-nvim requires neovim version >0.7.1. Current version: " .. v, vim.log.levels.WARN)
+		vim.notify_once(
+			"tabnine-nvim requires neovim version >=" .. min_version .. ". Current version: " .. v,
+			vim.log.levels.WARN
+		)
 		return nil
 	end
 
