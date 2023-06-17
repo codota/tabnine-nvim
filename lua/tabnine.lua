@@ -9,6 +9,13 @@ local M = {}
 function M.setup(o)
 	config.set_config(o)
 
+	if vim.version.lt(vim.version(), { 0, 7, 1 }) then
+		local v = string.match(tostring(vim.cmd.version()), ".*\n")
+
+		vim.notify_once("tabnine-nvim requires neovim version >0.7.1. Current version: " .. v, vim.log.levels.WARN)
+		return nil
+	end
+
 	keymaps.setup()
 
 	user_commands.setup()
