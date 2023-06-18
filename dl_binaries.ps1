@@ -33,7 +33,7 @@ $targets | foreach-object {
     Write-Output "downloading $path"    
     invoke-webrequest -uri "https://update.tabnine.com/bundles/$path/TabNine.zip" -outfile "binaries/$path/TabNine.zip"
     # Stop this iteration if the download failed
-    if ($LastExitCode -eq 0) {return}
+    if ($LastExitCode -ne 0) {return}
 
     expand-archive "binaries/$path/TabNine.zip" "binaries/$path" 
 
