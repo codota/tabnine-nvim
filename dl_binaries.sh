@@ -16,7 +16,7 @@ fi
 
 # This script downloads the binaries for the most recent version of TabNine.
 # Infrastructure detection heavily inspired by https://github.com/tzachar/cmp-tabnine/blob/main/install.sh
-version=${version:-$(curl -sSL "$TABNINE_UPDATE_SERVICE/bundles/version")}
+version=${version:-$(curl -fsSL "$TABNINE_UPDATE_SERVICE/bundles/version")}
 case $(uname -s) in
 "Darwin")
   if [ "$(uname -m)" = "arm64" ]; then
