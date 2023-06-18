@@ -23,6 +23,8 @@ local function arch_and_platform()
 		return "x86_64-pc-windows-gnu"
 	elseif os_uname.sysname == "Windows_NT" then
 		return "i686-pc-windows-gnu"
+	else
+		return nil
 	end
 end
 
@@ -46,7 +48,21 @@ local function binary_path()
 
 	table.sort(paths)
 
-	return binaries_path .. "/" .. tostring(paths[#paths]) .. "/" .. arch_and_platform() .. "/" .. binary_name()
+	local version = paths[#paths]
+	if not version then
+		return nil -- Is it installed?
+	end
+	local machine = arch_and_platform()
+	if not machine then
+		return nil -- Is this machine supported?
+	end
+	local binary = binaries_path .. "/" .. tostring(version) .. "/" .. machine .. "/" .. binary_name()
+
+	if vim.fn.filereadable(binary) then -- Double check that it's installed
+		return binary
+	else
+		return nil -- File doesn't exist or isn't readable. Is it installed?
+	end
 end
 
 local function optional_args()
@@ -61,7 +77,7 @@ function TabnineBinary:start()
 	self.stdin = uv.new_pipe()
 	self.stdout = uv.new_pipe()
 	self.stderr = uv.new_pipe()
-	self.handle, self.pid = uv.spawn(binary_path(), {
+	self.handle, self.pid = uv.spawn(self.binary_path, {
 		args = vim.list_extend({
 			"--client",
 			"nvim",
@@ -103,12 +119,16 @@ function TabnineBinary:new(o)
 	self.restart_counter = 0
 	self.handle = nil
 	self.pid = nil
+	self.binary_path = binary_path()
 	self.callbacks = {}
 
 	return o
 end
 
 function TabnineBinary:request(request, on_response)
+	if not self.binary_path then
+		return function() end -- To avoid breaking user configurations
+	end
 	if not self.pid then
 		self.restart_counter = self.restart_counter + 1
 		self:start()
