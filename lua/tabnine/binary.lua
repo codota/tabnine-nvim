@@ -3,7 +3,7 @@ local fn = vim.fn
 local json = vim.json
 local utils = require("tabnine.utils")
 local consts = require("tabnine.consts")
-local semver = require("tabnine.third_party.semver.semver")
+local semver = vim.version
 local TabnineBinary = {}
 local config = require("tabnine.config")
 
@@ -41,11 +41,10 @@ local function binary_path()
 	end, fn.glob(binaries_path .. "/*", true, true))
 
 	paths = vim.tbl_map(function(path)
-		return semver(path)
+		return semver.parse(path)
 	end, paths)
 
 	table.sort(paths)
-
 	return binaries_path .. "/" .. tostring(paths[#paths]) .. "/" .. arch_and_platform() .. "/" .. binary_name()
 end
 
