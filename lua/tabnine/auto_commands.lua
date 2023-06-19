@@ -7,7 +7,8 @@ local config = require("tabnine.config")
 local M = {}
 
 function M.setup()
-	api.nvim_create_autocmd("InsertLeave", { pattern = "*", callback = completion.clear })
+	-- CursorMoved is only triggered in Normal or Visual - see ':h CursorMoved'
+	api.nvim_create_autocmd({ "InsertLeave", "CursorMoved" }, { pattern = "*", callback = completion.clear })
 
 	if config.get_config().disable_auto_comment then
 		api.nvim_create_autocmd("FileType", {
