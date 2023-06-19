@@ -1,0 +1,3 @@
+[submodule "lua/tabnine/third_party/semver"]
+	path = lua/tabnine/third_party/semver
+	url = https://github.com/kikito/semver.lua.git
