@@ -12,7 +12,7 @@ function M.setup(o)
 	config.set_config(o)
 
 	local v = vim.version()
-	local cur_version = semver(string.format("%s.%s.%s", v.major, v.minor, v.patch))
+	local cur_version = semver(v.major, v.minor, v.patch)
 	local min_version = semver(consts.min_nvim_version)
 	if cur_version < min_version then
 		vim.notify_once(
