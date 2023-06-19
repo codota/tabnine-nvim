@@ -8,6 +8,8 @@ local M = {}
 
 function M.setup()
 	api.nvim_create_autocmd("InsertLeave", { pattern = "*", callback = completion.clear })
+	-- Only triggered in Normal or Visual - see ':h CursorMoved'
+	api.nvim_create_autocmd("CursorMoved", { pattern = "*", callback = completion.clear })
 
 	if config.get_config().disable_auto_comment then
 		api.nvim_create_autocmd("FileType", {
