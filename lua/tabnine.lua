@@ -1,5 +1,6 @@
 local config = require("tabnine.config")
 local consts = require("tabnine.consts")
+local semver = require("tabnine.third_party.semver.semver")
 local auto_commands = require("tabnine.auto_commands")
 local user_commands = require("tabnine.user_commands")
 local status = require("tabnine.status")
@@ -11,7 +12,9 @@ function M.setup(o)
 	config.set_config(o)
 
 	local v = vim.version()
-	if vim.version.lt(v, vim.version.parse(consts.min_nvim_version) or {}) then
+	local cur_version = semver(string.format("%s.%s.%s", v.major, v.minor, v.patch))
+	local min_version = semver(consts.min_nvim_version)
+	if cur_version < min_version then
 		vim.notify_once(
 			string.format(
 				"tabnine-nvim requires neovim version >=%s. Current version: %d.%d.%d",
