@@ -1,8 +1,12 @@
 local M = {}
 local api = vim.api
-local tabnine_binary = require("tabnine.binary")
+local fn = vim.fn
 local status = require("tabnine.status")
 local config = require("tabnine.config")
+local chat_binary = require("tabnine.chat.binary")
+local tabnine_binary = require("tabnine.binary")
+local utils = require("tabnine.utils")
+local chat = require("tabnine.chat")
 
 function M.setup()
 	if not config.is_enterprise() then
@@ -37,6 +41,7 @@ function M.setup()
 	api.nvim_create_user_command("TabnineStatus", function()
 		print(status.status())
 	end, {})
+	api.nvim_create_user_command("TabnineChat", chat.setup, {})
 end
 
 return M

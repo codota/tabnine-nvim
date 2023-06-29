@@ -1,0 +1,14 @@
+[package]
+name = "tabnine_chat"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+image = "0.24.6"
+once_cell = "1.18.0"
+regex = "1.8.4"
+serde = { version = "1.0.164", features = ["derive"] }
+serde_json = "1.0.99"
+wry = "0.29.0"
