@@ -116,6 +116,8 @@ lua <<EOF
 " activate tabnine here
 EOF
 ```
+## Tabnine Chat - still in ALPHA
+To use Tabnine Chat - you will need to first build it under `chat/` directory using `cargo build --release`, then run `:TabnineChat`
 
 ## Activate Tabnine Pro
 
