@@ -1,3 +1,4 @@
+use image::ImageFormat;
 use once_cell::sync::Lazy;
 use regex::Regex;
 use std::{
@@ -7,7 +8,7 @@ use std::{
     path::PathBuf,
     thread,
 };
-use wry::application::window::Window;
+use wry::application::window::{Icon, Window};
 use wry::{
     application::{
         event::{Event, StartCause, WindowEvent},
@@ -29,10 +30,21 @@ static INDEX_HTML: Lazy<String> = Lazy::new(|| {
         .to_string()
 });
 
+static ICON: Lazy<Icon> = Lazy::new(|| {
+    let bytes: Vec<u8> = include_bytes!("../icon.png").to_vec();
+    let imagebuffer = image::load_from_memory_with_format(&bytes, ImageFormat::Png)
+        .unwrap()
+        .into_rgba8();
+    let (icon_width, icon_height) = imagebuffer.dimensions();
+    let icon_rgba = imagebuffer.into_raw();
+    Icon::from_rgba(icon_rgba, icon_width, icon_height).unwrap()
+});
+
 fn main() -> wry::Result<()> {
     let event_loop = EventLoop::with_user_event();
     let window = WindowBuilder::new()
         .with_title("Tabnine Chat")
+        .with_window_icon(Some(ICON.clone()))
         .build(&event_loop)?;
     let _webview = WebViewBuilder::new(window)?
         .with_custom_protocol("wry".into(), |request| {

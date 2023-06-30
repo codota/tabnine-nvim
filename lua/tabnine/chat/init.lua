@@ -61,6 +61,12 @@ local function register_events()
 end
 
 function M.setup()
+	if not chat_binary:available() then
+		vim.notify(
+			"tabnine_chat binary not found, did you remember to build it first? `cargo build --release` inside `chat/` directory"
+		)
+		return
+	end
 	chat_state = read_chat_state()
 	register_events()
 	chat_binary:start()
