@@ -19,14 +19,12 @@ function ChatBinary:available()
 end
 
 function ChatBinary:close()
-	-- self.stdout:read_stop()
-	-- self.stderr:close()
-	-- self.stdout:close()
-	self.stdin:shutdown(function()
-		-- self.stdin:close()
-		self.handle:close(function() end)
-	end)
-	-- self.handle, self.pid, self.registry = nil, nil, {}
+	if self.handle and not self.handle:is_closing() then
+		self.handle:close()
+		uv.kill(self.pid)
+		self.handle = nil
+		self.pid = nil
+	end
 end
 
 function ChatBinary:is_open()

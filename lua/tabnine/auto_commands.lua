@@ -3,6 +3,7 @@ local consts = require("tabnine.consts")
 local state = require("tabnine.state")
 local completion = require("tabnine.completion")
 local config = require("tabnine.config")
+local chat = require("tabnine.chat")
 
 local M = {}
 
@@ -35,6 +36,14 @@ function M.setup()
 			else
 				completion.clear()
 				state.completions_cache = nil
+			end
+		end,
+	})
+	api.nvim_create_autocmd("VimLeavePre", {
+		pattern = "*",
+		callback = function()
+			if chat.is_open() then
+				chat.close()
 			end
 		end,
 	})
