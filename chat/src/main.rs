@@ -19,12 +19,13 @@ use wry::{
 };
 
 const BASE_URL: &str = "wry://localhost";
-const INDEX_HTML_TEMPLATE: &[u8] = include_bytes!("../index.html");
+
 static INDEX_HTML: Lazy<String> = Lazy::new(|| {
+    let index_html = read(PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("./index.html")).unwrap();
     Regex::new("(href|src)=\"/static")
         .unwrap()
         .replace_all(
-            &String::from_utf8(INDEX_HTML_TEMPLATE.to_vec()).unwrap(),
+            &String::from_utf8(index_html).unwrap(),
             format!("$1=\"{BASE_URL}/static"),
         )
         .to_string()

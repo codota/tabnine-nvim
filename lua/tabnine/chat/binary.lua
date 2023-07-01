@@ -15,7 +15,25 @@ end
 local binary_path = utils.script_path() .. "/../chat/target/release/" .. binary_name()
 
 function ChatBinary:available()
-  return vim.fn.executable(binary_path) == 1
+	return vim.fn.executable(binary_path) == 1
+end
+
+function ChatBinary:close()
+	-- self.stdout:read_stop()
+	-- self.stderr:close()
+	-- self.stdout:close()
+	self.stdin:shutdown(function()
+		-- self.stdin:close()
+		self.handle:close(function() end)
+	end)
+	-- self.handle, self.pid, self.registry = nil, nil, {}
+end
+
+function ChatBinary:is_open()
+	if self.handle == nil then
+		return false
+	end
+	return self.handle:is_active()
 end
 
 function ChatBinary:start()
@@ -30,30 +48,27 @@ function ChatBinary:start()
 	self.handle, self.pid = uv.spawn(binary_path, {
 		stdio = { self.stdin, self.stdout, self.stderr },
 	}, function()
-		self.handle, self.pid, self.registry = nil, nil, {}
-		uv.read_stop(self.stdout)
+		self:close()
 	end)
 
-	uv.read_start(
-		self.stdout,
-		vim.schedule_wrap(function(error, chunk)
-			if chunk then
-				for _, line in pairs(utils.str_to_lines(chunk)) do
-					local message = vim.json.decode(line)
-					local handler = self.registry[message.command]
-					if handler then
-						handler(message.data, function(payload)
-							if payload then
-								self:post_message(message.id, payload)
-							end
-						end)
-					end
+	self.stdout:read_start(vim.schedule_wrap(function(error, chunk)
+		if chunk then
+			for _, line in pairs(utils.str_to_lines(chunk)) do
+				print(line)
+				local message = vim.json.decode(line)
+				local handler = self.registry[message.command]
+				if handler then
+					handler(message.data, function(payload)
+						if payload then
+							self:post_message({ id = message.id, payload = payload })
+						end
+					end)
 				end
-			elseif error then
-				print("chat binary read_start error", error)
 			end
-		end)
-	)
+		elseif error then
+			print("chat binary read_start error", error)
+		end
+	end))
 end
 
 function ChatBinary:new(o)
@@ -74,8 +89,8 @@ function ChatBinary:register_event(event, handler)
 	self.registry[event] = handler
 end
 
-function ChatBinary:post_message(id, payload)
-	uv.write(self.stdin, json.encode({ id = id, payload = payload }) .. "\n")
+function ChatBinary:post_message(message)
+	uv.write(self.stdin, json.encode(message) .. "\n")
 end
 
 return ChatBinary:new()

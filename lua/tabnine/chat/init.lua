@@ -29,6 +29,12 @@ local function register_events()
 		answer({ ide = "ij", isDarkTheme = true })
 	end)
 
+	chat_binary:register_event("clear_all_chat_conversations", function(_, answer)
+		chat_state.conversations = {}
+		write_chat_state(chat_state)
+		answer(chat_state)
+	end)
+
 	chat_binary:register_event("update_chat_conversation", function(conversation)
 		chat_state.conversations[conversation.id] = {
 			id = conversation.id,
@@ -42,7 +48,8 @@ local function register_events()
 	end)
 	chat_binary:register_event("get_user", function(_, answer)
 		tabnine_binary:request({ State = { dummy = true } }, function(state)
-			answer({ token = state.access_token, username = state.user_name })
+			print(vim.inspect(state))
+			answer({ token = state.access_token, username = state.user_name, avatarUrl = state.user_avatar_url })
 		end)
 	end)
 	chat_binary:register_event("insert-at-cursor", function(message, _)
@@ -60,7 +67,23 @@ local function register_events()
 	end)
 end
 
-function M.setup()
+function M.clear_conversation()
+	chat_binary:post_message({ command = "clear-conversation" })
+end
+
+function M.close()
+	chat_binary:close()
+end
+
+function M.toggle()
+	if chat_binary:is_open() then
+		M.close()
+	else
+		M.open()
+	end
+end
+
+function M.open()
 	if not chat_binary:available() then
 		vim.notify(
 			"tabnine_chat binary not found, did you remember to build it first? `cargo build --release` inside `chat/` directory"
