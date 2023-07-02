@@ -59,6 +59,12 @@ local function register_events()
 	chat_binary:register_event("get_editor_context", function(_, answer)
 		local file_code_table = api.nvim_buf_get_text(0, 0, 0, fn.line("$") - 1, fn.col("$,$") - 1, {})
 		local file_code = table.concat(file_code_table, "\n")
+
+		-- local vstart = fn.getpos("'<")
+		-- local vend = fn.getpos("'>")
+		-- local selected_code_table = api.nvim_buf_get_text(0, vstart[1], vstart[2], vend[1], vend[2] - 1, {})
+		-- local selected_code = table.concat(selected_code_table, "\n")
+		-- print(selected_code)
 		answer({
 			fileCode = file_code,
 			selectedCode = "",
@@ -75,20 +81,16 @@ function M.new_conversation()
 	chat_binary:post_message({ command = "create-new-conversation" })
 end
 
+function M.set_always_on_top(value)
+	chat_binary:post_message({ command = "set_always_on_top", data = value })
+end
+
 function M.is_open()
 	return chat_binary:is_open()
 end
 
 function M.close()
 	chat_binary:close()
-end
-
-function M.toggle()
-	if chat_binary:is_open() then
-		M.close()
-	else
-		M.open()
-	end
 end
 
 function M.open()
@@ -98,9 +100,19 @@ function M.open()
 		)
 		return
 	end
+
+	if M.is_open() then
+		M.focus()
+		return
+	end
+
 	chat_state = read_chat_state()
 	register_events()
 	chat_binary:start()
+end
+
+function M.focus()
+	chat_binary:post_message({ command = "focus" })
 end
 
 return M

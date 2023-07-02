@@ -1,6 +1,7 @@
 use image::ImageFormat;
 use once_cell::sync::Lazy;
 use regex::Regex;
+use serde::{Deserialize, Serialize};
 use std::{
     env,
     fs::{canonicalize, read},
@@ -17,6 +18,17 @@ use wry::{
     },
     webview::WebViewBuilder,
 };
+
+#[derive(Deserialize, Serialize)]
+#[serde(tag = "command", content = "data")]
+enum Message {
+    #[serde(rename = "focus")]
+    Focus,
+    #[serde(rename = "set_always_on_top")]
+    SetOnTop(bool),
+}
+
+const WINDOW_TITLE: &str = "Tabnine Chat";
 
 const BASE_URL: &str = "wry://localhost";
 
@@ -42,12 +54,13 @@ static ICON: Lazy<Icon> = Lazy::new(|| {
 });
 
 fn main() -> wry::Result<()> {
+    // println!("{}", serde_json::to_string_pretty(&Message::Focus).unwrap());
     let event_loop = EventLoop::with_user_event();
     let window = WindowBuilder::new()
-        .with_title("Tabnine Chat")
+        .with_title(WINDOW_TITLE)
         .with_window_icon(Some(ICON.clone()))
         .build(&event_loop)?;
-    let _webview = WebViewBuilder::new(window)?
+    let webview = WebViewBuilder::new(window)?
         .with_custom_protocol("wry".into(), |request| {
             let path = request.uri().path();
             // Read the file content from file path
@@ -96,9 +109,23 @@ fn main() -> wry::Result<()> {
                 event: WindowEvent::CloseRequested,
                 ..
             } => *control_flow = ControlFlow::Exit,
-            Event::UserEvent(message) => {
-                let _ = _webview.evaluate_script(&format!("window.postMessage({message},\"*\")"));
-            }
+            Event::UserEvent(message) => match serde_json::from_str::<Message>(&message) {
+                Ok(Message::Focus) => {
+                    webview.window().set_focus();
+                    if env::consts::OS == "linux" {
+                        let _ = std::process::Command::new("wmctrl")
+                            .args(["-a", WINDOW_TITLE])
+                            .output();
+                    }
+                },
+                Ok(Message::SetOnTop(on_top)) => {
+                    webview.window().set_always_on_top(on_top);
+                },
+                _ => {
+                    let _ =
+                        webview.evaluate_script(&format!("window.postMessage({message},\"*\")"));
+                }
+            },
             _ => (),
         }
     });
