@@ -43,6 +43,7 @@ function M.setup()
 	end, {})
 	api.nvim_create_user_command("TabnineChat", chat.toggle, {})
 	api.nvim_create_user_command("TabnineChatClear", chat.clear_conversation, {})
+	api.nvim_create_user_command("TabnineChatNew", chat.new_conversation, {})
 end
 
 return M

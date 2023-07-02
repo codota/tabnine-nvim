@@ -71,6 +71,10 @@ function M.clear_conversation()
 	chat_binary:post_message({ command = "clear-conversation" })
 end
 
+function M.new_conversation()
+	chat_binary:post_message({ command = "create-new-conversation" })
+end
+
 function M.is_open()
 	return chat_binary:is_open()
 end
