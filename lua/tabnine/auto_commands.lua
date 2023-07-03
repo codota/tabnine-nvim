@@ -39,12 +39,20 @@ function M.setup()
 			end
 		end,
 	})
+
 	api.nvim_create_autocmd("VimLeavePre", {
 		pattern = "*",
 		callback = function()
 			if chat.is_open() then
 				chat.close()
 			end
+		end,
+	})
+
+	api.nvim_create_autocmd("VimEnter", {
+		pattern = "*",
+		callback = function()
+			chat.setup()
 		end,
 	})
 end

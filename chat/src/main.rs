@@ -117,10 +117,10 @@ fn main() -> wry::Result<()> {
                             .args(["-a", WINDOW_TITLE])
                             .output();
                     }
-                },
+                }
                 Ok(Message::SetOnTop(on_top)) => {
                     webview.window().set_always_on_top(on_top);
-                },
+                }
                 _ => {
                     let _ =
                         webview.evaluate_script(&format!("window.postMessage({message},\"*\")"));

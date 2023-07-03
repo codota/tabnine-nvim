@@ -1,11 +1,8 @@
 local M = {}
 local api = vim.api
-local fn = vim.fn
 local status = require("tabnine.status")
 local config = require("tabnine.config")
-local chat_binary = require("tabnine.chat.binary")
 local tabnine_binary = require("tabnine.binary")
-local utils = require("tabnine.utils")
 local chat = require("tabnine.chat")
 
 function M.setup()
@@ -41,10 +38,6 @@ function M.setup()
 	api.nvim_create_user_command("TabnineStatus", function()
 		print(status.status())
 	end, {})
-	api.nvim_create_user_command("TabnineChat", chat.open, {})
-	api.nvim_create_user_command("TabnineChatClose", chat.close, {})
-	api.nvim_create_user_command("TabnineChatClear", chat.clear_conversation, {})
-	api.nvim_create_user_command("TabnineChatNew", chat.new_conversation, {})
 end
 
 return M
