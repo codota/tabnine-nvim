@@ -1,0 +1,30 @@
+name: Chat
+
+on:
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "./chat"
+    strategy:
+      matrix:
+        target: [x86_64-unknown-linux-musl, aarch64-apple-darwin, x86_64-apple-darwin, x86_64-pc-windows-gnu,i686-pc-windows-gnu]
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: rust-cargo
+      uses: actions-rs/cargo@v1.0.1
+      with:
+        # Cargo command to run (ex. `check` or `build`)
+        command: build
+        toolchain: 1.70
+        # Arguments for the cargo command
+        args: --release --target=${{ matrix.target }}
+        # Use cross instead of cargo
+        use-cross: true
