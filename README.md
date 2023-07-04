@@ -117,6 +117,7 @@ lua <<EOF
 EOF
 ```
 ## Tabnine Chat - still in ALPHA
+![Tabnine Neovim chat](https://github.com/codota/tabnine-nvim/blob/chat/examples/python-chat.gif)
 To use Tabnine Chat - you will need to first build it under `chat/` directory using `cargo build --release`, then run `:TabnineChat`
 
 ## Activate Tabnine Pro
