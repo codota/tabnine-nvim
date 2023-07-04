@@ -116,7 +116,7 @@ lua <<EOF
 " activate tabnine here
 EOF
 ```
-## Tabnine Chat - ALPHA
+## Tabnine Chat - BETA
 ![Tabnine Neovim chat](https://github.com/codota/tabnine-nvim/blob/chat/examples/python-chat.gif)
 
 ### Installation
