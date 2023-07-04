@@ -120,7 +120,7 @@ EOF
 ![Tabnine Neovim chat](https://github.com/codota/tabnine-nvim/blob/chat/examples/python-chat.gif)
 
 ### Installation
-First build `chat/` directory using:`cargo build --release`
+First build `chat/` directory using `cargo build --release`
 
 ## Activate Tabnine Pro
 
