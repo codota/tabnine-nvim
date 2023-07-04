@@ -19,12 +19,12 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: rust-cargo
-      uses: actions-rs/cargo@v1.0.1
+    - uses: actions-rs/toolchain@v1
       with:
-        # Cargo command to run (ex. `check` or `build`)
+        toolchain: 1.70.0
+        target: ${{ matrix.target }}
+    - uses: actions-rs/cargo@v1.0.1
+      with:
         command: build
-        toolchain: 1.70
-        # Arguments for the cargo command
         args: --release --target=${{ matrix.target }}
-        # Use cross instead of cargo
         use-cross: true
