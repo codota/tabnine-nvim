@@ -59,14 +59,12 @@ local function register_events()
 		local file_code_table = api.nvim_buf_get_text(0, 0, 0, fn.line("$") - 1, fn.col("$,$") - 1, {})
 		local file_code = table.concat(file_code_table, "\n")
 
-		-- local vstart = fn.getpos("'<")
-		-- local vend = fn.getpos("'>")
-		-- local selected_code_table = api.nvim_buf_get_text(0, vstart[1], vstart[2], vend[1], vend[2] - 1, {})
-		-- local selected_code = table.concat(selected_code_table, "\n")
-		-- print(selected_code)
+		local selected_code_table =
+			api.nvim_buf_get_text(0, fn.line("v") - 1, fn.col("v") - 1, fn.line(".") - 1, fn.col(".") - 1, {})
+		local selected_code = table.concat(selected_code_table, "\n")
 		answer({
 			fileCode = file_code,
-			selectedCode = "",
+			selectedCode = selected_code,
 			selectedCodeUsages = {},
 		})
 	end)
