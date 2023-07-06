@@ -1,5 +1,5 @@
 local api = vim.api
-local chat = require("tabnine.chat.chat")
+local chat = require("tabnine.chat")
 
 local M = {}
 

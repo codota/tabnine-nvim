@@ -1,7 +1,7 @@
 local M = {}
 local api = vim.api
 local config = require("tabnine.config")
-local chat = require("tabnine.chat.chat")
+local chat = require("tabnine.chat")
 
 function M.setup()
 	if not config.is_enterprise() then
