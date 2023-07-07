@@ -89,6 +89,8 @@ function TabnineBinary:start()
 	}, function()
 		self.handle, self.pid = nil, nil
 		uv.read_stop(self.stdout)
+		uv.read_stop(self.stderr)
+		self.stdout, self.stderr, self.stdin = nil, nil, nil
 	end)
 
 	uv.read_start(
