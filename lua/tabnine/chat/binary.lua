@@ -21,7 +21,7 @@ end
 function ChatBinary:close()
 	if self.handle and not self.handle:is_closing() then
 		self.handle:close()
-		uv.kill(self.pid)
+		uv.kill(self.pid, "sigterm")
 		self.handle = nil
 		self.pid = nil
 	end
