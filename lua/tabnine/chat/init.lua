@@ -6,7 +6,7 @@ local api = vim.api
 
 local M = {}
 
-local CHAT_STATE_FILE = utils.script_path() .. "/chat_state.json"
+local CHAT_STATE_FILE = utils.script_path() .. "/../chat_state.json"
 local chat_state = nil
 
 local function read_chat_state()
