@@ -5,6 +5,7 @@ local auto_commands = require("tabnine.auto_commands")
 local user_commands = require("tabnine.user_commands")
 local status = require("tabnine.status")
 local keymaps = require("tabnine.keymaps")
+local chat_setup = require("tabnine.chat.setup")
 
 local M = {}
 
@@ -35,6 +36,8 @@ function M.setup(o)
 	auto_commands.setup()
 
 	status.setup()
+
+	chat_setup.setup()
 end
 
 return M
