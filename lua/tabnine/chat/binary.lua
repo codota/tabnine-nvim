@@ -24,6 +24,9 @@ function ChatBinary:close()
 		uv.kill(self.pid, "sigterm")
 		self.handle = nil
 		self.pid = nil
+		self.stdin = nil
+		self.stdout = nil
+		self.stderr = nil
 	end
 end
 
