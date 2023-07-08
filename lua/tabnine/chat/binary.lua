@@ -25,6 +25,8 @@ function ChatBinary:close()
 		self.handle = nil
 		self.pid = nil
 		self.stdin = nil
+		uv.read_stop(self.stdout)
+		uv.read_stop(self.stderr)
 		self.stdout = nil
 		self.stderr = nil
 	end
