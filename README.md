@@ -122,6 +122,13 @@ EOF
 ### Installation
 First build `chat/` directory using `cargo build --release`
 
+### Keymaps examples
+```lua
+api.nvim_set_keymap("x", "<leader>q", "", { noremap = true, callback = require("tabnine.chat").open })
+api.nvim_set_keymap("i", "<leader>q", "", { noremap = true, callback = require("tabnine.chat").open })
+api.nvim_set_keymap("n", "<leader>q", "", { noremap = true, callback = require("tabnine.chat").open })
+```
+
 ## Activate Tabnine Pro
 
 `:TabnineHub` - to open Tabnine Hub and log in to your account
