@@ -4,7 +4,7 @@ local utils = require("tabnine.utils")
 local tabnine_binary = require("tabnine.binary")
 local api = vim.api
 
-local M = {}
+local M = { enabled = false }
 
 local CHAT_STATE_FILE = utils.script_path() .. "/../chat_state.json"
 local chat_state = nil
@@ -93,6 +93,11 @@ function M.close()
 end
 
 function M.open()
+	if not M.enabled then
+		vim.notify("Tabnine Chat is available only for preview users")
+		return
+	end
+
 	if not chat_binary:available() then
 		vim.notify(
 			"tabnine_chat binary not found, did you remember to build it first? `cargo build --release` inside `chat/` directory"
@@ -112,6 +117,10 @@ end
 
 function M.focus()
 	chat_binary:post_message({ command = "focus" })
+end
+
+function M.setup()
+	M.enabled = true
 end
 
 return M
