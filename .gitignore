@@ -9,3 +9,10 @@ sig
 auth
 .idea/
 *.iml
+
+
+# Added by cargo
+
+target/
+
+chat_state.json

@@ -4,6 +4,25 @@ Tabnine client for Neovim
 
 ![Tabnine Neovim client](https://github.com/codota/tabnine-nvim/blob/master/examples/javascript.gif)
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+- [Install](#install)
+  - [Unix (Linux, MacOS)](#unix-linux-macos)
+  - [Windows](#windows)
+- [Activate (mandatory)](#activate-mandatory)
+- [Activate Tabnine Pro](#activate-tabnine-pro)
+- [Commands](#commands)
+- [`<Tab>` and `nvim-cmp`](#tab-and-nvim-cmp)
+- [lualine integration](#lualine-integration)
+- [Other statusline integrations](#other-statusline-integrations)
+- [Tabnine Enterprise customers (self hosted only)](#tabnine-enterprise-customers-self-hosted-only)
+- [Tabnine Chat - BETA](#tabnine-chat---beta)
+  - [Keymaps examples](#keymaps-examples)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 ## Install
 
 **Note** this plugin requires having [Neovim](https://github.com/neovim/neovim) version >= v0.7
@@ -129,6 +148,7 @@ Sometimes Tabnine may fail to open the browser on Tabnine Hub, in this case use 
 - `:TabnineDisable` - to disable Tabnine
 - `:TabnineEnable` - to enable Tabnine
 - `:TabnineToggle` - to toggle enable/disable
+- `:TabnineChat` - to launch Tabnine chat
 
 ## `<Tab>` and `nvim-cmp`
 
@@ -188,3 +208,19 @@ require('tabnine').setup({
 })
 ```
 
+## Tabnine Chat - BETA
+
+![Tabnine Neovim chat](https://github.com/codota/tabnine-nvim/blob/chat/examples/python-chat.gif)
+
+Tabnine Chat for Nvim is in very early BETA. To make it work:
+
+- Contact support@tabnine.com with your Tabnine Pro email - so we will enable it for you
+- you will need to build the chat from source, by executing: `cargo build --release` inside `chat/` directory.
+
+### Keymaps examples
+
+```lua
+api.nvim_set_keymap("x", "<leader>q", "", { noremap = true, callback = require("tabnine.chat").open })
+api.nvim_set_keymap("i", "<leader>q", "", { noremap = true, callback = require("tabnine.chat").open })
+api.nvim_set_keymap("n", "<leader>q", "", { noremap = true, callback = require("tabnine.chat").open })
+```

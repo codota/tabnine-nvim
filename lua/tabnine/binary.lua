@@ -62,6 +62,9 @@ local function optional_args()
 end
 
 function TabnineBinary:start()
+	self.stdin = uv.new_pipe()
+	self.stdout = uv.new_pipe()
+	self.stderr = uv.new_pipe()
 	self.handle, self.pid = uv.spawn(binary_path(), {
 		args = vim.list_extend({
 			"--client",
@@ -97,9 +100,9 @@ function TabnineBinary:new(o)
 	o = o or {}
 	setmetatable(o, self)
 	self.__index = self
-	self.stdin = uv.new_pipe()
-	self.stdout = uv.new_pipe()
-	self.stderr = uv.new_pipe()
+	self.stdin = nil
+	self.stdout = nil
+	self.stderr = nil
 	self.restart_counter = 0
 	self.handle = nil
 	self.pid = nil
