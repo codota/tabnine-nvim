@@ -210,7 +210,7 @@ require('tabnine').setup({
 ```
 
 ## Tabnine Chat - BETA
-![Tabnine Neovim chat](https://github.com/codota/tabnine-nvim/blob/chat/examples/python-chat.gif)
+![Tabnine Neovim chat](https://github.com/codota/tabnine-nvim/blob/master/examples/python-chat.gif)
 Tabnine Chat for Nvim is in very early BETA. To make it work:
 - Contact support@tabnine.com with your Tabnine Pro email - so we will enable it for you
 - You will need to build the chat from source, by executing: `cargo build --release` inside `chat/` directory.
