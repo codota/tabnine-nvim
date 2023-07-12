@@ -50,6 +50,7 @@ local function binary_path()
 
 	local version = paths[#paths]
 	if not version then
+		vim.notify("Did you remember to run the build script for tabnine-nvim?", vim.log.levels.WARN)
 		return nil -- Is it installed?
 	end
 	local machine = arch_and_platform()
@@ -61,6 +62,7 @@ local function binary_path()
 	if vim.fn.filereadable(binary) then -- Double check that it's installed
 		return binary
 	else
+		vim.notify("Did you remember to run the build script for tabnine-nvim?", vim.log.levels.WARN)
 		return nil -- File doesn't exist or isn't readable. Is it installed?
 	end
 end
