@@ -68,6 +68,10 @@ local function register_events()
 			selectedCodeUsages = {},
 		})
 	end)
+
+	chat_binary:register_event("send_event", function(event)
+		tabnine_binary:request({ Event = { name = event.eventName, properties = event.properties } }, function() end)
+	end)
 end
 
 function M.clear_conversation()
