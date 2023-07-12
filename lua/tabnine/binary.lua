@@ -38,6 +38,11 @@ local function binary_name()
 end
 
 local function binary_path()
+	local machine = arch_and_platform()
+	if not machine then
+		return nil -- Is this machine supported?
+	end
+
 	local paths = vim.tbl_map(function(path)
 		return fn.fnamemodify(path, ":t")
 	end, fn.glob(binaries_path .. "/*", true, true))
@@ -52,10 +57,6 @@ local function binary_path()
 	if not version then
 		vim.notify("Did you remember to run the build script for tabnine-nvim?", vim.log.levels.WARN)
 		return nil -- Is it installed?
-	end
-	local machine = arch_and_platform()
-	if not machine then
-		return nil -- Is this machine supported?
 	end
 	local binary = binaries_path .. "/" .. tostring(version) .. "/" .. machine .. "/" .. binary_name()
 
