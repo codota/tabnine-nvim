@@ -6,7 +6,7 @@ local chat = require("tabnine.chat")
 local M = {}
 
 function M.setup()
-	features.if_feature_enabled({ "alpha", "chat" }, function()
+	features.if_feature_enabled({ "alpha", "plugin.feature.tabnine_chat" }, function()
 		user_commands.setup()
 		auto_commands.setup()
 		chat.setup()
