@@ -8,10 +8,13 @@
           background: linear-gradient(239deg, rgb(252, 71, 96) 0%, rgb(255, 103, 195) 100%);
           color: white;
           text-align: center;
-          font-size: 20px;
-          padding: 2px;
           font-weight: bold;
           justify-content: center;
+        }
+        h1 {
+          padding: 2px;
+          margin: 0;
+          font-size: 20px;
         }
 
       </style>
