@@ -1,5 +1,6 @@
-# tabnine-nvim
+[![Tabnine Chat Support](https://github.com/codota/tabnine-nvim/blob/master/chat/ticker.png)](#tabnine-chat---beta)
 
+# tabnine-nvim
 Tabnine client for Neovim
 
 ![Tabnine Neovim client](https://github.com/codota/tabnine-nvim/blob/master/examples/javascript.gif)
