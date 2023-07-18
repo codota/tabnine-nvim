@@ -1,4 +1,4 @@
-![Tabnine Chat Support](https://github.com/codota/tabnine-nvim/blob/chat-ticker/chat/ticker.png)
+[![Tabnine Chat Support](https://github.com/codota/tabnine-nvim/blob/master/chat/ticker.png)](#tabnine-chat---beta)
 
 # tabnine-nvim
 Tabnine client for Neovim
