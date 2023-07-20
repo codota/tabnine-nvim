@@ -57,14 +57,19 @@ function ChatBinary:start()
 	self.stdout:read_start(vim.schedule_wrap(function(error, chunk)
 		if chunk then
 			for _, line in pairs(utils.str_to_lines(chunk)) do
-				local message = vim.json.decode(line)
-				local handler = self.registry[message.command]
-				if handler then
-					handler(message.data, function(payload)
-						if payload then
-							self:post_message({ id = message.id, payload = payload })
-						end
-					end)
+				local status, message = pcall(vim.json.decode, line)
+				if not status then
+					vim.notify("[tabnine-nvim] Failed to decode chat message: " .. line, vim.log.levels.WARN)
+					return
+				else
+					local handler = self.registry[message.command]
+					if handler then
+						handler(message.data, function(payload)
+							if payload then
+								self:post_message({ id = message.id, payload = payload })
+							end
+						end)
+					end
 				end
 			end
 		elseif error then
