@@ -86,4 +86,16 @@ function M.document_changed()
 	return last_changedtick > current_changedtick
 end
 
+function M.selected_text()
+	local mode = vim.fn.mode()
+	if mode ~= "v" and mode ~= "V" and mode ~= "" then
+		return ""
+	end
+	local a_orig = vim.fn.getreg("a")
+	vim.cmd([[silent! normal! "aygv]])
+	local text = vim.fn.getreg("a")
+	vim.fn.setreg("a", a_orig)
+	return text
+end
+
 return M
