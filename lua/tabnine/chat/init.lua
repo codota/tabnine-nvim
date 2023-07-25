@@ -9,6 +9,19 @@ local M = { enabled = false }
 local CHAT_STATE_FILE = utils.script_path() .. "/../chat_state.json"
 local chat_state = nil
 
+local function get_diagnostics_text()
+	local diagnostics = vim.diagnostic.get(0)
+	if #diagnostics == 0 then
+		return ""
+	end
+	local text = ""
+	for _, diagnostic in ipairs(diagnostics) do
+		text = text .. diagnostic.message .. "\n"
+	end
+	print(text)
+	return text
+end
+
 local function read_chat_state()
 	if fn.filereadable(CHAT_STATE_FILE) == 1 then
 		local lines = fn.readfile(CHAT_STATE_FILE)
@@ -65,6 +78,7 @@ local function register_events()
 		answer({
 			fileCode = file_code,
 			selectedCode = selected_code,
+			diagnosticsText = get_diagnostics_text(),
 			selectedCodeUsages = {},
 		})
 	end)
