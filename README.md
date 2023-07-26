@@ -218,9 +218,9 @@ Tabnine Chat for Nvim is in very early BETA. To make it work:
   - You may be missing some dependencies to build the chat. To fix this, run the following command:
 ```shell
 $ # Debian/Ubuntu
-$ sudo apt-get install -y libgtk-3-dev libglib2.0-dev libjavascriptcoregtk-4.1-dev
+$ sudo apt-get install -y libgtk-3-dev libglib2.0-dev libjavascriptcoregtk-4.1-dev libsoup-3.0-dev libwebkit2gtk-4.1-dev
 $ # Arch
-$ pacman -S --needed gtk3 glib2 webkit2gtk-4.1
+$ pacman -S --needed gtk3 glib2 webkit2gtk-4.1 libsoup3
 ```
 
 ### Keymaps examples
