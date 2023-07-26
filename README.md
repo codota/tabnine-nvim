@@ -215,6 +215,13 @@ require('tabnine').setup({
 Tabnine Chat for Nvim is in very early BETA. To make it work:
 - Contact support@tabnine.com with your Tabnine Pro email - so we will enable it for you
 - You will need to build the chat from source, by executing: `cargo build --release` inside `chat/` directory.
+  - You may be missing some dependencies to build the chat. To fix this, run the following command:
+```shell
+$ # Debian/Ubuntu
+$ sudo apt-get install -y libgtk-3-dev libglib2.0-dev libjavascriptcoregtk-4.1-dev
+$ # Arch
+$ pacman -S --needed gtk3 glib2 webkit2gtk-4.1
+```
 
 ### Keymaps examples
 
