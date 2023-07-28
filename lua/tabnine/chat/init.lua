@@ -18,7 +18,6 @@ local function get_diagnostics_text()
 	for _, diagnostic in ipairs(diagnostics) do
 		text = text .. diagnostic.message .. "\n"
 	end
-	print(text)
 	return text
 end
 
