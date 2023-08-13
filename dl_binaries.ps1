@@ -39,7 +39,7 @@ $targets | foreach-object {
     Write-Output "downloading $path"    
     invoke-webrequest -uri "$TABNINE_UPDATE_SERVICE/bundles/$path/TabNine.zip" -outfile "binaries/$path/TabNine.zip"
     # Stop this iteration if the download failed
-    if ($LastExitCode -ne 0) {return}
+    if (!(Test-Path "binaries/$path/TabNine.zip" -PathType Leaf)) {return}
 
     expand-archive "binaries/$path/TabNine.zip" "binaries/$path" 
 
