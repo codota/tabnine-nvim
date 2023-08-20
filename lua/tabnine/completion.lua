@@ -9,7 +9,7 @@ local tabnine_binary = require("tabnine.binary")
 local config = require("tabnine.config")
 
 local function valid_response(response)
-	return response and #response.results >= 1 and #response.results[1].new_prefix > 1
+	return response and #response.results > 0 and #response.results[1].new_prefix > 0
 end
 
 function M.accept()
