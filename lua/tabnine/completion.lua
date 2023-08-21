@@ -54,7 +54,6 @@ function M.complete()
 	local after_table =
 		api.nvim_buf_get_text(0, fn.line(".") - 1, fn.col(".") - 1, fn.line("$") - 1, fn.col("$,$") - 1, {})
 	local after = table.concat(after_table, "\n")
-
 	state.cancel_completion = tabnine_binary:request({
 		Autocomplete = {
 			before = before,
