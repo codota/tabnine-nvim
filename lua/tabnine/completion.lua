@@ -54,6 +54,17 @@ function M.complete()
 	local after_table =
 		api.nvim_buf_get_text(0, fn.line(".") - 1, fn.col(".") - 1, fn.line("$") - 1, fn.col("$,$") - 1, {})
 	local after = table.concat(after_table, "\n")
+	print(vim.json.encode({
+		Autocomplete = {
+			before = before,
+			after = after,
+			filename = fn.expand("%:t"),
+			region_includes_beginning = true,
+			region_includes_end = false,
+			max_num_results = 1,
+			correlation_id = state.requests_counter,
+		},
+	}))
 
 	state.cancel_completion = tabnine_binary:request({
 		Autocomplete = {

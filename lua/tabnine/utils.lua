@@ -98,4 +98,18 @@ function M.selected_text()
 	return text
 end
 
+function M.set(array)
+	local set = {}
+	local uniqueValues = {}
+
+	for _, value in ipairs(array) do
+		if not set[value] then
+			set[value] = true
+			table.insert(uniqueValues, value)
+		end
+	end
+
+	return uniqueValues
+end
+
 return M

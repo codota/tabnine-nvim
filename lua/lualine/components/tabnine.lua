@@ -1,5 +1,3 @@
-local uv = vim.loop
-
 local M = require("lualine.component"):extend()
 local status = require("tabnine.status")
 
