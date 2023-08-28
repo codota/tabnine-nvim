@@ -73,7 +73,7 @@ local function register_events()
 			})
 		end)
 	end)
-	chat_binary:register_event("insert-at-cursor", function(message, _)
+	chat_binary:register_event("insert_at_cursor", function(message, _)
 		local lines = utils.str_to_lines(message.code)
 		api.nvim_buf_set_text(0, fn.line("v") - 1, fn.col("v") - 1, fn.line(".") - 1, fn.col(".") - 1, lines)
 	end)
@@ -88,20 +88,21 @@ local function register_events()
 		end)
 	end)
 
+	chat_binary:register_event("get_selected_code", function(_, answer)
+		answer({ code = utils.selected_text() })
+	end)
+
 	chat_binary:register_event("get_enriching_context", function(request, answer)
 		local contextTypesSet = utils.set(request.contextTypes)
 		local enrichingContextData = vim.tbl_map(function(contextType)
-			print(contextType)
 			if contextType == "Editor" then
 				local file_code_table = api.nvim_buf_get_text(0, 0, 0, fn.line("$") - 1, fn.col("$,$") - 1, {})
 				local file_code = table.concat(file_code_table, "\n")
-				local selected_code = utils.selected_text()
 
 				return {
 					type = "Editor",
 					fileCode = file_code,
-					selectedCode = selected_code,
-					lineTextAtCursor = api.nvim_get_current_line(),
+					currentLineIndex = api.nvim_win_get_cursor(0)[1],
 					selectedCodeUsages = {},
 				}
 			elseif contextType == "Diagnostics" then
