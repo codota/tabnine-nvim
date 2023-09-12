@@ -48,20 +48,24 @@ function ChatBinary:start()
 	self.stdout = uv.new_pipe()
 	self.stderr = uv.new_pipe()
 
-	self.handle, self.pid = uv.spawn(binary_path, {
-		stdio = { self.stdin, self.stdout, self.stderr },
-	}, function(code, signal) -- on exit
-		if signal ~= 0 or code ~= 0 then
-			local err = "Something went wrong running Tabnine chat"
-			if signal ~= 0 then
-				err = err .. (" (signal %d)"):format(signal)
-			else
-				err = err .. (" (exit code %d)"):format(code)
+	self.handle, self.pid = uv.spawn(
+		binary_path,
+		{
+			stdio = { self.stdin, self.stdout, self.stderr },
+		},
+		vim.schedule_wrap(function(code, signal) -- on exit
+			if signal ~= 0 or code ~= 0 then
+				local err = "Something went wrong running Tabnine chat"
+				if signal ~= 0 then
+					err = err .. (" (signal %d)"):format(signal)
+				else
+					err = err .. (" (exit code %d)"):format(code)
+				end
+				vim.notify(err, vim.log.levels.WARN)
 			end
-			vim.notify(err, vim.log.levels.WARN)
-		end
-		self:close()
-	end)
+			self:close()
+		end)
+	)
 
 	self.stdout:read_start(vim.schedule_wrap(function(error, chunk)
 		if chunk then
