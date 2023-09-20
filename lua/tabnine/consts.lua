@@ -1,7 +1,7 @@
 local api = vim.api
 
 return {
-	plugin_version = "1.5.0",
+	plugin_version = "1.6.0",
 	min_nvim_version = "0.7.1",
 	max_chars = 3000,
 	tabnine_hl_group = "TabnineSuggestion",

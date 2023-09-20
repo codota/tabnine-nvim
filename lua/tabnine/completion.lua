@@ -132,4 +132,15 @@ function M.render(completion, old_prefix, changedtick)
 	state.rendered_completion = utils.lines_to_str(lines)
 end
 
+function M.should_prefetch()
+	return state.active and not vim.tbl_contains(config.get_config().exclude_filetypes, vim.bo.filetype)
+end
+
+function M.prefetch()
+	-- TODO add active_text_editor_changed event
+	tabnine_binary:request({
+		Prefetch = { filename = api.nvim_buf_get_name(0) },
+	}, function() end)
+end
+
 return M

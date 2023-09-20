@@ -27,6 +27,15 @@ function M.setup()
 		end,
 	})
 
+	api.nvim_create_autocmd("BufEnter", {
+		pattern = "*",
+		callback = function()
+			if completion.should_prefetch() then
+				completion.prefetch()
+			end
+		end,
+	})
+
 	api.nvim_create_autocmd("CursorMovedI", {
 		pattern = "*",
 		callback = function()
