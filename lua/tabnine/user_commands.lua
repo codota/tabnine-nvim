@@ -38,6 +38,9 @@ function M.setup()
 	api.nvim_create_user_command("TabnineStatus", function()
 		print(status.status())
 	end, {})
+	api.nvim_create_user_command("TabnineChat", function()
+		chat.open()
+	end,{})
 end
 
 return M
