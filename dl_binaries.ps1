@@ -14,7 +14,7 @@ else {
     $version = invoke-webrequest -uri "$TABNINE_UPDATE_SERVICE/bundles/version" -usebasicparsing
 }
 
-if ((Get-WmiObject win32_operatingsystem | Select-Object osarchitecture).osarchitecture -eq "64-bit") {
+if ([Environment]::Is64BitOperatingSystem) {
     $targets = @(
         'x86_64-pc-windows-gnu'
     )
