@@ -7,7 +7,7 @@ if ($args.count -gt 0) {
     $TABNINE_UPDATE_SERVICE=$args[0]
 }
 
-if ($null -ne $env:FOO) {
+if ($null -ne $env:version) {
     $version=$Env:version
 }
 else {
