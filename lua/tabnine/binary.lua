@@ -86,7 +86,8 @@ function TabnineBinary:start()
 				for _, line in pairs(utils.str_to_lines(chunk)) do
 					local callback = table.remove(self.callbacks)
 					if not callback.cancelled then
-						callback.callback(vim.json.decode(line))
+						local decoded = vim.json.decode(line, { luanil = { object = true, array = true } })
+						callback.callback(decoded)
 					end
 				end
 			elseif error then
