@@ -70,7 +70,7 @@ function ChatBinary:start()
 	self.stdout:read_start(vim.schedule_wrap(function(error, chunk)
 		if chunk then
 			for _, line in pairs(utils.str_to_lines(chunk)) do
-				local message = vim.json.decode(line)
+				local message = vim.json.decode(line, { luanil = { object = true, array = true } })
 				local handler = self.registry[message.command]
 				if handler then
 					handler(message.data, function(payload)

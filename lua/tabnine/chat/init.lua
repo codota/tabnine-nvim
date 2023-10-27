@@ -26,7 +26,7 @@ local function read_chat_state()
 	if fn.filereadable(CHAT_STATE_FILE) == 1 then
 		local lines = fn.readfile(CHAT_STATE_FILE)
 		if #lines > 0 then
-			return vim.json.decode(lines[1])
+			return vim.json.decode(lines[1], { luanil = { object = true, array = true } })
 		end
 		return { conversations = {} }
 	end
