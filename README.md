@@ -140,8 +140,8 @@ EOF
 
 ## Activate Tabnine Pro
 
-`:TabnineHub` - to open Tabnine Hub and log in to your account
-`:TabnineLoginWithAuthToken` - to log in using auth token (for headless environments, where no browser is available)
+- `:TabnineHub` - to open Tabnine Hub and log in to your account
+- `:TabnineLoginWithAuthToken` - to log in using auth token (for headless environments, where no browser is available)
 
 Sometimes Tabnine may fail to open the browser on Tabnine Hub, in this case use `:TabnineHubUrl` to get Tabnine Hub URL
 
