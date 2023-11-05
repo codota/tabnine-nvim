@@ -138,9 +138,7 @@ end
 
 function M.prefetch()
 	-- TODO add active_text_editor_changed event
-	tabnine_binary:request({
-		Prefetch = { filename = api.nvim_buf_get_name(0) },
-	}, function() end)
+	tabnine_binary:request({ Prefetch = { filename = api.nvim_buf_get_name(0) } }, function() end)
 end
 
 return M
