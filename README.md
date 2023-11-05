@@ -140,8 +140,8 @@ EOF
 
 ## Activate Tabnine Pro
 
-`:TabnineHub` - to open Tabnine Hub and sign in to your account
-`:TabnineSignInUsingAuthToken` - to sign in using auth token (for headless environments, where no browser is available)
+`:TabnineHub` - to open Tabnine Hub and log in to your account
+`:TabnineLoginWithAuthToken` - to log in using auth token (for headless environments, where no browser is available)
 
 Sometimes Tabnine may fail to open the browser on Tabnine Hub, in this case use `:TabnineHubUrl` to get Tabnine Hub URL
 
@@ -152,7 +152,7 @@ Sometimes Tabnine may fail to open the browser on Tabnine Hub, in this case use 
 - `:TabnineEnable` - to enable Tabnine
 - `:TabnineToggle` - to toggle enable/disable
 - `:TabnineChat` - to launch Tabnine chat
-- `:TabnineSignInUsingAuthToken` - to sign in using auth token (for headless environments, where no browser is available)
+- `:TabnineLoginWithAuthToken` - to log in using auth token (for headless environments, where no browser is available)
 
 ## `<Tab>` and `nvim-cmp`
 

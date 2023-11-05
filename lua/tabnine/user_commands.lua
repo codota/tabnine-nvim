@@ -24,7 +24,7 @@ function M.setup()
 		end, {})
 	end
 
-	api.nvim_create_user_command("TabnineSignInUsingAuthToken", function()
+	api.nvim_create_user_command("TabnineLoginWithAuthToken", function()
 		tabnine_binary:request({ LoginWithCustomTokenUrl = { dummy = true } }, function(url)
 			vim.ui.input({
 				prompt = string.format("Get your token from: %s\nPaste it here: ", url),
@@ -33,7 +33,7 @@ function M.setup()
 					LoginWithCustomToken = { custom_token = custom_token },
 				}, function(response)
 					if response.is_success then
-						vim.notify("Signed in successfully")
+						vim.notify("Logged in successfully")
 					else
 						vim.notify("Sign in failed", vim.log.levels.WARN)
 					end

@@ -39,6 +39,7 @@ Print Tabnine status
 
 Login and activate Tabnine Pro
 :TabnineLogin
+:TabnineLoginWithAuthToken - login for headleass environments
 
 Logout
 :TabnineLogout
