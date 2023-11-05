@@ -1,0 +1,21 @@
+name: Lint With Stylua
+on:
+  push:
+    paths:
+      - "**.lua"
+  workflow_dispatch:
+jobs:
+  format_code:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+      - uses: JohnnyMorganz/stylua-action@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          version: latest
+          args: .
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "chore: linting with Stylua"
