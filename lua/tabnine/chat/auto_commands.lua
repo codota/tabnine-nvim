@@ -7,9 +7,7 @@ function M.setup()
 	api.nvim_create_autocmd("VimLeavePre", {
 		pattern = "*",
 		callback = function()
-			if chat.is_open() then
-				chat.close()
-			end
+			if chat.is_open() then chat.close() end
 		end,
 	})
 end

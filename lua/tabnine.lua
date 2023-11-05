@@ -1,11 +1,11 @@
+local auto_commands = require("tabnine.auto_commands")
+local chat_setup = require("tabnine.chat.setup")
 local config = require("tabnine.config")
 local consts = require("tabnine.consts")
-local semver = require("tabnine.third_party.semver.semver")
-local auto_commands = require("tabnine.auto_commands")
-local user_commands = require("tabnine.user_commands")
-local status = require("tabnine.status")
 local keymaps = require("tabnine.keymaps")
-local chat_setup = require("tabnine.chat.setup")
+local semver = require("tabnine.third_party.semver.semver")
+local status = require("tabnine.status")
+local user_commands = require("tabnine.user_commands")
 
 local M = {}
 

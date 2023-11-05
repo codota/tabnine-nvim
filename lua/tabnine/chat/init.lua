@@ -1,7 +1,7 @@
 local chat_binary = require("tabnine.chat.binary")
 local fn = vim.fn
-local utils = require("tabnine.utils")
 local tabnine_binary = require("tabnine.binary")
+local utils = require("tabnine.utils")
 local api = vim.api
 local config = require("tabnine.config")
 
@@ -12,9 +12,7 @@ local chat_state = nil
 
 local function get_diagnostics_text()
 	local diagnostics = vim.diagnostic.get(0)
-	if #diagnostics == 0 then
-		return ""
-	end
+	if #diagnostics == 0 then return "" end
 	local text = ""
 	for _, diagnostic in ipairs(diagnostics) do
 		text = text .. diagnostic.message .. "\n"
@@ -25,9 +23,7 @@ end
 local function read_chat_state()
 	if fn.filereadable(CHAT_STATE_FILE) == 1 then
 		local lines = fn.readfile(CHAT_STATE_FILE)
-		if #lines > 0 then
-			return vim.json.decode(lines[1], { luanil = { object = true, array = true } })
-		end
+		if #lines > 0 then return vim.json.decode(lines[1], { luanil = { object = true, array = true } }) end
 		return { conversations = {} }
 	end
 	return { conversations = {} }
@@ -40,9 +36,7 @@ end
 local function register_events()
 	chat_binary:register_event("init", function(_, answer)
 		local init = { ide = "ij", isDarkTheme = true }
-		if config.is_enterprise() then
-			init.serverUrl = config.get_config().tabnine_enterprise_host
-		end
+		if config.is_enterprise() then init.serverUrl = config.get_config().tabnine_enterprise_host end
 		answer(init)
 	end)
 

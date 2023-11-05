@@ -2,11 +2,11 @@ local M = {}
 local api = vim.api
 local fn = vim.fn
 local uv = vim.loop
-local state = require("tabnine.state")
-local consts = require("tabnine.consts")
-local utils = require("tabnine.utils")
-local tabnine_binary = require("tabnine.binary")
 local config = require("tabnine.config")
+local consts = require("tabnine.consts")
+local state = require("tabnine.state")
+local tabnine_binary = require("tabnine.binary")
+local utils = require("tabnine.utils")
 
 local function valid_response(response)
 	return response and response.results and #response.results > 0 and #response.results[1].new_prefix > 0
@@ -31,9 +31,7 @@ function M.accept()
 end
 
 function M.clear()
-	if state.cancel_completion then
-		state.cancel_completion()
-	end
+	if state.cancel_completion then state.cancel_completion() end
 	state.debounce_timer:stop()
 	api.nvim_buf_clear_namespace(0, consts.tabnine_namespace, 0, -1)
 end
@@ -92,9 +90,7 @@ function M.complete()
 end
 
 function M.render(completion, old_prefix, changedtick)
-	if not (vim.b.changedtick == changedtick) then
-		return
-	end
+	if not (vim.b.changedtick == changedtick) then return end
 
 	local lines = utils.str_to_lines(completion)
 
