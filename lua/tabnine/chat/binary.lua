@@ -75,7 +75,10 @@ function ChatBinary:start()
 				if handler then
 					handler(message.data, function(payload)
 						if payload then
-							self:post_message({ id = message.id, payload = payload })
+							self:post_message({
+								id = message.id,
+								payload = payload,
+							})
 						end
 					end)
 				end

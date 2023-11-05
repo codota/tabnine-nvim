@@ -24,6 +24,24 @@ function M.setup()
 		end, {})
 	end
 
+	api.nvim_create_user_command("TabnineLoginWithAuthToken", function()
+		tabnine_binary:request({ LoginWithCustomTokenUrl = { dummy = true } }, function(url)
+			vim.ui.input({
+				prompt = string.format("Get your token from: %s\nPaste it here: ", url),
+			}, function(custom_token)
+				tabnine_binary:request({
+					LoginWithCustomToken = { custom_token = custom_token },
+				}, function(response)
+					if response.is_success then
+						vim.notify("Logged in successfully")
+					else
+						vim.notify("Sign in failed", vim.log.levels.WARN)
+					end
+				end)
+			end)
+		end)
+	end, {})
+
 	api.nvim_create_user_command("TabnineLogin", function()
 		tabnine_binary:request({ Login = { dummy = true } }, function() end)
 	end, {})

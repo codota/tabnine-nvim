@@ -17,7 +17,7 @@ function M.setup()
 		})
 	end
 
-	api.nvim_create_autocmd({"VimEnter","ColorScheme"}, {
+	api.nvim_create_autocmd({ "VimEnter", "ColorScheme" }, {
 		pattern = "*",
 		callback = function()
 			api.nvim_set_hl(0, consts.tabnine_hl_group, {

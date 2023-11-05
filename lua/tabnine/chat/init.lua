@@ -79,7 +79,9 @@ local function register_events()
 	end)
 
 	chat_binary:register_event("get_basic_context", function(_, answer)
-		tabnine_binary:request({ FileMetadata = { path = api.nvim_buf_get_option(0, "filetype") } }, function(metadata)
+		tabnine_binary:request({
+			FileMetadata = { path = api.nvim_buf_get_option(0, "filetype") },
+		}, function(metadata)
 			answer({
 				fileUri = api.nvim_buf_get_name(0),
 				language = api.nvim_buf_get_option(0, "filetype"),
@@ -106,15 +108,16 @@ local function register_events()
 					selectedCodeUsages = {},
 				}
 			elseif contextType == "Diagnostics" then
-				return { type = "Diagnostics", diagnosticsText = get_diagnostics_text() }
+				return {
+					type = "Diagnostics",
+					diagnosticsText = get_diagnostics_text(),
+				}
 			elseif contextType == "Workspace" then
 				return {} -- not implemented
 			end
 		end, contextTypesSet)
 
-		answer({
-			enrichingContextData = enrichingContextData,
-		})
+		answer({ enrichingContextData = enrichingContextData })
 	end)
 
 	chat_binary:register_event("get_editor_context", function(_, answer)
@@ -143,7 +146,9 @@ local function register_events()
 	end)
 
 	chat_binary:register_event("send_event", function(event)
-		tabnine_binary:request({ Event = { name = event.eventName, properties = event.properties } }, function() end)
+		tabnine_binary:request({
+			Event = { name = event.eventName, properties = event.properties },
+		}, function() end)
 	end)
 end
 
