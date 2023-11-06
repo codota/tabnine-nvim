@@ -37,7 +37,10 @@ local function run_build(callback)
 	end)
 
 	if not handle then ---@cast pid string
-		vim.notify(("Could not spawn tabnine-nvim build script: `%s`. Error: %s"):format(cmd_str, pid), vim.log.levels.WARN)
+		vim.notify(
+			("Could not spawn tabnine-nvim build script: `%s`. Error: %s"):format(cmd_str, pid),
+			vim.log.levels.WARN
+		)
 		if callback then callback(false) end
 		return nil, pid
 	end ---@cast pid integer
