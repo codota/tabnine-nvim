@@ -13,16 +13,12 @@ function M.lines_to_str(lines)
 end
 
 function M.remove_matching_suffix(str, suffix)
-	if not M.ends_with(str, suffix) then
-		return str
-	end
+	if not M.ends_with(str, suffix) then return str end
 	return str:sub(1, -#suffix - 1)
 end
 
 function M.remove_matching_prefix(str, prefix)
-	if not M.starts_with(str, prefix) then
-		return str
-	end
+	if not M.starts_with(str, prefix) then return str end
 	return str:sub(#prefix)
 end
 
@@ -37,9 +33,7 @@ end
 
 function M.prequire(...)
 	local status, lib = pcall(require, ...)
-	if status then
-		return lib
-	end
+	if status then return lib end
 	return nil
 end
 
@@ -57,17 +51,13 @@ function M.current_position()
 end
 
 function M.ends_with(str, suffix)
-	if str == "" then
-		return true
-	end
+	if str == "" then return true end
 
 	return str:sub(-#suffix) == suffix
 end
 
 function M.starts_with(str, prefix)
-	if str == "" then
-		return true
-	end
+	if str == "" then return true end
 
 	return str:sub(1, #prefix) == prefix
 end
@@ -88,9 +78,7 @@ end
 
 function M.selected_text()
 	local mode = vim.fn.mode()
-	if mode ~= "v" and mode ~= "V" and mode ~= "" then
-		return ""
-	end
+	if mode ~= "v" and mode ~= "V" and mode ~= "" then return "" end
 	local a_orig = vim.fn.getreg("a")
 	vim.cmd([[silent! normal! "aygv]])
 	local text = vim.fn.getreg("a")

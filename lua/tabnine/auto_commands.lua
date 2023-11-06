@@ -1,8 +1,8 @@
 local api = vim.api
-local consts = require("tabnine.consts")
-local state = require("tabnine.state")
 local completion = require("tabnine.completion")
 local config = require("tabnine.config")
+local consts = require("tabnine.consts")
+local state = require("tabnine.state")
 
 local M = {}
 
@@ -30,9 +30,7 @@ function M.setup()
 	api.nvim_create_autocmd("BufEnter", {
 		pattern = "*",
 		callback = function()
-			if completion.should_prefetch() then
-				completion.prefetch()
-			end
+			if completion.should_prefetch() then completion.prefetch() end
 		end,
 	})
 

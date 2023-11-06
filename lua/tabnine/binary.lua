@@ -1,9 +1,9 @@
 local uv = vim.loop
 local fn = vim.fn
 local json = vim.json
-local utils = require("tabnine.utils")
 local consts = require("tabnine.consts")
 local semver = require("tabnine.third_party.semver.semver")
+local utils = require("tabnine.utils")
 local TabnineBinary = {}
 local config = require("tabnine.config")
 
@@ -52,12 +52,8 @@ end
 local function optional_args()
 	local config = config.get_config()
 	local args = {}
-	if config.log_file_path then
-		table.insert(args, "--log-file-path=" .. config.log_file_path)
-	end
-	if config.tabnine_enterprise_host then
-		table.insert(args, "--cloud2_url=" .. config.tabnine_enterprise_host)
-	end
+	if config.log_file_path then table.insert(args, "--log-file-path=" .. config.log_file_path) end
+	if config.tabnine_enterprise_host then table.insert(args, "--cloud2_url=" .. config.tabnine_enterprise_host) end
 	return args
 end
 

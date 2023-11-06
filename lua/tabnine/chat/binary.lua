@@ -33,16 +33,12 @@ function ChatBinary:close()
 end
 
 function ChatBinary:is_open()
-	if self.handle == nil then
-		return false
-	end
+	if self.handle == nil then return false end
 	return self.handle:is_active()
 end
 
 function ChatBinary:start()
-	if self.pid then
-		return
-	end
+	if self.pid then return end
 
 	self.stdin = uv.new_pipe()
 	self.stdout = uv.new_pipe()

@@ -1,0 +1,15 @@
+name: Check Lint With Stylua
+on:
+  pull_request:
+    paths:
+      - "**.lua"
+jobs:
+  format_code:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: JohnnyMorganz/stylua-action@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          version: latest
+          args: --check .
