@@ -9,7 +9,6 @@ else
 	cmd = "./dl_binaries.sh"
 	args = {}
 end
---- A human-readable description of the command -- for notifying and debugging purposes only
 local cmd_str = table.concat(vim.tbl_map(vim.fn.shellescape, { cmd, unpack(args) }), " ")
 
 ---Run the build script and call the callback when done.
@@ -52,8 +51,14 @@ local function run_build(callback)
 	end)
 	return pid, nil
 end
+local function run_build_sync()
+	vim.notify(("Starting tabnine-nvim build script: `%s`"):format(cmd_str), vim.log.levels.INFO)
+	local f = assert(io.popen(cmd_str))
+	f:close()
+end
 
 return {
 	run_build = run_build,
 	cmd_str = cmd_str,
+	run_build_sync = run_build_sync,
 }
