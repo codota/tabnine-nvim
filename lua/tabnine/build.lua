@@ -10,7 +10,7 @@ else
 	args = {}
 end
 --- A human-readable description of the command -- for notifying and debugging purposes only
-local cmd_str = table.concat({ cmd, unpack(args) }, " ")
+local cmd_str = table.concat(vim.tbl_map(vim.fn.shellescape, { cmd, unpack(args) }), " ")
 
 ---Run the build script and call the callback when done.
 ---Note: this function will notify the user about progress and errors. Don't do it in the callback!
@@ -19,7 +19,7 @@ local cmd_str = table.concat({ cmd, unpack(args) }, " ")
 ---@return integer|nil pid
 ---@return string? error error message, if no pid
 local function run_build(callback)
-	vim.notify(("Starting tabnine-nvim build script: '%s'"):format(cmd_str), vim.log.levels.INFO)
+	vim.notify(("Starting tabnine-nvim build script: `%s`"):format(cmd_str), vim.log.levels.INFO)
 	local stderr = assert(uv.new_pipe())
 
 	local handle, pid = uv.spawn(cmd, {
@@ -38,7 +38,7 @@ local function run_build(callback)
 	end)
 
 	if not handle then ---@cast pid string
-		vim.notify(("Could not spawn tabnine-nvim build script: '%s'. Error: %s"):format(cmd_str, pid), vim.log.levels.WARN)
+		vim.notify(("Could not spawn tabnine-nvim build script: `%s`. Error: %s"):format(cmd_str, pid), vim.log.levels.WARN)
 		if callback then callback(false) end
 		return nil, pid
 	end ---@cast pid integer
@@ -48,11 +48,12 @@ local function run_build(callback)
 		if not data then return end
 		data = data:gsub("%s+$", ""):gsub("^%s+", "") -- remove trailing and leading whitespace
 		if data == "" then return end
-		return vim.notify(("%s: ERROR: %s"):format(cmd_str, data), vim.log.levels.WARN)
+		return vim.notify(("`%s`: ERROR: %s"):format(cmd_str, data), vim.log.levels.WARN)
 	end)
 	return pid, nil
 end
 
 return {
 	run_build = run_build,
+	cmd_str = cmd_str,
 }
