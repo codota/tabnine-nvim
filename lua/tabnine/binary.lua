@@ -79,6 +79,8 @@ function TabnineBinary:start()
 	local bin = binary_path()
 	if bin == false then return end -- This machine is not supported, don't keep trying
 	if not bin then -- We couldn't find the binary path. Try to redownload it
+		--- We will almost definitely get errors while this is running, but hopefully,
+		--- when the user reloads neovim, this will be done and at least no more errors will be thrown.
 		if has_run_build then return warn_failed_build() end
 		has_run_build = true
 		return build.run_build(function(success)
