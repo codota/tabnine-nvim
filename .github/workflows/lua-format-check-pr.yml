@@ -5,7 +5,6 @@ on:
       - "**.lua"
 jobs:
   format_code:
-    if: github.repository != github.event.pull_request.base.repo.full_name # if not a local branch
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
