@@ -18,44 +18,48 @@ local cmd_str = table.concat(vim.tbl_map(vim.fn.shellescape, { cmd, unpack(args)
 ---@return integer|nil pid
 ---@return string? error error message, if no pid
 local function run_build(callback)
-	vim.notify(("Starting tabnine-nvim build script: `%s`"):format(cmd_str), vim.log.levels.INFO)
+	print(("Starting tabnine-nvim build script: `%s`"):format(cmd_str))
 	local stderr = assert(uv.new_pipe())
 
-	local handle, pid = uv.spawn(cmd, {
-		args = args,
-		stdio = { nil, nil, stderr },
-		cwd = utils.script_path(),
-	}, function(code)
-		local suc = code == 0
-		if suc then
-			vim.notify("tabnine-nvim build script finished successfully", vim.log.levels.INFO)
-		else
-			vim.notify(("tabnine-nvim build script failed with exit code: %s"):format(code), vim.log.levels.WARN)
-		end
+	local handle, pid = uv.spawn(
+		cmd,
+		{
+			args = args,
+			stdio = { nil, nil, stderr },
+			cwd = utils.script_path(),
+		},
+		vim.schedule_wrap(function(code)
+			local suc = code == 0
+			if suc then
+				print("tabnine-nvim build script finished successfully")
+			else
+				vim.api.nvim_err_writeln(("tabnine-nvim build script failed with exit code: %s"):format(code))
+			end
 
-		if callback then return callback(suc) end
-	end)
+			if callback then return callback(suc) end
+		end)
+	)
 
 	if not handle then ---@cast pid string
-		vim.notify(
-			("Could not spawn tabnine-nvim build script: `%s`. Error: %s"):format(cmd_str, pid),
-			vim.log.levels.WARN
-		)
+		vim.api.nvim_err_writeln(("Could not spawn tabnine-nvim build script: `%s`. Error: %s"):format(cmd_str, pid))
 		if callback then callback(false) end
 		return nil, pid
 	end ---@cast pid integer
 
-	uv.read_start(stderr, function(err, data)
-		assert(not err, err)
-		if not data then return end
-		data = data:gsub("%s+$", ""):gsub("^%s+", "") -- remove trailing and leading whitespace
-		if data == "" then return end
-		return vim.notify(("`%s`: ERROR: %s"):format(cmd_str, data), vim.log.levels.WARN)
-	end)
+	uv.read_start(
+		stderr,
+		vim.schedule_wrap(function(err, data)
+			assert(not err, err)
+			if not data then return end
+			data = data:gsub("%s+$", ""):gsub("^%s+", "") -- remove trailing and leading whitespace
+			if data == "" then return end
+			return vim.api.nvim_err_writeln(("`%s`: ERROR: %s"):format(cmd_str, data))
+		end)
+	)
 	return pid, nil
 end
 local function run_build_sync()
-	vim.notify(("Starting tabnine-nvim build script: `%s`"):format(cmd_str), vim.log.levels.INFO)
+	print(("Starting tabnine-nvim build script: `%s`"):format(cmd_str))
 	local f = assert(io.popen(cmd_str))
 	f:close()
 end
