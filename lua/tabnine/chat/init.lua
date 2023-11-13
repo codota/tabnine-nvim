@@ -10,14 +10,16 @@ local M = { enabled = false }
 local CHAT_STATE_FILE = utils.script_path() .. "/../chat_state.json"
 local chat_state = nil
 
-local function get_diagnostics_text()
-	local diagnostics = vim.diagnostic.get(0)
-	if #diagnostics == 0 then return "" end
-	local text = ""
-	for _, diagnostic in ipairs(diagnostics) do
-		text = text .. diagnostic.message .. "\n"
-	end
-	return text
+local function get_diagnostics()
+	return vim.tbl_map(function(diagnostic)
+		print(vim.inspect(diagnostic))
+		print(api.nvim_buf_get_lines(0, diagnostic.lnum, diagnostic.lnum + 1, true)[1])
+		return {
+			errorMessage = diagnostic.message,
+			lineCode = api.nvim_buf_get_lines(0, diagnostic.lnum, diagnostic.lnum + 1, true)[1],
+			lineNumber = diagnostic.lnum + 1,
+		}
+	end, vim.diagnostic.get(0))
 end
 
 local function read_chat_state()
@@ -34,6 +36,16 @@ local function write_chat_state(state)
 end
 
 local function register_events()
+	chat_binary:register_event("get_server_url", function(request, answer)
+		tabnine_binary:request({
+			ChatCommunicatorAddress = { kind = request.kind },
+		}, function(response)
+			answer({
+				server_url = response.address,
+			})
+		end)
+	end)
+
 	chat_binary:register_event("init", function(_, answer)
 		local init = { ide = "ij", isDarkTheme = true }
 		if config.is_enterprise() then init.serverUrl = config.get_config().tabnine_enterprise_host end
@@ -84,10 +96,6 @@ local function register_events()
 		end)
 	end)
 
-	chat_binary:register_event("get_selected_code", function(_, answer)
-		answer({ code = utils.selected_text() })
-	end)
-
 	chat_binary:register_event("get_enriching_context", function(request, answer)
 		local contextTypesSet = utils.set(request.contextTypes)
 		local enrichingContextData = vim.tbl_map(function(contextType)
@@ -104,38 +112,24 @@ local function register_events()
 			elseif contextType == "Diagnostics" then
 				return {
 					type = "Diagnostics",
-					diagnosticsText = get_diagnostics_text(),
+					diagnostics = get_diagnostics(),
 				}
 			elseif contextType == "Workspace" then
 				return {} -- not implemented
 			end
 		end, contextTypesSet)
 
+		print(vim.inspect(enrichingContextData))
 		answer({ enrichingContextData = enrichingContextData })
 	end)
 
-	chat_binary:register_event("get_editor_context", function(_, answer)
-		local file_code_table = api.nvim_buf_get_text(0, 0, 0, fn.line("$") - 1, fn.col("$,$") - 1, {})
-		local file_code = table.concat(file_code_table, "\n")
+	chat_binary:register_event("get_selected_code", function(_, answer)
 		local selected_code = utils.selected_text()
-		answer({
-			fileCode = file_code,
-			selectedCode = selected_code,
-			diagnosticsText = get_diagnostics_text(),
-			selectedCodeUsages = {},
-		})
-	end)
 
-	chat_binary:register_event("get_editor_context", function(_, answer)
-		local file_code_table = api.nvim_buf_get_text(0, 0, 0, fn.line("$") - 1, fn.col("$,$") - 1, {})
-		local file_code = table.concat(file_code_table, "\n")
-
-		local selected_code = utils.selected_text()
 		answer({
-			fileCode = file_code,
-			selectedCode = selected_code,
-			diagnosticsText = get_diagnostics_text(),
-			selectedCodeUsages = {},
+			code = selected_code,
+			startLine = vim.fn.getpos("'<")[2],
+			endLine = vim.fn.getpos("'>")[2],
 		})
 	end)
 
