@@ -20,12 +20,13 @@ local cmd_str = table.concat(vim.tbl_map(vim.fn.shellescape, { cmd, unpack(args)
 local function run_build(callback)
 	print(("Starting tabnine-nvim build script: `%s`"):format(cmd_str))
 	local stderr = assert(uv.new_pipe())
+	local stdout = assert(uv.new_pipe())
 
 	local handle, pid = uv.spawn(
 		cmd,
 		{
 			args = args,
-			stdio = { nil, nil, stderr },
+			stdio = { nil, stdout, stderr },
 			cwd = utils.script_path(),
 		},
 		vim.schedule_wrap(function(code)
@@ -54,6 +55,16 @@ local function run_build(callback)
 			data = data:gsub("%s+$", ""):gsub("^%s+", "") -- remove trailing and leading whitespace
 			if data == "" then return end
 			return vim.api.nvim_err_writeln(("`%s`: ERROR: %s"):format(cmd_str, data))
+		end)
+	)
+	uv.read_start(
+		stdout,
+		vim.schedule_wrap(function(err, data)
+			assert(not err, err)
+			if not data then return end
+			data = data:gsub("%s+$", ""):gsub("^%s+", "") -- remove trailing and leading whitespace
+			if data == "" then return end
+			return print(("`%s`: %s"):format(cmd_str, data))
 		end)
 	)
 	return pid, nil
