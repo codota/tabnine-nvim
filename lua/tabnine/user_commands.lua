@@ -4,6 +4,7 @@ local chat = require("tabnine.chat")
 local config = require("tabnine.config")
 local status = require("tabnine.status")
 local tabnine_binary = require("tabnine.binary")
+-- local ts_utls = require("nvim-treesitter.ts_utils")
 
 function M.setup()
 	if not config.is_enterprise() then
