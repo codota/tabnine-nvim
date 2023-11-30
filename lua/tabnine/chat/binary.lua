@@ -2,6 +2,7 @@ local uv = vim.loop
 local json = vim.json
 local utils = require("tabnine.utils")
 local ChatBinary = {}
+local on_closed_callbacks = {}
 
 local function binary_name()
 	local os_uname = uv.os_uname()
@@ -37,6 +38,17 @@ function ChatBinary:is_open()
 	return self.handle:is_active()
 end
 
+function ChatBinary:on_closed(callback)
+	on_closed_callbacks[#on_closed_callbacks + 1] = callback
+end
+
+local function on_closed()
+	for _, callback in ipairs(on_closed_callbacks) do
+		callback()
+	end
+	on_closed_callbacks = {}
+end
+
 function ChatBinary:start()
 	if self.pid then return end
 
@@ -59,6 +71,7 @@ function ChatBinary:start()
 				end
 				vim.notify(err, vim.log.levels.WARN)
 			end
+			on_closed()
 			self:close()
 		end)
 	)

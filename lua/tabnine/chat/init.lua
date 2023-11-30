@@ -12,6 +12,7 @@ local CHAT_SETTINGS_FILE = utils.script_path() .. "/../chat_settings.json"
 
 local chat_state = nil
 local chat_settings = nil
+local initialized = false
 
 local function get_diagnostics()
 	return vim.tbl_map(function(diagnostic)
@@ -49,7 +50,7 @@ local function write_chat_settings(settings)
 	fn.writefile({ vim.json.encode(settings) }, CHAT_SETTINGS_FILE)
 end
 
-local function register_events(on_ready)
+local function register_events(on_init)
 	chat_binary:register_event("get_server_url", function(request, answer)
 		tabnine_binary:request({
 			ChatCommunicatorAddress = { kind = request.kind },
@@ -64,7 +65,10 @@ local function register_events(on_ready)
 		local init = { ide = "ij", isDarkTheme = true }
 		if config.is_enterprise() then init.serverUrl = config.get_config().tabnine_enterprise_host end
 		answer(init)
-		if on_ready then on_ready() end
+		if not initialized and on_init then
+			on_init()
+			initialized = true
+		end
 	end)
 
 	chat_binary:register_event("clear_all_chat_conversations", function(_, answer)
@@ -144,7 +148,6 @@ local function register_events(on_ready)
 			end
 		end, contextTypesSet)
 
-		print(vim.inspect(enrichingContextData))
 		answer({ enrichingContextData = enrichingContextData })
 	end)
 

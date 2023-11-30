@@ -4,6 +4,17 @@ local api = vim.api
 local M = {}
 local last_changedtick = vim.b.changedtick
 
+function M.debounce(func, delay)
+	local timer_id
+	return function(...)
+		if timer_id then fn.timer_stop(timer_id) end
+		local args = { ... }
+		timer_id = fn.timer_start(delay, function()
+			func(unpack(args))
+		end)
+	end
+end
+
 function M.str_to_lines(str)
 	return fn.split(str, "\n")
 end

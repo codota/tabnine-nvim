@@ -13,8 +13,11 @@ function M.setup()
 		api.nvim_create_user_command("TabnineExplain", function()
 			codelens.run_under_cursor("/explain-code")
 		end, {})
-		api.nvim_create_user_command("TabnineGenerateTest", function()
+		api.nvim_create_user_command("TabnineTest", function()
 			codelens.run_under_cursor("/generate-test-for-code")
+		end, {})
+		api.nvim_create_user_command("TabnineFix", function()
+			codelens.run_under_cursor("/fix-code")
 		end, {})
 	end
 end

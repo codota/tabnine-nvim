@@ -10,11 +10,11 @@ local current_symbols = {}
 local symbol_under_cursor = nil
 local cancel_lsp_request = nil
 
-function M.should_display_codelense()
-	return not vim.tbl_contains(config.get_config().exclude_filetypes, vim.bo.filetype)
+function M.should_display()
+	return fn.mode() == "n" and not vim.tbl_contains(config.get_config().exclude_filetypes, vim.bo.filetype)
 end
 
-function M.reload_symbols()
+function M.collect_symbols(on_collect)
 	if not vim.lsp.buf.server_ready() then return end
 
 	local params = vim.lsp.util.make_position_params()
@@ -30,6 +30,7 @@ function M.reload_symbols()
 				end
 			end
 		end
+		on_collect()
 	end)
 end
 
@@ -56,24 +57,34 @@ local function is_symbol_under_cursor(symbol)
 	return line > symbol.range.start.line and line <= symbol.range["end"].line
 end
 
-function M.reload_codelens()
+function M.clear()
+	symbol_under_cursor = nil
+	api.nvim_buf_clear_namespace(0, consts.tabnine_codelens_namespace, 0, -1)
+end
+
+function M.reload()
+	print(1)
 	local new_symbol_under_cursor = nil
 	for _, symbol in ipairs(current_symbols) do
 		if is_symbol_under_cursor(symbol) then new_symbol_under_cursor = symbol end
 	end
 
+	print(2, vim.inspect(new_symbol_under_cursor))
 	if new_symbol_under_cursor == symbol_under_cursor then return end
 
+	print(3)
 	if not new_symbol_under_cursor then
-		api.nvim_buf_clear_namespace(0, consts.tabnine_codelens_namespace, 0, -1)
+		M.clear()
+		print(4)
 	elseif new_symbol_under_cursor then
-		api.nvim_buf_clear_namespace(0, consts.tabnine_codelens_namespace, 0, -1)
+		print(5)
+		M.clear()
 		api.nvim_buf_set_extmark(
 			0,
 			consts.tabnine_codelens_namespace,
 			new_symbol_under_cursor.range.start.line,
 			0,
-			{ virt_text = { { "{💡} tabnine", consts.tabnine_codelens_hl_group } } }
+			{ virt_text = { { "⌬ tabnine 🪄", consts.tabnine_codelens_hl_group } } }
 		)
 	end
 	symbol_under_cursor = new_symbol_under_cursor

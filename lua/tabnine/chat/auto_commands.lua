@@ -1,6 +1,7 @@
 local api = vim.api
 local chat = require("tabnine.chat")
 local codelens = require("tabnine.chat.codelens")
+local utils = require("tabnine.utils")
 local M = {}
 
 function M.setup()
@@ -11,18 +12,15 @@ function M.setup()
 		end,
 	})
 
-	api.nvim_create_autocmd({ "CursorMoved" }, {
+	api.nvim_create_autocmd({ "CursorMoved", "ModeChanged" }, {
 		pattern = "*",
-		callback = function()
-			if codelens.should_display_codelense() then codelens.reload_codelens() end
-		end,
-	})
-
-	api.nvim_create_autocmd({ "TextChanged", "BufEnter" }, {
-		pattern = "*",
-		callback = function()
-			if codelens.should_display_codelense() then pcall(codelens.reload_symbols) end
-		end,
+		callback = utils.debounce(function()
+			if codelens.should_display() then
+				pcall(codelens.collect_symbols, codelens.reload)
+			else
+				codelens.clear()
+			end
+		end, 200),
 	})
 end
 
