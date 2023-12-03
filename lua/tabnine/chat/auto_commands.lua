@@ -20,7 +20,12 @@ function M.setup()
 			else
 				codelens.clear()
 			end
-		end, 200),
+		end, 100),
+	})
+
+	api.nvim_create_autocmd({ "BufEnter" }, {
+		pattern = "*",
+		callback = codelens.reload_buf_supports_symbols,
 	})
 end
 

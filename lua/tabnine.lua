@@ -6,6 +6,7 @@ local keymaps = require("tabnine.keymaps")
 local semver = require("tabnine.third_party.semver.semver")
 local status = require("tabnine.status")
 local user_commands = require("tabnine.user_commands")
+local workspace = require("tabnine.workspace")
 
 local M = {}
 
@@ -38,6 +39,8 @@ function M.setup(o)
 	status.setup()
 
 	chat_setup.setup()
+
+	workspace.setup()
 end
 
 return M

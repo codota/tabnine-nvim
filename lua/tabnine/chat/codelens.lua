@@ -1,6 +1,7 @@
 local chat = require("tabnine.chat")
 local config = require("tabnine.config")
 local consts = require("tabnine.consts")
+local utils = require("tabnine.utils")
 local api = vim.api
 local fn = vim.fn
 
@@ -9,14 +10,40 @@ local SYMBOL_KIND = { FUNCTION = 12, CLASS = 5, METHOD = 6 }
 local current_symbols = {}
 local symbol_under_cursor = nil
 local cancel_lsp_request = nil
+local buf_supports_symbols = nil
+
+function M.reload_buf_supports_symbols()
+	local clients = vim.lsp.buf_get_clients()
+
+	for _, client in ipairs(clients) do
+		if client.server_capabilities.documentSymbolProvider then
+			buf_supports_symbols = true
+			return
+		end
+	end
+
+	buf_supports_symbols = false
+end
 
 function M.should_display()
-	return fn.mode() == "n" and not vim.tbl_contains(config.get_config().exclude_filetypes, vim.bo.filetype)
+	return vim.lsp.buf.server_ready()
+		and not vim.tbl_contains(config.get_config().exclude_filetypes, vim.bo.filetype)
+		and buf_supports_symbols
+end
+
+local function flatten_symbols(symbols, result)
+	result = result or {}
+
+	for _, symbol in ipairs(symbols) do
+		table.insert(result, symbol)
+
+		if symbol.children then flatten_symbols(symbol.children, result) end
+	end
+
+	return result
 end
 
 function M.collect_symbols(on_collect)
-	if not vim.lsp.buf.server_ready() then return end
-
 	local params = vim.lsp.util.make_position_params()
 
 	if cancel_lsp_request then cancel_lsp_request() end
@@ -24,9 +51,11 @@ function M.collect_symbols(on_collect)
 	cancel_lsp_request = vim.lsp.buf_request_all(0, "textDocument/documentSymbol", params, function(responses)
 		current_symbols = {}
 		for _, response in ipairs(responses) do
-			for _, result in ipairs(response.result) do
-				if result.kind == SYMBOL_KIND.FUNCTION or result.kind == SYMBOL_KIND.METHOD then
-					table.insert(current_symbols, result)
+			if response.result then
+				for _, result in ipairs(flatten_symbols(response.result)) do
+					if result.kind == SYMBOL_KIND.FUNCTION or result.kind == SYMBOL_KIND.METHOD then
+						table.insert(current_symbols, result)
+					end
 				end
 			end
 		end
@@ -37,7 +66,7 @@ end
 function M.run_under_cursor(command)
 	if not symbol_under_cursor then return end
 	chat.open(function()
-		M.select_range({
+		utils.select_range({
 			{
 				symbol_under_cursor.range.start.line + 1,
 				symbol_under_cursor.range.start.character + 1,
@@ -54,7 +83,7 @@ end
 
 local function is_symbol_under_cursor(symbol)
 	local line = fn.line(".")
-	return line > symbol.range.start.line and line <= symbol.range["end"].line
+	return line > symbol.range.start.line and line <= symbol.range["end"].line + 1
 end
 
 function M.clear()
@@ -63,21 +92,16 @@ function M.clear()
 end
 
 function M.reload()
-	print(1)
 	local new_symbol_under_cursor = nil
 	for _, symbol in ipairs(current_symbols) do
 		if is_symbol_under_cursor(symbol) then new_symbol_under_cursor = symbol end
 	end
 
-	print(2, vim.inspect(new_symbol_under_cursor))
 	if new_symbol_under_cursor == symbol_under_cursor then return end
 
-	print(3)
 	if not new_symbol_under_cursor then
 		M.clear()
-		print(4)
 	elseif new_symbol_under_cursor then
-		print(5)
 		M.clear()
 		api.nvim_buf_set_extmark(
 			0,
@@ -88,31 +112,6 @@ function M.reload()
 		)
 	end
 	symbol_under_cursor = new_symbol_under_cursor
-end
-
-function M.select_range(range)
-	local start_row, start_col, end_row, end_col = range[1][1], range[1][2], range[2][1], range[2][2]
-
-	local v_table = { charwise = "v", linewise = "V", blockwise = "<C-v>" }
-	selection_mode = selection_mode or "charwise"
-
-	-- Normalise selection_mode
-	if vim.tbl_contains(vim.tbl_keys(v_table), selection_mode) then selection_mode = v_table[selection_mode] end
-
-	-- enter visual mode if normal or operator-pending (no) mode
-	-- Why? According to https://learnvimscriptthehardway.stevelosh.com/chapters/15.html
-	--   If your operator-pending mapping ends with some text visually selected, Vim will operate on that text.
-	--   Otherwise, Vim will operate on the text between the original cursor position and the new position.
-	local mode = api.nvim_get_mode()
-	if mode.mode ~= selection_mode then
-		-- Call to `nvim_replace_termcodes()` is needed for sending appropriate command to enter blockwise mode
-		selection_mode = vim.api.nvim_replace_termcodes(selection_mode, true, true, true)
-		api.nvim_cmd({ cmd = "normal", bang = true, args = { selection_mode } }, {})
-	end
-
-	api.nvim_win_set_cursor(0, { start_row, start_col - 1 })
-	vim.cmd("normal! o")
-	api.nvim_win_set_cursor(0, { end_row, end_col - 1 })
 end
 
 return M
