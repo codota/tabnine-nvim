@@ -17,6 +17,12 @@ function M.setup()
 				print(response.message)
 			end)
 		end, {})
+
+		api.nvim_create_user_command("TabnineWhoAmI", function()
+			tabnine_binary:request({ State = { quiet = false } }, function(response)
+				print(response.user_name)
+			end)
+		end, {})
 	else
 		api.nvim_create_user_command("TabnineWhoAmI", function()
 			tabnine_binary:request({ UserInfo = { quiet = false } }, function(response)
