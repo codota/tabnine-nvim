@@ -90,6 +90,8 @@ function ChatBinary:start()
 							})
 						end
 					end)
+				else
+					self:post_message({ id = message.id, error = "not_implemented" })
 				end
 			end
 		elseif error then

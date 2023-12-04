@@ -51,12 +51,28 @@ local function write_chat_settings(settings)
 end
 
 local function register_events(on_init)
+	chat_binary:register_event("get_capabilities", function(_, answer)
+		tabnine_binary:request({
+			Capabilities = { dummy = true },
+		}, function(response)
+			answer({
+				enabledFeatures = response.enabled_features,
+			})
+		end)
+	end)
+
+	chat_binary:register_event("workspace_folders", function(_, answer)
+		answer({
+			rootPaths = { fn.getcwd() },
+		})
+	end)
+
 	chat_binary:register_event("get_server_url", function(request, answer)
 		tabnine_binary:request({
 			ChatCommunicatorAddress = { kind = request.kind },
 		}, function(response)
 			answer({
-				server_url = response.address,
+				serverUrl = response.address,
 			})
 		end)
 	end)
@@ -145,6 +161,10 @@ local function register_events(on_init)
 				}
 			elseif contextType == "Workspace" then
 				return {} -- not implemented
+			elseif contextType == "NFC" then
+				return {} -- not implemented
+			else
+				return {}
 			end
 		end, contextTypesSet)
 
