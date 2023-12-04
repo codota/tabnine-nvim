@@ -196,7 +196,7 @@ end
 
 function M.open(on_ready)
 	if not M.enabled then
-		vim.notify("Tabnine Chat is available only for preview users")
+		vim.notify("Tabnine Chat is available only for Pro users")
 		return
 	end
 

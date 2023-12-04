@@ -1,6 +1,7 @@
 local chat = require("tabnine.chat")
 local config = require("tabnine.config")
 local consts = require("tabnine.consts")
+local state = require("tabnine.state")
 local utils = require("tabnine.utils")
 local api = vim.api
 local fn = vim.fn
@@ -26,7 +27,9 @@ function M.reload_buf_supports_symbols()
 end
 
 function M.should_display()
-	return vim.lsp.buf.server_ready()
+	return config.get_config().codelens_enabled
+		and state.active
+		and vim.lsp.buf.server_ready()
 		and not vim.tbl_contains(config.get_config().exclude_filetypes, vim.bo.filetype)
 		and buf_supports_symbols
 end
