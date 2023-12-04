@@ -111,7 +111,7 @@ function M.reload()
 			consts.tabnine_codelens_namespace,
 			new_symbol_under_cursor.range.start.line,
 			0,
-			{ virt_text = { { "⌬ tabnine 🪄", consts.tabnine_codelens_hl_group } } }
+			{ virt_text = { { "⌬ tabnine {}", consts.tabnine_codelens_hl_group } } }
 		)
 	end
 	symbol_under_cursor = new_symbol_under_cursor
