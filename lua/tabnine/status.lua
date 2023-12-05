@@ -17,7 +17,7 @@ local function poll_service_level()
 		5000,
 		vim.schedule_wrap(function()
 			tabnine_binary:request({ State = { dummy_property = true } }, function(response)
-				if response.service_level == "Pro" or response.service_level == "Trial" then
+				if response and response.service_level == "Pro" or response.service_level == "Trial" then
 					service_level = "pro"
 				elseif response.service_level == "Business" then
 					service_level = "enterprise"
