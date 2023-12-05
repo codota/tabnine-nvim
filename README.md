@@ -15,6 +15,22 @@ Tabnine client for Neovim
   - [Windows](#windows)
 - [Activate (mandatory)](#activate-mandatory)
 - [Activate Tabnine Pro](#activate-tabnine-pro)
+- [Tabnine Chat - BETA](#tabnine-chat---beta)
+- [Commands](#commands)
+  - [Tabnine Chat commands](#tabnine-chat-commands)
+- [`<Tab>` and `nvim-cmp`](#tab-and-nvim-cmp)
+- [lualine integration](#lualine-integration)
+- [Other statusline integrations](#other-statusline-integrations)
+- [Tabnine Enterprise customers (self hosted only)](#tabnine-enterprise-customers-self-hosted-only)
+- [Keymaps examples](#keymaps-examples)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+- [Install](#install)
+  - [Unix (Linux, MacOS)](#unix-linux-macos)
+  - [Windows](#windows)
+- [Activate (mandatory)](#activate-mandatory)
+- [Activate Tabnine Pro](#activate-tabnine-pro)
 - [Commands](#commands)
 - [`<Tab>` and `nvim-cmp`](#tab-and-nvim-cmp)
 - [lualine integration](#lualine-integration)
