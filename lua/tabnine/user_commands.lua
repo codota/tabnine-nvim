@@ -4,6 +4,7 @@ local chat = require("tabnine.chat")
 local config = require("tabnine.config")
 local status = require("tabnine.status")
 local tabnine_binary = require("tabnine.binary")
+-- local ts_utls = require("nvim-treesitter.ts_utils")
 
 function M.setup()
 	if not config.is_enterprise() then
@@ -14,6 +15,12 @@ function M.setup()
 		api.nvim_create_user_command("TabnineHubUrl", function()
 			tabnine_binary:request({ Configuration = { quiet = true } }, function(response)
 				print(response.message)
+			end)
+		end, {})
+
+		api.nvim_create_user_command("TabnineWhoAmI", function()
+			tabnine_binary:request({ State = { quiet = false } }, function(response)
+				print(response.user_name)
 			end)
 		end, {})
 	else

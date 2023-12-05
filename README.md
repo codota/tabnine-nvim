@@ -15,6 +15,22 @@ Tabnine client for Neovim
   - [Windows](#windows)
 - [Activate (mandatory)](#activate-mandatory)
 - [Activate Tabnine Pro](#activate-tabnine-pro)
+- [Tabnine Chat - BETA](#tabnine-chat---beta)
+- [Commands](#commands)
+  - [Tabnine Chat commands](#tabnine-chat-commands)
+- [`<Tab>` and `nvim-cmp`](#tab-and-nvim-cmp)
+- [lualine integration](#lualine-integration)
+- [Other statusline integrations](#other-statusline-integrations)
+- [Tabnine Enterprise customers (self hosted only)](#tabnine-enterprise-customers-self-hosted-only)
+- [Keymaps examples](#keymaps-examples)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+- [Install](#install)
+  - [Unix (Linux, MacOS)](#unix-linux-macos)
+  - [Windows](#windows)
+- [Activate (mandatory)](#activate-mandatory)
+- [Activate Tabnine Pro](#activate-tabnine-pro)
 - [Commands](#commands)
 - [`<Tab>` and `nvim-cmp`](#tab-and-nvim-cmp)
 - [lualine integration](#lualine-integration)
@@ -145,6 +161,18 @@ EOF
 
 Sometimes Tabnine may fail to open the browser on Tabnine Hub, in this case use `:TabnineHubUrl` to get Tabnine Hub URL
 
+## Tabnine Chat - BETA
+![Tabnine Neovim chat](https://github.com/codota/tabnine-nvim/blob/master/examples/lua-chat.gif)
+Tabnine Chat is still in BETA and is available only for Tabnine Pro users. To make it work:
+- You will need to build the chat from source, by executing: `cargo build --release` inside `chat/` directory.
+- You may be missing some dependencies to build the chat. To fix this, run the following command:
+```shell
+$ # Debian/Ubuntu
+$ sudo apt-get install -y libgtk-3-dev libglib2.0-dev libjavascriptcoregtk-4.1-dev libsoup-3.0-dev libwebkit2gtk-4.1-dev
+$ # Arch
+$ pacman -S --needed gtk3 glib2 webkit2gtk-4.1 libsoup3
+```
+
 ## Commands
 
 - `:TabnineStatus` - to print Tabnine status
@@ -153,6 +181,12 @@ Sometimes Tabnine may fail to open the browser on Tabnine Hub, in this case use 
 - `:TabnineToggle` - to toggle enable/disable
 - `:TabnineChat` - to launch Tabnine chat
 - `:TabnineLoginWithAuthToken` - to log in using auth token (for headless environments, where no browser is available)
+
+### Tabnine Chat commands
+- `:TabnineChat` - to open Tabnine Chat
+- `:TabnineFix` - to fix the function in scope
+- `:TabnineTest` - to generate tests for function in scope
+- `:TabnineExplain` - to explain the function in scope
 
 ## `<Tab>` and `nvim-cmp`
 
@@ -206,26 +240,15 @@ require('tabnine').setup({
   dismiss_keymap = "<C-]>",
   debounce_ms = 800,
   suggestion_color = {gui = "#808080", cterm = 244},
+  codelens_color = { gui = "#808080", cterm = 244 },
+  codelens_enabled = true,
   exclude_filetypes = {"TelescopePrompt", "NvimTree"},
   log_file_path = nil, -- absolute path to Tabnine log file,
   tabnine_enterprise_host = tabnine_enterprise_host
 })
 ```
 
-## Tabnine Chat - BETA
-![Tabnine Neovim chat](https://github.com/codota/tabnine-nvim/blob/master/examples/python-chat.gif)
-Tabnine Chat for Nvim is in very early BETA. To make it work:
-- Contact support@tabnine.com with your Tabnine Pro email - so we will enable it for you
-- You will need to build the chat from source, by executing: `cargo build --release` inside `chat/` directory.
-- You may be missing some dependencies to build the chat. To fix this, run the following command:
-```shell
-$ # Debian/Ubuntu
-$ sudo apt-get install -y libgtk-3-dev libglib2.0-dev libjavascriptcoregtk-4.1-dev libsoup-3.0-dev libwebkit2gtk-4.1-dev
-$ # Arch
-$ pacman -S --needed gtk3 glib2 webkit2gtk-4.1 libsoup3
-```
-
-### Keymaps examples
+## Keymaps examples
 
 ```lua
 api.nvim_set_keymap("x", "<leader>q", "", { noremap = true, callback = require("tabnine.chat").open })

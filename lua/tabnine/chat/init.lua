@@ -8,12 +8,14 @@ local config = require("tabnine.config")
 local M = { enabled = false }
 
 local CHAT_STATE_FILE = utils.script_path() .. "/../chat_state.json"
+local CHAT_SETTINGS_FILE = utils.script_path() .. "/../chat_settings.json"
+
 local chat_state = nil
+local chat_settings = nil
+local initialized = false
 
 local function get_diagnostics()
 	return vim.tbl_map(function(diagnostic)
-		print(vim.inspect(diagnostic))
-		print(api.nvim_buf_get_lines(0, diagnostic.lnum, diagnostic.lnum + 1, true)[1])
 		return {
 			errorMessage = diagnostic.message,
 			lineCode = api.nvim_buf_get_lines(0, diagnostic.lnum, diagnostic.lnum + 1, true)[1],
@@ -31,17 +33,46 @@ local function read_chat_state()
 	return { conversations = {} }
 end
 
+local function read_chat_settings()
+	if fn.filereadable(CHAT_SETTINGS_FILE) == 1 then
+		local lines = fn.readfile(CHAT_SETTINGS_FILE)
+		if #lines > 0 then return vim.json.decode(lines[1], { luanil = { object = true, array = true } }) end
+		return {}
+	end
+	return {}
+end
+
 local function write_chat_state(state)
 	fn.writefile({ vim.json.encode(state) }, CHAT_STATE_FILE)
 end
 
-local function register_events()
+local function write_chat_settings(settings)
+	fn.writefile({ vim.json.encode(settings) }, CHAT_SETTINGS_FILE)
+end
+
+local function register_events(on_init)
+	chat_binary:register_event("get_capabilities", function(_, answer)
+		tabnine_binary:request({
+			Capabilities = { dummy = true },
+		}, function(response)
+			answer({
+				enabledFeatures = response.enabled_features,
+			})
+		end)
+	end)
+
+	chat_binary:register_event("workspace_folders", function(_, answer)
+		answer({
+			rootPaths = { fn.getcwd() },
+		})
+	end)
+
 	chat_binary:register_event("get_server_url", function(request, answer)
 		tabnine_binary:request({
 			ChatCommunicatorAddress = { kind = request.kind },
 		}, function(response)
 			answer({
-				server_url = response.address,
+				serverUrl = response.address,
 			})
 		end)
 	end)
@@ -50,6 +81,10 @@ local function register_events()
 		local init = { ide = "ij", isDarkTheme = true }
 		if config.is_enterprise() then init.serverUrl = config.get_config().tabnine_enterprise_host end
 		answer(init)
+		if not initialized and on_init then
+			on_init()
+			initialized = true
+		end
 	end)
 
 	chat_binary:register_event("clear_all_chat_conversations", function(_, answer)
@@ -69,6 +104,16 @@ local function register_events()
 	chat_binary:register_event("get_chat_state", function(_, answer)
 		answer(chat_state) -- this may not work good with multiple chats
 	end)
+
+	chat_binary:register_event("get_settings", function(_, answer)
+		answer(chat_settings)
+	end)
+
+	chat_binary:register_event("update_settings", function(settings)
+		chat_settings = settings
+		write_chat_settings(settings)
+	end)
+
 	chat_binary:register_event("get_user", function(_, answer)
 		tabnine_binary:request({ State = { dummy = true } }, function(state)
 			answer({
@@ -116,10 +161,13 @@ local function register_events()
 				}
 			elseif contextType == "Workspace" then
 				return {} -- not implemented
+			elseif contextType == "NFC" then
+				return {} -- not implemented
+			else
+				return {}
 			end
 		end, contextTypesSet)
 
-		print(vim.inspect(enrichingContextData))
 		answer({ enrichingContextData = enrichingContextData })
 	end)
 
@@ -154,6 +202,10 @@ function M.set_always_on_top(value)
 	chat_binary:post_message({ command = "set_always_on_top", data = value })
 end
 
+function M.submit_message(message)
+	chat_binary:post_message({ command = "submit-message", data = { input = message } })
+end
+
 function M.is_open()
 	return chat_binary:is_open()
 end
@@ -162,9 +214,9 @@ function M.close()
 	chat_binary:close()
 end
 
-function M.open()
+function M.open(on_ready)
 	if not M.enabled then
-		vim.notify("Tabnine Chat is available only for preview users")
+		vim.notify("Tabnine Chat is available only for Pro users")
 		return
 	end
 
@@ -177,11 +229,13 @@ function M.open()
 
 	if M.is_open() then
 		M.focus()
+		if on_ready then on_ready() end
 		return
 	end
 
 	chat_state = read_chat_state()
-	register_events()
+	chat_settings = read_chat_settings()
+	register_events(on_ready)
 	chat_binary:start()
 end
 

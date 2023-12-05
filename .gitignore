@@ -16,3 +16,4 @@ auth
 target/
 
 chat_state.json
+chat_settings.json

@@ -8,6 +8,8 @@ function M.set_config(o)
 		dismiss_keymap = "<C-]>",
 		debounce_ms = 800,
 		suggestion_color = { gui = "#808080", cterm = 244 },
+		codelens_color = { gui = "#808080", cterm = 244 },
+		codelens_enabled = true,
 		exclude_filetypes = { "TelescopePrompt", "NvimTree" },
 		log_file_path = nil,
 		tabnine_enterprise_host = nil,
