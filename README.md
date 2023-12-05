@@ -231,7 +231,7 @@ $ # Arch
 $ pacman -S --needed gtk3 glib2 webkit2gtk-4.1 libsoup3
 ```
 
-### Keymaps examples
+## Keymaps examples
 
 ```lua
 api.nvim_set_keymap("x", "<leader>q", "", { noremap = true, callback = require("tabnine.chat").open })
