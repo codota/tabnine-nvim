@@ -145,6 +145,18 @@ EOF
 
 Sometimes Tabnine may fail to open the browser on Tabnine Hub, in this case use `:TabnineHubUrl` to get Tabnine Hub URL
 
+## Tabnine Chat - BETA
+![Tabnine Neovim chat](https://github.com/codota/tabnine-nvim/blob/master/examples/lua-chat.gif)
+Tabnine Chat is still in BETA and is available only for Tabnine Pro users. To make it work:
+- You will need to build the chat from source, by executing: `cargo build --release` inside `chat/` directory.
+- You may be missing some dependencies to build the chat. To fix this, run the following command:
+```shell
+$ # Debian/Ubuntu
+$ sudo apt-get install -y libgtk-3-dev libglib2.0-dev libjavascriptcoregtk-4.1-dev libsoup-3.0-dev libwebkit2gtk-4.1-dev
+$ # Arch
+$ pacman -S --needed gtk3 glib2 webkit2gtk-4.1 libsoup3
+```
+
 ## Commands
 
 - `:TabnineStatus` - to print Tabnine status
@@ -154,7 +166,8 @@ Sometimes Tabnine may fail to open the browser on Tabnine Hub, in this case use 
 - `:TabnineChat` - to launch Tabnine chat
 - `:TabnineLoginWithAuthToken` - to log in using auth token (for headless environments, where no browser is available)
 
-### The following commands are available for Tabnine Chat users
+### Tabnine Chat commands
+- `:TabnineChat` - to open Tabnine Chat
 - `:TabnineFix` - to fix the function in scope
 - `:TabnineTest` - to generate tests for function in scope
 - `:TabnineExplain` - to explain the function in scope
@@ -217,18 +230,6 @@ require('tabnine').setup({
   log_file_path = nil, -- absolute path to Tabnine log file,
   tabnine_enterprise_host = tabnine_enterprise_host
 })
-```
-
-## Tabnine Chat - BETA
-![Tabnine Neovim chat](https://github.com/codota/tabnine-nvim/blob/master/examples/python-chat.gif)
-Tabnine Chat is still in BETA and is available only for Tabnine Pro users. To make it work:
-- You will need to build the chat from source, by executing: `cargo build --release` inside `chat/` directory.
-- You may be missing some dependencies to build the chat. To fix this, run the following command:
-```shell
-$ # Debian/Ubuntu
-$ sudo apt-get install -y libgtk-3-dev libglib2.0-dev libjavascriptcoregtk-4.1-dev libsoup-3.0-dev libwebkit2gtk-4.1-dev
-$ # Arch
-$ pacman -S --needed gtk3 glib2 webkit2gtk-4.1 libsoup3
 ```
 
 ## Keymaps examples
