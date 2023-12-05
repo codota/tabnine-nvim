@@ -53,7 +53,7 @@ end
 local function register_events(on_init)
 	chat_binary:register_event("get_capabilities", function(_, answer)
 		tabnine_binary:request({
-			Capabilities = { dummy = true },
+			Features = { dummy = true },
 		}, function(response)
 			answer({
 				enabledFeatures = response.enabled_features,
