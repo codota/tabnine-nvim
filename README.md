@@ -154,6 +154,11 @@ Sometimes Tabnine may fail to open the browser on Tabnine Hub, in this case use 
 - `:TabnineChat` - to launch Tabnine chat
 - `:TabnineLoginWithAuthToken` - to log in using auth token (for headless environments, where no browser is available)
 
+### The following commands are available for Tabnine Chat users
+- `:TabnineFix` - to fix the function in scope
+- `:TabnineTest` - to generate tests for function in scope
+- `:TabnineExplain` - to explain the function in scope
+
 ## `<Tab>` and `nvim-cmp`
 
 `nvim-cmp` maps `<Tab>` to navigating through pop menu items (see [here](https://github.com/hrsh7th/nvim-cmp/blob/777450fd0ae289463a14481673e26246b5e38bf2/lua/cmp/config/mapping.lua#L86)) This conflicts with Tabnine `<Tab>` for inline completion. To get this sorted you can either:
@@ -216,8 +221,7 @@ require('tabnine').setup({
 
 ## Tabnine Chat - BETA
 ![Tabnine Neovim chat](https://github.com/codota/tabnine-nvim/blob/master/examples/python-chat.gif)
-Tabnine Chat for Nvim is in very early BETA. To make it work:
-- Contact support@tabnine.com with your Tabnine Pro email - so we will enable it for you
+Tabnine Chat is still in BETA and is available only for Tabnine Pro users. To make it work:
 - You will need to build the chat from source, by executing: `cargo build --release` inside `chat/` directory.
 - You may be missing some dependencies to build the chat. To fix this, run the following command:
 ```shell
