@@ -160,11 +160,12 @@ local function register_events(on_init)
 					diagnostics = get_diagnostics(),
 				}
 			elseif contextType == "Workspace" then
-				return {} -- not implemented
+				return { type = "Workspace" } -- not implemented
 			elseif contextType == "NFC" then
-				return {} -- not implemented
+				-- TODO implement
+				return nil
 			else
-				return {}
+				return nil
 			end
 		end, contextTypesSet)
 
