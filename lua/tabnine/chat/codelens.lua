@@ -86,7 +86,7 @@ end
 
 local function is_symbol_under_cursor(symbol)
 	local line = fn.line(".")
-	return line > symbol.range.start.line and line <= symbol.range["end"].line + 1
+	return symbol.range and line > symbol.range.start.line and line <= symbol.range["end"].line + 1
 end
 
 function M.clear()
