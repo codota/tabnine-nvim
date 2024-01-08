@@ -239,3 +239,5 @@ api.nvim_set_keymap("x", "<leader>q", "", { noremap = true, callback = require("
 api.nvim_set_keymap("i", "<leader>q", "", { noremap = true, callback = require("tabnine.chat").open })
 api.nvim_set_keymap("n", "<leader>q", "", { noremap = true, callback = require("tabnine.chat").open })
 ```
+
+{"request":{"Autocomplete":{"filename":"test.py","region_includes_beginning":true,"region_includes_end":false,"max_num_results":1,"correlation_id":0,"after":"","before":"def max_elem(list_elem):\n m = list_elem[0]\n for i in list_elem:\n if m > i:\n m = i\n return m\n\n\n# read a csv file and print each row in it\n\n"}},"version":"4.4.223"}
