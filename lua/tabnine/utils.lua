@@ -4,13 +4,16 @@ local api = vim.api
 local M = {}
 local last_changedtick = vim.b.changedtick
 
+---@param func fun(...: unknown): any the callback
+---@param delay integer delay in milliseconds
+---@return fun(...: unknown)
 function M.debounce(func, delay)
 	local timer_id
 	return function(...)
 		if timer_id then fn.timer_stop(timer_id) end
-		local args = { ... }
+		local args = table.pack(...)
 		timer_id = fn.timer_start(delay, function()
-			func(unpack(args))
+			return func(unpack(args, 1, args.n))
 		end)
 	end
 end
