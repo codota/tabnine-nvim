@@ -13,7 +13,7 @@ local function binary_name()
 	end
 end
 
-local binary_path = utils.script_path() .. "/../chat/target/release/" .. binary_name()
+local binary_path = utils.module_dir() .. "/chat/target/release/" .. binary_name()
 
 function ChatBinary:available()
 	return vim.fn.executable(binary_path) == 1

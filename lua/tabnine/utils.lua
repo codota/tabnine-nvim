@@ -50,9 +50,18 @@ function M.subset(tbl, from, to)
 	return { unpack(tbl, from, to) }
 end
 
-function M.script_path()
+---returns the directory of the running script
+---@return string
+function M.script_dir()
 	local str = debug.getinfo(2, "S").source:sub(2)
-	return str:match("(.*/)") .. "../.."
+	return str:match("(.*/)") or "./"
+end
+
+---returns the directory of the root of the module
+---@return string
+function M.module_dir()
+	-- HACK: This only works if this file is not moved!
+	return M.script_dir() .. "../.."
 end
 
 ---pcall require. Returns nil if the module is not found.
