@@ -2,7 +2,6 @@ local fn = vim.fn
 local api = vim.api
 
 local M = {}
-local last_changedtick = vim.b.changedtick
 
 ---@param func fun(...: unknown): any the callback
 ---@param delay integer delay in milliseconds
@@ -104,33 +103,50 @@ function M.starts_with(str, prefix)
 	return str:sub(1, #prefix) == prefix
 end
 
+---Returns true if the current cursor position is the end of the current line
+---@return boolean
 function M.is_end_of_line()
 	return fn.col(".") == fn.col("$")
 end
 
+---Returns the text after the current cursor position to the end of the current line
+---@return string
 function M.end_of_line()
 	return api.nvim_buf_get_text(0, fn.line(".") - 1, fn.col(".") - 1, fn.line(".") - 1, fn.col("$"), {})[1]
 end
 
-function M.document_changed()
-	local current_changedtick = last_changedtick
-	last_changedtick = vim.b.changedtick
-	return last_changedtick > current_changedtick
+do
+	---The last time we checked for a document change
+	local last_changedtick = vim.b.changedtick
+	---Returns true if the document has changed since the last call
+	---@return boolean
+	function M.document_changed()
+		local current_changedtick = last_changedtick
+		last_changedtick = vim.b.changedtick
+		return last_changedtick > current_changedtick
+	end
 end
 
+---Returns the currently selected text. If no in visual mode, returns the empty string.
+---@return string
 function M.selected_text()
-	local mode = vim.fn.mode()
+	local mode = vim.fn.mode() ---@type string
 	if mode ~= "v" and mode ~= "V" and mode ~= "" then return "" end
-	local a_orig = vim.fn.getreg("a")
+	local a_orig = vim.fn.getreg("a", 1)
 	vim.cmd([[silent! normal! "aygv]])
-	local text = vim.fn.getreg("a")
+	---@diagnostic disable-next-line: assign-type-mismatch -- This is fine. it returns a string
+	local text = vim.fn.getreg("a") ---@type string
 	vim.fn.setreg("a", a_orig)
 	return text
 end
 
+---gets the unique values from the array
+---@generic T
+---@param array T[]
+---@return T[]
 function M.set(array)
-	local set = {}
-	local uniqueValues = {}
+	local set = {} ---@type table<unknown, true>
+	local uniqueValues = {} ---@type unknown[]
 
 	for _, value in ipairs(array) do
 		if not set[value] then
