@@ -111,39 +111,17 @@ function M.set(array)
 	return uniqueValues
 end
 
-function M.select_range(range)
+---Selects a given range of text
+---@param range table
+---@param selection_mode? 'charwise'|'linewise'|'blockwise'|'v'|'V'|'<C-v>'
+function M.select_range(range, selection_mode)
 	local start_row, start_col, end_row, end_col = range[1][1], range[1][2], range[2][1], range[2][2]
 
 	local v_table = { charwise = "v", linewise = "V", blockwise = "<C-v>" }
 	selection_mode = selection_mode or "charwise"
 
 	-- Normalise selection_mode
-	if vim.tbl_contains(vim.tbl_keys(v_table), selection_mode) then selection_mode = v_table[selection_mode] end
-
-	-- enter visual mode if normal or operator-pending (no) mode
-	-- Why? According to https://learnvimscriptthehardway.stevelosh.com/chapters/15.html
-	--   If your operator-pending mapping ends with some text visually selected, Vim will operate on that text.
-	--   Otherwise, Vim will operate on the text between the original cursor position and the new position.
-	local mode = api.nvim_get_mode()
-	if mode.mode ~= selection_mode then
-		-- Call to `nvim_replace_termcodes()` is needed for sending appropriate command to enter blockwise mode
-		selection_mode = vim.api.nvim_replace_termcodes(selection_mode, true, true, true)
-		api.nvim_cmd({ cmd = "normal", bang = true, args = { selection_mode } }, {})
-	end
-
-	api.nvim_win_set_cursor(0, { start_row, start_col - 1 })
-	vim.cmd("normal! o")
-	api.nvim_win_set_cursor(0, { end_row, end_col - 1 })
-end
-
-function M.select_range(range)
-	local start_row, start_col, end_row, end_col = range[1][1], range[1][2], range[2][1], range[2][2]
-
-	local v_table = { charwise = "v", linewise = "V", blockwise = "<C-v>" }
-	selection_mode = selection_mode or "charwise"
-
-	-- Normalise selection_mode
-	if vim.tbl_contains(vim.tbl_keys(v_table), selection_mode) then selection_mode = v_table[selection_mode] end
+	selection_mode = v_table[selection_mode] or selection_mode
 
 	-- enter visual mode if normal or operator-pending (no) mode
 	-- Why? According to https://learnvimscriptthehardway.stevelosh.com/chapters/15.html
