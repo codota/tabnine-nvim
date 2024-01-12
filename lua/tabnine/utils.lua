@@ -18,19 +18,29 @@ function M.debounce(func, delay)
 	end
 end
 
+---@param str string
+---@return string[]
 function M.str_to_lines(str)
 	return fn.split(str, "\n")
 end
 
+---@param lines string[]
+---@return string
 function M.lines_to_str(lines)
 	return fn.join(lines, "\n")
 end
 
+---@param str string
+---@param suffix string
+---@return string
 function M.remove_matching_suffix(str, suffix)
 	if not M.ends_with(str, suffix) then return str end
 	return str:sub(1, -#suffix - 1)
 end
 
+---@param str string
+---@param prefix string
+---@return string
 function M.remove_matching_prefix(str, prefix)
 	if not M.starts_with(str, prefix) then return str end
 	return str:sub(#prefix)
@@ -45,19 +55,21 @@ function M.script_path()
 	return str:match("(.*/)") .. "../.."
 end
 
-function M.prequire(...)
-	local status, lib = pcall(require, ...)
+---pcall require. Returns nil if the module is not found.
+---Note: use @module to manage types.
+---@param modname string
+---@return unknown?
+function M.prequire(modname)
+	local status, lib = pcall(require, modname)
 	if status then return lib end
 	return nil
 end
 
+---@return boolean
 function M.pumvisible()
 	local cmp = M.prequire("cmp")
-	if cmp then
-		return cmp.visible()
-	else
-		return vim.fn.pumvisible() > 0
-	end
+	if cmp then return cmp.visible() end
+	return vim.fn.pumvisible() > 0
 end
 
 function M.current_position()
