@@ -88,15 +88,19 @@ function M.current_position()
 	return fn.line("."), fn.col(".")
 end
 
+---Returns true if str ends with suffix.
+---@param str string
+---@param suffix string
+---@return boolean
 function M.ends_with(str, suffix)
-	if str == "" then return true end
-
 	return str:sub(-#suffix) == suffix
 end
 
+---Returns true if str starts with prefix.
+---@param str string
+---@param prefix string
+---@return boolean
 function M.starts_with(str, prefix)
-	if str == "" then return true end
-
 	return str:sub(1, #prefix) == prefix
 end
 
