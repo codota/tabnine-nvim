@@ -81,8 +81,11 @@ function M.pumvisible()
 	return vim.fn.pumvisible() > 0
 end
 
+---Return the position of the cursor
+---@return number line, number column
 function M.current_position()
-	return { fn.line("."), fn.col(".") }
+	---@diagnostic disable-next-line: return-type-mismatch -- This is fine, they return non-nil values
+	return fn.line("."), fn.col(".")
 end
 
 function M.ends_with(str, suffix)
