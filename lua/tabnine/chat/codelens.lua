@@ -29,7 +29,7 @@ end
 function M.should_display()
 	return config.get_config().codelens_enabled
 		and state.active
-		and vim.lsp.buf.server_ready()
+		and #vim.lsp.buf_get_clients() > 0
 		and not vim.tbl_contains(config.get_config().exclude_filetypes, vim.bo.filetype)
 		and buf_supports_symbols
 end
