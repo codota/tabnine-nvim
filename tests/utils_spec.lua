@@ -1,5 +1,15 @@
+local assert = require("luassert")
 local utils = require("tabnine.utils")
 local eq = assert.same
+table.pack, table.unpack = table.pack or vim.F.pack_len, table.unpack or unpack
+--- Creates a wrapper that calls f with given args
+--- use like: assert.error(wrap(f, 1, 3, 4), "error: here")
+local function wrap(f, ...)
+	local args = table.pack(...)
+	return function()
+		return f(table.unpack(args, 1, args.n))
+	end
+end
 
 describe("utils", function()
 	pending("debounce", function()
@@ -79,10 +89,42 @@ describe("utils", function()
 
 	pending("ends_with", function()
 		-- utils.ends_with(str, suffix)
+		--TODO: Test compatability with vim.endswith
 	end)
 
-	pending("starts_with", function()
-		-- utils.starts_with(str, prefix)
+	--compatability with vim.startswith
+	describe("starts_with", function()
+		it("works for values present", function()
+			eq(true, utils.starts_with("123", "1"))
+			eq(true, utils.starts_with("123", "123"))
+		end)
+		it("works returns true for empty prefixes", function()
+			eq(true, utils.starts_with("123", ""))
+			eq(true, utils.starts_with("", ""))
+			eq(true, utils.starts_with("long string here", ""))
+		end)
+		--- This is an odd exception present in the code. Should it be removed?
+		it("always returns true for empty string", function()
+			eq(true, utils.starts_with("", "123"))
+			eq(true, utils.starts_with("", "Any random string"))
+			eq(true, utils.starts_with("", ""))
+		end)
+
+		it("works for values not present", function()
+			eq(false, utils.starts_with("123", " "))
+			eq(false, utils.starts_with("123", "2"))
+			eq(false, utils.starts_with("123", "1234"))
+		end)
+
+		it("errors on bad values", function()
+			assert.error(wrap(utils.starts_with, "123", nil))
+			assert.error(wrap(utils.starts_with, nil, "123"))
+			assert.error(wrap(utils.starts_with, {}, "123"))
+			--- no error on table. Is this intended behaivor?
+			assert.not_error(wrap(utils.starts_with, "123", {}))
+			assert.error(wrap(utils.starts_with, "123", false))
+			assert.error(wrap(utils.starts_with, false, "123"))
+		end)
 	end)
 
 	pending("is_end_of_line", function()
