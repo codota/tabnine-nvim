@@ -1,7 +1,7 @@
 {
   "neodev": {
     "library": {
-      "plugins": ["plenary.nvim", "tabnine-nvim"]
+      "plugins": ["plenary.nvim"]
     }
   }
 }
