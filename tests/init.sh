@@ -6,7 +6,7 @@ set -euC -o pipefail
 # This is a lua table of options
 read -r -d '' OPTIONS <<'EOF' || true
 {
-  minimal_init = "None", -- Required to avoid errors with package.path in user's init.lua
+  minimal_init = "NONE", -- Required to avoid errors with package.path in user's init.lua
   sequential = false, -- Run in parallel if false
 }
 EOF
