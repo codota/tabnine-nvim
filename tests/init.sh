@@ -28,6 +28,14 @@ case "$this_dir" in
   this_dir=.
   ;;
 esac
+# Note: don't use this in the PlenaryBustedDirectory command line, since it may contain spaces
+abs_this_dir="$(realpath -- "$this_dir")"
+root="$(dirname -- "$abs_this_dir")"
+
+# Ensure the project root is in the `package.path`
+# Plenary guarantees that its directory and the current directory will be
+# thusly, only add it if we aren't already in the root.
+if [ "$abs_this_dir" != "$root" ]; then export LUA_PATH="$root/lua/?.lua;$root/lua/?/init.lua;;"; fi
 
 # Either 'true' or 'false' -- note: parens are imporant to ensure that only the first value is returned
 has_plenary=$(nvim --headless -c 'lua =(pcall(require,"plenary"))' -c 0cq 2>&1)
