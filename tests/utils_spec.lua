@@ -87,18 +87,50 @@ describe("utils", function()
 		-- utils.current_position()
 	end)
 
-	pending("ends_with", function()
-		-- utils.ends_with(str, suffix)
-		--TODO: Test compatability with vim.endswith
+	--compatability with vim.endswith?
+	describe("ends_with", function()
+		it("works for values present", function()
+			eq(true, utils.ends_with("123", "3"))
+			eq(true, utils.ends_with("123", "123"))
+		end)
+		--- This is likely a bug! certainly counterintuitive
+		it("returns false for empty suffixes", function()
+			eq(false, utils.ends_with("123", ""))
+			eq(false, utils.ends_with("long string here", ""))
+			-- Note: this is true because the empty string, not the suffix
+			eq(true, utils.ends_with("", ""))
+		end)
+		--- This is an odd exception present in the code. Should it be removed?
+		it("always returns true for empty string", function()
+			eq(true, utils.ends_with("", "123"))
+			eq(true, utils.ends_with("", "Any random string"))
+			eq(true, utils.ends_with("", ""))
+		end)
+
+		it("works for values not present", function()
+			eq(false, utils.ends_with("123", " "))
+			eq(false, utils.ends_with("123", "2"))
+			eq(false, utils.ends_with("123", "1234"))
+		end)
+
+		it("errors on bad values", function()
+			assert.error(wrap(utils.ends_with, "123", nil))
+			assert.error(wrap(utils.ends_with, nil, "123"))
+			assert.error(wrap(utils.ends_with, {}, "123"))
+			--- no error on table. Is this intended behaivor?
+			assert.not_error(wrap(utils.ends_with, "123", {}))
+			assert.error(wrap(utils.ends_with, "123", false))
+			assert.error(wrap(utils.ends_with, false, "123"))
+		end)
 	end)
 
-	--compatability with vim.startswith
+	--compatability with vim.startswith?
 	describe("starts_with", function()
 		it("works for values present", function()
 			eq(true, utils.starts_with("123", "1"))
 			eq(true, utils.starts_with("123", "123"))
 		end)
-		it("works returns true for empty prefixes", function()
+		it("returns true for empty prefixes", function()
 			eq(true, utils.starts_with("123", ""))
 			eq(true, utils.starts_with("", ""))
 			eq(true, utils.starts_with("long string here", ""))
