@@ -107,8 +107,21 @@ describe("utils", function()
 		end)
 	end)
 
-	pending("subset", function()
-		-- utils.subset(tbl, from, to)
+	describe("subset", function()
+		local tbl
+		before_each(function()
+			tbl = { 1, 2, 3, 4, nil, 5, 6, 7 }
+		end)
+		it("creates an array of the right length", function()
+			eq({ 1, 2 }, utils.subset(tbl, 1, 2))
+			eq({ 1, 2, 3 }, utils.subset(tbl, 1, 3))
+			eq({}, utils.subset(tbl, 0, 0))
+		end)
+		it("creates a new array", function()
+			assert.not_equal(tbl, utils.subset(tbl, 1, 3))
+			assert.not_equal(tbl, utils.subset(tbl, 1, 99))
+			assert.not_equal(tbl, utils.subset(tbl, 1, #tbl))
+		end)
 	end)
 
 	pending("script_path", function()
