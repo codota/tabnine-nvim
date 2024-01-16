@@ -1,4 +1,5 @@
 local assert = require("luassert")
+local spy = require("luassert.spy")
 local utils = require("tabnine.utils")
 local eq = assert.same
 local Path = require("plenary.path")
@@ -16,8 +17,25 @@ local function path_exists(path)
 end
 
 describe("utils", function()
-	pending("debounce", function()
-		-- utils.debounce(func, delay)
+	describe("debounce", function()
+		it("works after waiting", function()
+			local timeout, tests = 20, { 1, 2, 10 } -- note: increasing either of these will result in tests that take longer
+			local s = spy.new(function() end)
+			local f = utils.debounce(s, timeout)
+			for _, call_count in ipairs(tests) do
+				s:clear()
+				for _ = 1, call_count do
+					for _ = 1, 5 do -- call 5 times for every expected spy call
+						f()
+					end
+					vim.wait(timeout + 10) -- wait until timeout expires (ensure it's called at least once)
+				end
+				assert.spy(s).called(call_count)
+			end
+		end)
+		--TODO: Should debounce validate input on the initial call?
+		---- Should negative values error (prob) -- the neovim source casts them to an unsigned long (a **really** big number)
+		-- it("errors on bad values", function() end)
 	end)
 
 	describe("str_to_lines", function()
