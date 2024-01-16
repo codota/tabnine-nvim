@@ -1,5 +1,6 @@
 local fn = vim.fn
 local api = vim.api
+local unpack = table.unpack or unpack
 
 local M = {}
 
@@ -45,7 +46,15 @@ function M.remove_matching_prefix(str, prefix)
 	return str:sub(#prefix)
 end
 
+---@generic T
+---@param tbl T[] | {n?: integer} The table to get a subset from
+---@param from integer? defaults to 1
+---@param to integer? defaults to tbl.n or #tbl.
+---@return T[]
 function M.subset(tbl, from, to)
+	to = to or tbl.n or #tbl -- support table.pack values if no end given
+	-- We can't use table.pack here because nvim_buf_set_extmark will error if non-integer keys are present
+	-- Ideally, implementations would ignore string keys in an 'array'.
 	return { unpack(tbl, from, to) }
 end
 
