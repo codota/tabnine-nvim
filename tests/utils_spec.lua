@@ -1,0 +1,115 @@
+local utils = require("tabnine.utils")
+local eq = assert.same
+
+describe("utils", function()
+	pending("debounce", function()
+		-- utils.debounce(func, delay)
+	end)
+
+	describe("str_to_lines", function()
+		it("splits on newlines", function()
+			local lines = utils.str_to_lines("Hello\nworld")
+			eq({ "Hello", "world" }, lines)
+		end)
+		--- TODO: Should it? This is different than lines_to_str
+		it("trims leading and trailing newlines", function()
+			local lines = utils.str_to_lines("\nHello\nworld\n")
+			eq({ "Hello", "world" }, lines)
+		end)
+		it("includes empty lines", function()
+			local lines = utils.str_to_lines("Hello\n\nworld")
+			eq({ "Hello", "", "world" }, lines)
+		end)
+		it("includes consecutive empty lines", function()
+			local lines = utils.str_to_lines("Hello\n\n\n\n\nworld")
+			eq({ "Hello", "", "", "", "", "world" }, lines)
+		end)
+	end)
+
+	describe("lines_to_str", function()
+		it("joins on newlines", function()
+			local str = utils.lines_to_str({ "Hello", "world" })
+			eq("Hello\nworld", str)
+		end)
+		it("includes leading and trailing newlines", function()
+			local str = utils.lines_to_str({ "", "Hello", "world", "" })
+			eq("\nHello\nworld\n", str)
+		end)
+		it("includes empty lines", function()
+			local str = utils.lines_to_str({ "Hello", "", "world" })
+			eq("Hello\n\nworld", str)
+		end)
+		it("includes consecutive empty lines", function()
+			local str = utils.lines_to_str({ "Hello", "", "", "", "", "world" })
+			eq("Hello\n\n\n\n\nworld", str)
+		end)
+		it("is the inverse of str_to_lines", function()
+			local str = "Hello\n\n\n\nWorld\n\rWith" .. string.char(27) .. "escapes"
+			eq(str, utils.lines_to_str(utils.str_to_lines(str)))
+		end)
+	end)
+
+	pending("remove_matching_suffix", function()
+		-- utils.remove_matching_suffix(str, suffix)
+	end)
+
+	pending("remove_matching_prefix", function()
+		-- utils.remove_matching_prefix(str, prefix)
+	end)
+
+	pending("subset", function()
+		-- utils.subset(tbl, from, to)
+	end)
+
+	pending("script_path", function()
+		-- utils.script_path()
+	end)
+
+	pending("prequire", function()
+		-- utils.prequire("")
+	end)
+
+	pending("pumvisible", function()
+		-- utils.pumvisible()
+	end)
+
+	pending("current_position", function()
+		-- utils.current_position()
+	end)
+
+	pending("ends_with", function()
+		-- utils.ends_with(str, suffix)
+	end)
+
+	pending("starts_with", function()
+		-- utils.starts_with(str, prefix)
+	end)
+
+	pending("is_end_of_line", function()
+		-- utils.is_end_of_line()
+	end)
+
+	pending("end_of_line", function()
+		-- utils.end_of_line()
+	end)
+
+	pending("document_changed", function()
+		-- utils.document_changed()
+	end)
+
+	pending("selected_text", function()
+		-- utils.selected_text()
+	end)
+
+	pending("set", function()
+		-- utils.set(array)
+	end)
+
+	pending("select_range", function()
+		-- utils.select_range(range)
+	end)
+
+	pending("select_range", function()
+		-- utils.select_range(range)
+	end)
+end)
