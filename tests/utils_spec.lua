@@ -255,8 +255,24 @@ describe("utils", function()
 		-- utils.selected_text()
 	end)
 
-	pending("set", function()
-		-- utils.set(array)
+	describe("set", function()
+		it("doesn't handle nils", function() -- Should it?
+			eq({ 1, 2, 3, 4 }, utils.set({ 1, 2, 3, 4, nil, 5, 6, 7 }))
+			eq({ 1, 2, 4 }, utils.set({ 1, 2, 4, nil, 5, 3, 7 }))
+			eq({ 1, 2, 3, 4 }, utils.set({ 1, 2, 3, 4, nil, 5, 6, n = 7 })) -- ignores the n key
+		end)
+
+		it("creates an array of the right length", function()
+			eq({ 1, 2, 3, 4 }, utils.set({ 1, 2, 3, 4, 2, 3, 1 }))
+			eq({ 1, 2, 3, 4 }, utils.set({ 1, 2, 3, 4 }))
+			eq({}, utils.set({}))
+		end)
+		it("creates a new array", function()
+			local tbl = { 1, 2, 3, 4 }
+			assert.not_equal(tbl, utils.set(tbl))
+			assert.not_equal({}, utils.set({}))
+			assert.not_equal(utils.set(tbl), utils.set(tbl))
+		end)
 	end)
 
 	pending("select_range", function()
