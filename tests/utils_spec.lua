@@ -1,6 +1,7 @@
 local assert = require("luassert")
 local utils = require("tabnine.utils")
 local eq = assert.same
+local Path = require("plenary.path")
 table.pack, table.unpack = table.pack or vim.F.pack_len, table.unpack or unpack
 --- Creates a wrapper that calls f with given args
 --- use like: assert.error(wrap(f, 1, 3, 4), "error: here")
@@ -9,6 +10,9 @@ local function wrap(f, ...)
 	return function()
 		return f(table.unpack(args, 1, args.n))
 	end
+end
+local function path_exists(path)
+	return vim.uv.fs_stat(path) ~= nil
 end
 
 describe("utils", function()
@@ -125,8 +129,30 @@ describe("utils", function()
 		end)
 	end)
 
-	pending("script_path", function()
-		-- utils.script_path()
+	describe("script_path", function()
+		---@type string
+		local this_path, root_path
+		before_each(function()
+			this_path = debug.getinfo(1, "S").source:sub(2):match("(.*)/") or "." -- the current file using debug.getinfo
+			root_path = Path:new(this_path):find_upwards("lua/") -- Find the /lua/ folder
+			if root_path == "" then root_path = nil end -- find_upwards returns an empty string on fail :(
+			root_path = root_path and root_path:parent():absolute() -- get the parent directory as a string
+		end)
+
+		it("doesn't end in trailing slash", function()
+			assert.not_matches(utils.script_path(), "/$")
+		end)
+
+		--- TODO: fix utils.script_path. It currently hardcodes to ../.. from the *calling* script
+		--- In this case, this is the containing directory
+		it("properly identitfies the root", function()
+			eq(true, path_exists(utils.script_path()))
+			--- TODO: These should return true
+			eq(false, path_exists(utils.script_path() .. "/README.md"))
+			eq(false, path_exists(utils.script_path() .. "/lua/"))
+			--- TODO: this shouldn't need the dirname
+			eq(vim.fs.dirname(root_path), vim.uv.fs_realpath(utils.script_path()))
+		end)
 	end)
 
 	pending("prequire", function()
