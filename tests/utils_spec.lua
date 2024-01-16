@@ -236,8 +236,4 @@ describe("utils", function()
 	pending("select_range", function()
 		-- utils.select_range(range)
 	end)
-
-	pending("select_range", function()
-		-- utils.select_range(range)
-	end)
 end)
