@@ -137,12 +137,12 @@ function M.select_range(range)
 end
 
 function M.read_file_into_buffer(file_path)
-    local content = vim.fn.readfile(file_path)
-    local bufnr = vim.api.nvim_create_buf(false, true)
+	local content = vim.fn.readfile(file_path)
+	local bufnr = vim.api.nvim_create_buf(false, true)
 
-    api.nvim_buf_set_lines(bufnr, 0, -1, false, content)
+	api.nvim_buf_set_lines(bufnr, 0, -1, false, content)
 
-    return bufnr
+	return bufnr
 end
 
 return M

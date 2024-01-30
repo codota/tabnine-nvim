@@ -184,20 +184,20 @@ local function register_events(on_init)
 	end)
 
 	chat_binary:register_event("get_symbols", function(request, answer)
-		-- if get_symbols_request then get_symbols_request() end
+		if get_symbols_request then get_symbols_request() end
 		get_symbols_request = lsp.get_document_symbols(request.query, function(document_symbols)
 			lsp.get_workspace_symbols(request.query, function(workspace_symbols)
 				answer({
-					workspaceSymbols = vim.tbl_map(function(s)
+					workspaceSymbols = vim.tbl_map(function(symbol)
 						return {
-							name = s.name,
-							absolutePath = utils.remove_matching_prefix(s.location.uri, "file://"),
-							relativePath = utils.remove_matching_prefix(s.location.uri, "file://" .. fn.getcwd()),
+							name = symbol.name,
+							absolutePath = utils.remove_matching_prefix(symbol.location.uri, "file://"),
+							relativePath = utils.remove_matching_prefix(symbol.location.uri, "file://" .. fn.getcwd()),
 							range = {
-								startLine = s.location.range.start.line,
-								startCharacter = s.location.range.start.character,
-								endLine = s.location.range["end"].line,
-								endCharacter = s.location.range["end"].character,
+								startLine = symbol.location.range.start.line,
+								startCharacter = symbol.location.range.start.character,
+								endLine = symbol.location.range["end"].line,
+								endCharacter = symbol.location.range["end"].character,
 							},
 						}
 					end, workspace_symbols),

@@ -23,7 +23,6 @@ function M.get_workspace_symbols(query, callback)
 		for _, response in ipairs(responses) do
 			if response.result then
 				for _, result in ipairs(flatten_symbols(response.result)) do
-					print(result.location.uri)
 					if
 						(
 							result.kind == SYMBOL_KIND.CLASS
