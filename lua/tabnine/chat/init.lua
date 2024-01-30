@@ -191,8 +191,8 @@ local function register_events(on_init)
 					workspaceSymbols = vim.tbl_map(function(symbol)
 						return {
 							name = symbol.name,
-							absolutePath = utils.remove_matching_prefix(symbol.location.uri, "file://"),
-							relativePath = utils.remove_matching_prefix(symbol.location.uri, "file://" .. fn.getcwd()),
+							absolutePath = symbol.location.uri,
+							relativePath = utils.remove_matching_prefix(symbol.location.uri, fn.getcwd()),
 							range = {
 								startLine = symbol.location.range.start.line,
 								startCharacter = symbol.location.range.start.character,

@@ -23,12 +23,15 @@ function M.get_workspace_symbols(query, callback)
 		for _, response in ipairs(responses) do
 			if response.result then
 				for _, result in ipairs(flatten_symbols(response.result)) do
+					result.location.uri = utils.remove_matching_prefix(result.location.uri, "file://")
 					if
 						(
 							result.kind == SYMBOL_KIND.CLASS
 							or result.kind == SYMBOL_KIND.METHOD
 							or result.kind == SYMBOL_KIND.FUNCTION
-						) and utils.starts_with(result.location.uri, "file://" .. vim.fn.getcwd())
+						)
+						and utils.starts_with(result.location.uri, vim.fn.getcwd())
+						and not is_not_source(result.location.uri)
 					then
 						table.insert(results, result)
 					end
@@ -62,6 +65,17 @@ function M.get_document_symbols(query, callback)
 		end
 		callback(results)
 	end)
+end
+
+function is_not_source(symbol_path)
+	local dirs = { "node_modules", "dist", "build", "target", "out" }
+	for i, dir in ipairs(dirs) do
+		if string.sub(symbol_path, 1, string.len(dir)) == dir then
+			print("is not source")
+			return true
+		end
+	end
+	return false
 end
 
 return M
