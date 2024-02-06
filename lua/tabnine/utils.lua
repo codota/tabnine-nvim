@@ -1,6 +1,7 @@
 local fn = vim.fn
 local api = vim.api
-
+local unpack = table.unpack or unpack
+local pack = table.pack or vim.F.pack_len
 local M = {}
 local last_changedtick = vim.b.changedtick
 
@@ -11,7 +12,7 @@ function M.debounce(func, delay)
 	local timer_id
 	return function(...)
 		if timer_id then fn.timer_stop(timer_id) end
-		local args = table.pack(...)
+		local args = pack(...)
 		timer_id = fn.timer_start(delay, function()
 			return func(unpack(args, 1, args.n))
 		end)
