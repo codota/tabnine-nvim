@@ -2,7 +2,6 @@ local M = {}
 local api = vim.api
 local chat = require("tabnine.chat")
 local codelens = require("tabnine.chat.codelens")
-local config = require("tabnine.config")
 
 function M.setup()
 	api.nvim_create_user_command("TabnineChat", function()

@@ -4,6 +4,8 @@ local tabnine_binary = require("tabnine.binary")
 local utils = require("tabnine.utils")
 local api = vim.api
 local config = require("tabnine.config")
+local lsp = require("tabnine.lsp")
+local get_symbols_request = nil
 
 local M = { enabled = false }
 
@@ -14,6 +16,19 @@ local chat_state = nil
 local chat_settings = nil
 local initialized = false
 
+local function to_chat_symbol_kind(kind)
+	if kind == lsp.SYMBOL_KIND.METHOD then
+		return "Method"
+	elseif kind == lsp.SYMBOL_KIND.FUNCTION then
+		return "Function"
+	elseif kind == lsp.SYMBOL_KIND.CLASS then
+		return "Class"
+	elseif kind == lsp.SYMBOL_KIND.FILE then
+		return "File"
+	else
+		return "Other"
+	end
+end
 local function get_diagnostics()
 	return vim.tbl_map(function(diagnostic)
 		return {
@@ -174,12 +189,67 @@ local function register_events(on_init)
 
 	chat_binary:register_event("get_selected_code", function(_, answer)
 		local selected_code = utils.selected_text()
-
 		answer({
 			code = selected_code,
 			startLine = vim.fn.getpos("'<")[2],
 			endLine = vim.fn.getpos("'>")[2],
 		})
+	end)
+
+	chat_binary:register_event("get_symbols", function(request, answer)
+		if get_symbols_request then get_symbols_request() end
+		get_symbols_request = lsp.get_document_symbols(request.query, function(document_symbols)
+			lsp.get_workspace_symbols(request.query, function(workspace_symbols)
+				answer({
+					workspaceSymbols = vim.tbl_map(function(symbol)
+						return {
+							name = symbol.name,
+							absolutePath = symbol.location.uri,
+							relativePath = utils.remove_matching_prefix(symbol.location.uri, fn.getcwd()),
+							kind = to_chat_symbol_kind(symbol.kind),
+							range = {
+								startLine = symbol.location.range.start.line,
+								startCharacter = symbol.location.range.start.character,
+								endLine = symbol.location.range["end"].line,
+								endCharacter = symbol.location.range["end"].character,
+							},
+						}
+					end, workspace_symbols),
+					documentSymbols = vim.tbl_map(function(symbol)
+						return {
+							name = symbol.name,
+							absolutePath = api.nvim_buf_get_name(0),
+							relativePath = vim.fn.expand("%"),
+							kind = to_chat_symbol_kind(symbol.kind),
+							range = {
+								startLine = symbol.range.start.line,
+								startCharacter = symbol.range.start.character,
+								endLine = symbol.range["end"].line,
+								endCharacter = symbol.range["end"].character,
+							},
+						}
+					end, document_symbols),
+				})
+			end)
+		end)
+	end)
+
+	chat_binary:register_event("get_symbols_text", function(request, answer)
+		answer(vim.tbl_map(function(symbol)
+			local buf = utils.read_file_into_buffer(symbol.absolutePath)
+			local text = utils.lines_to_str(
+				api.nvim_buf_get_text(
+					buf,
+					symbol.range.startLine,
+					symbol.range.startCharacter,
+					symbol.range.endLine,
+					symbol.range.endCharacter,
+					{}
+				)
+			)
+			api.nvim_buf_delete(buf, { force = true })
+			return { id = symbol.id, snippet = text }
+		end, request.symbols))
 	end)
 
 	chat_binary:register_event("send_event", function(event)

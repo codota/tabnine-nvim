@@ -1,13 +1,13 @@
 local chat = require("tabnine.chat")
 local config = require("tabnine.config")
 local consts = require("tabnine.consts")
+local lsp = require("tabnine.lsp")
 local state = require("tabnine.state")
 local utils = require("tabnine.utils")
 local api = vim.api
 local fn = vim.fn
 
 local M = {}
-local SYMBOL_KIND = { FUNCTION = 12, CLASS = 5, METHOD = 6 }
 local current_symbols = {}
 local symbol_under_cursor = nil
 local cancel_lsp_request = nil
@@ -34,34 +34,11 @@ function M.should_display()
 		and buf_supports_symbols
 end
 
-local function flatten_symbols(symbols, result)
-	result = result or {}
-
-	for _, symbol in ipairs(symbols) do
-		table.insert(result, symbol)
-
-		if symbol.children then flatten_symbols(symbol.children, result) end
-	end
-
-	return result
-end
-
 function M.collect_symbols(on_collect)
-	local params = vim.lsp.util.make_position_params()
-
 	if cancel_lsp_request then cancel_lsp_request() end
 
-	cancel_lsp_request = vim.lsp.buf_request_all(0, "textDocument/documentSymbol", params, function(responses)
-		current_symbols = {}
-		for _, response in ipairs(responses) do
-			if response.result then
-				for _, result in ipairs(flatten_symbols(response.result)) do
-					if result.kind == SYMBOL_KIND.FUNCTION or result.kind == SYMBOL_KIND.METHOD then
-						table.insert(current_symbols, result)
-					end
-				end
-			end
-		end
+	cancel_lsp_request = lsp.get_document_symbols("", function(symbols)
+		current_symbols = symbols
 		on_collect()
 	end)
 end

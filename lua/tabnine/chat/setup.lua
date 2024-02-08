@@ -1,6 +1,5 @@
 local auto_commands = require("tabnine.chat.auto_commands")
 local chat = require("tabnine.chat")
-local codelens = require("tabnine.chat.codelens")
 local config = require("tabnine.config")
 local features = require("tabnine.features")
 local user_commands = require("tabnine.chat.user_commands")
