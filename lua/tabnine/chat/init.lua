@@ -16,6 +16,19 @@ local chat_state = nil
 local chat_settings = nil
 local initialized = false
 
+local function to_chat_symbol_kind(kind)
+	if kind == lsp.SYMBOL_KIND.METHOD then
+		return "Method"
+	elseif kind == lsp.SYMBOL_KIND.FUNCTION then
+		return "Function"
+	elseif kind == lsp.SYMBOL_KIND.CLASS then
+		return "Class"
+	elseif kind == lsp.SYMBOL_KIND.FILE then
+		return "File"
+	else
+		return "Other"
+	end
+end
 local function get_diagnostics()
 	return vim.tbl_map(function(diagnostic)
 		return {
@@ -193,6 +206,7 @@ local function register_events(on_init)
 							name = symbol.name,
 							absolutePath = symbol.location.uri,
 							relativePath = utils.remove_matching_prefix(symbol.location.uri, fn.getcwd()),
+							kind = to_chat_symbol_kind(symbol.kind),
 							range = {
 								startLine = symbol.location.range.start.line,
 								startCharacter = symbol.location.range.start.character,
@@ -201,16 +215,17 @@ local function register_events(on_init)
 							},
 						}
 					end, workspace_symbols),
-					documentSymbols = vim.tbl_map(function(s)
+					documentSymbols = vim.tbl_map(function(symbol)
 						return {
-							name = s.name,
+							name = symbol.name,
 							absolutePath = api.nvim_buf_get_name(0),
 							relativePath = vim.fn.expand("%"),
+							kind = to_chat_symbol_kind(symbol.kind),
 							range = {
-								startLine = s.range.start.line,
-								startCharacter = s.range.start.character,
-								endLine = s.range["end"].line,
-								endCharacter = s.range["end"].character,
+								startLine = symbol.range.start.line,
+								startCharacter = symbol.range.start.character,
+								endLine = symbol.range["end"].line,
+								endCharacter = symbol.range["end"].character,
 							},
 						}
 					end, document_symbols),

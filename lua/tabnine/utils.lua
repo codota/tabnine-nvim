@@ -30,7 +30,7 @@ end
 
 function M.remove_matching_prefix(str, prefix)
 	if not M.starts_with(str, prefix) then return str end
-	return str:sub(#prefix)
+	return str:sub(#prefix + 1)
 end
 
 function M.subset(tbl, from, to)

@@ -1,7 +1,15 @@
 local utils = require("tabnine.utils")
 local M = {}
 
-local SYMBOL_KIND = { FUNCTION = 12, CLASS = 5, METHOD = 6 }
+M.SYMBOL_KIND = { FUNCTION = 12, CLASS = 5, METHOD = 6 }
+
+local function is_not_source(symbol_path)
+	local dirs = { "node_modules", "dist", "build", "target", "out" }
+	for i, dir in ipairs(dirs) do
+		if string.sub(symbol_path, 1, string.len(dir)) == dir then return true end
+	end
+	return false
+end
 
 local function flatten_symbols(symbols, result)
 	result = result or {}
@@ -26,9 +34,9 @@ function M.get_workspace_symbols(query, callback)
 					result.location.uri = utils.remove_matching_prefix(result.location.uri, "file://")
 					if
 						(
-							result.kind == SYMBOL_KIND.CLASS
-							or result.kind == SYMBOL_KIND.METHOD
-							or result.kind == SYMBOL_KIND.FUNCTION
+							result.kind == M.SYMBOL_KIND.CLASS
+							or result.kind == M.SYMBOL_KIND.METHOD
+							or result.kind == M.SYMBOL_KIND.FUNCTION
 						)
 						and utils.starts_with(result.location.uri, vim.fn.getcwd())
 						and not is_not_source(result.location.uri)
@@ -53,9 +61,9 @@ function M.get_document_symbols(query, callback)
 				for _, result in ipairs(flatten_symbols(response.result)) do
 					if
 						(
-							result.kind == SYMBOL_KIND.CLASS
-							or result.kind == SYMBOL_KIND.METHOD
-							or result.kind == SYMBOL_KIND.FUNCTION
+							result.kind == M.SYMBOL_KIND.CLASS
+							or result.kind == M.SYMBOL_KIND.METHOD
+							or result.kind == M.SYMBOL_KIND.FUNCTION
 						) and utils.starts_with(result.name, query)
 					then
 						table.insert(results, result)
@@ -65,17 +73,6 @@ function M.get_document_symbols(query, callback)
 		end
 		callback(results)
 	end)
-end
-
-function is_not_source(symbol_path)
-	local dirs = { "node_modules", "dist", "build", "target", "out" }
-	for i, dir in ipairs(dirs) do
-		if string.sub(symbol_path, 1, string.len(dir)) == dir then
-			print("is not source")
-			return true
-		end
-	end
-	return false
 end
 
 return M
