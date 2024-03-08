@@ -15,6 +15,8 @@ local function arch_and_platform()
 
 	if os_uname.sysname == "Linux" and os_uname.machine == "x86_64" then
 		return "x86_64-unknown-linux-musl"
+	elseif os_uname.sysname == "Linux" and os_uname.machine == "aarch64" then 
+		return "aarch64-unknown-linux-gnu"
 	elseif os_uname.sysname == "Darwin" and os_uname.machine == "arm64" then
 		return "aarch64-apple-darwin"
 	elseif os_uname.sysname == "Darwin" then
