@@ -26,7 +26,7 @@ function M.accept()
 	end
 
 	api.nvim_buf_set_text(0, fn.line(".") - 1, fn.col(".") - 1, fn.line(".") - 1, fn.col(".") - 1, lines)
-	api.nvim_win_set_cursor(0, { fn.line(".") + #lines - 1, fn.col(".") + #lines[#lines] })
+	api.nvim_win_set_cursor(0, { fn.line("."), fn.col(".") + #lines[#lines] })
 	state.completions_cache = nil
 end
 
