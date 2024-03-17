@@ -124,9 +124,10 @@ local function register_events(on_init)
 		answer(chat_settings)
 	end)
 
-	chat_binary:register_event("update_settings", function(settings)
+	chat_binary:register_event("update_settings", function(settings, answer)
 		chat_settings = settings
 		write_chat_settings(settings)
+		answer({})
 	end)
 
 	chat_binary:register_event("get_user", function(_, answer)
