@@ -83,12 +83,12 @@ function ChatBinary:start()
 				local handler = self.registry[message.command]
 				if handler then
 					handler(message.data, function(payload)
-						if payload then
-							self:post_message({
-								id = message.id,
-								payload = payload,
-							})
-						end
+						-- if payload then
+						self:post_message({
+							id = message.id,
+							payload = payload,
+						})
+						-- end
 					end)
 				else
 					self:post_message({ id = message.id, error = "not_implemented" })
