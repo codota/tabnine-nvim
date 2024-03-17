@@ -109,6 +109,7 @@ local function register_events(on_init)
 	end)
 
 	chat_binary:register_event("update_chat_conversation", function(conversation)
+		chat_state = chat_state or {}
 		chat_state.conversations[conversation.id] = {
 			id = conversation.id,
 			messages = conversation.messages,
@@ -127,7 +128,7 @@ local function register_events(on_init)
 	chat_binary:register_event("update_settings", function(settings, answer)
 		chat_settings = settings
 		write_chat_settings(settings)
-		answer({})
+		answer(nil)
 	end)
 
 	chat_binary:register_event("get_user", function(_, answer)
@@ -168,7 +169,6 @@ local function register_events(on_init)
 					type = "Editor",
 					fileCode = file_code,
 					currentLineIndex = api.nvim_win_get_cursor(0)[1],
-					selectedCodeUsages = {},
 				}
 			elseif contextType == "Diagnostics" then
 				return {
@@ -190,11 +190,15 @@ local function register_events(on_init)
 
 	chat_binary:register_event("get_selected_code", function(_, answer)
 		local selected_code = utils.selected_text()
-		answer({
-			code = selected_code,
-			startLine = vim.fn.getpos("'<")[2],
-			endLine = vim.fn.getpos("'>")[2],
-		})
+		if selected_code:len() > 0 then
+			answer({
+				code = selected_code,
+				startLine = vim.fn.getpos("'<")[2],
+				endLine = vim.fn.getpos("'>")[2],
+			})
+		else
+			answer(nil)
+		end
 	end)
 
 	chat_binary:register_event("get_symbols", function(request, answer)
