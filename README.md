@@ -149,6 +149,7 @@ Sometimes Tabnine may fail to open the browser on Tabnine Hub, in this case use 
 ![Tabnine Neovim chat](https://github.com/codota/tabnine-nvim/blob/master/examples/lua-chat.gif)
 Tabnine Chat is still in BETA and is available only for Tabnine Pro users. To make it work:
 - You will need to build the chat from source, by executing: `cargo build --release` inside `chat/` directory.
+  - On a Linux system with Packer, it would be located at `~/.local/share/nvim/site/pack/packer/start/tabnine-nvim/chat`
 - You may be missing some dependencies to build the chat. To fix this, run the following command:
 ```shell
 $ # Debian/Ubuntu
