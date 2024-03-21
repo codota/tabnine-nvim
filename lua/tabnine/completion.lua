@@ -25,7 +25,7 @@ function M.accept()
 		return
 	end
 
-	api.nvim_put(lines, "c", true, true)
+	api.nvim_put(lines, "c", false, true)
 	state.completions_cache = nil
 end
 
