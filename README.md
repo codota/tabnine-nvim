@@ -1,11 +1,13 @@
 [![Tabnine Chat Support](https://github.com/codota/tabnine-nvim/blob/master/chat/ticker.png)](#tabnine-chat---beta)
 
 # tabnine-nvim
+
 Tabnine client for Neovim
 
 ![Tabnine Neovim client](https://github.com/codota/tabnine-nvim/blob/master/examples/javascript.gif)
 
 ## Table of Contents
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
@@ -63,11 +65,13 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim)
 
 ```lua
 require("lazy").setup({
-  { 'codota/tabnine-nvim', build = "./dl_binaries.sh" },
+  { 'codota/tabnine-nvim' },
 })
 ```
 
 2. Restart Neovim and run `:Lazy`
+
+Note: The build script will be automatically ran by lazy.nvim, and thus does not need to be included in your `init.lua`.
 
 ### Windows
 
@@ -91,9 +95,9 @@ Windows installations need to be adjusted to utilize PowerShell. This can be acc
 -- pwsh.exe for PowerShell Core
 -- powershell.exe for Windows PowerShell
 
-require("lazy").setup({
-  { 'codota/tabnine-nvim', build = "pwsh.exe -file .\\dl_binaries.ps1" },
-})
+require("packer").startup(function(use)
+  use { 'codota/tabnine-nvim', run = "pwsh.exe -file .\\dl_binaries.ps1" }
+end)
 ```
 
 If you need to use Tabnine on Windows and Unix you can change the config as follows
@@ -107,9 +111,9 @@ local function tabnine_build_path()
     return "./dl_binaries.sh"
   end
 end
-require("lazy").setup({
-  { 'codota/tabnine-nvim', build = tabnine_build_path()},
-})
+require("packer").startup(function(use)
+  use { 'codota/tabnine-nvim', run = tabnine_build_path() }
+end)
 ```
 
 ---
@@ -232,7 +236,23 @@ require('tabnine').setup({
 })
 ```
 
-## Keymaps examples
+## Tabnine Chat - BETA
+
+![Tabnine Neovim chat](https://github.com/codota/tabnine-nvim/blob/master/examples/python-chat.gif)
+Tabnine Chat for Nvim is in very early BETA. To make it work:
+
+- Contact support@tabnine.com with your Tabnine Pro email - so we will enable it for you
+- You will need to build the chat from source, by executing: `cargo build --release` inside `chat/` directory.
+- You may be missing some dependencies to build the chat. To fix this, run the following command:
+
+```shell
+$ # Debian/Ubuntu
+$ sudo apt-get install -y libgtk-3-dev libglib2.0-dev libjavascriptcoregtk-4.1-dev libsoup-3.0-dev libwebkit2gtk-4.1-dev
+$ # Arch
+$ pacman -S --needed gtk3 glib2 webkit2gtk-4.1 libsoup3
+```
+
+### Keymaps examples
 
 ```lua
 api.nvim_set_keymap("x", "<leader>q", "", { noremap = true, callback = require("tabnine.chat").open })
