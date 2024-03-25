@@ -9,6 +9,7 @@ Introduction                                       |tabnine-nvim-introduction|
 Usage                                              |tabnine-nvim-usage|
 Commands                                           |tabnine-nvim-commands|
 Configuration                                      |tabnine-nvim-configuration|
+Advanced keymaps                                   |tabnine-nvim-advanced-keymaps|
 
 ==============================================================================
 INTRODUCTION                                        *tabnine-nvim-introduction*
@@ -32,7 +33,7 @@ This will initialize and setup the plugin to start using completion.
 Further configuration can be passed to the setup function (|CONFIGURATION|)
 
 ==============================================================================
-COMMANDS
+COMMANDS                                                *tabnine-nvim-commands*
 
 Print Tabnine status
 :TabnineStatus
@@ -82,9 +83,11 @@ See https://vim.fandom.com/wiki/Disable_automatic_comment_insertion
 
 *accept_keymap* - String - Default: "<Tab>"
 The key to press to accept the current completion.
+Note: Set to `false` to disable the accept keymap
 
 *dismiss_keymap* - String - Default: "<C-]>"
 The key to press to hide the current completion.
+Note: Set to `false` to disable the dismiss keymap
 
 *debounce_ms* - Integer - Default: 800 - Minumum: 0
 The number of milliseconds to wait between keystrokes before giving
@@ -103,6 +106,26 @@ Use :|setfiletype| <C-d> to see available file types.
 
 *log_file_path* - String - Default: nil 
 An absolute path to Tabnine log file.
+
+
+==============================================================================
+ADVANCED KEYMAPS                                 *tabnine-nvim-advanced-keymaps*
+
+You can set `accept_keymap` and `dismiss_keymap` to `false` to disable them
+then you can create mappings using `require('tabnine.keymaps')`
+>lua
+--- Example integration with Tabnine and LuaSnip
+--- falling back to inserting tab if neither has a completion
+vim.keymap.set("i", "<tab>", function()
+  if require("tabnine.keymaps").has_suggestion() then
+    return require("tabnine.keymaps").accept_suggestion()
+  elseif require("luasnip").jumpable(1) then
+    return require("luasnip").jump(1)
+  else
+    return "<tab>"
+  end
+end, { expr = true })
+<
 
 
 ==============================================================================
