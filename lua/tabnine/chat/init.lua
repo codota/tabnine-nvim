@@ -9,8 +9,8 @@ local get_symbols_request = nil
 
 local M = { enabled = false }
 
-local CHAT_STATE_FILE = utils.script_path() .. "/../chat_state.json"
-local CHAT_SETTINGS_FILE = utils.script_path() .. "/../chat_settings.json"
+local CHAT_STATE_FILE = utils.module_dir() .. "/chat_state.json"
+local CHAT_SETTINGS_FILE = utils.module_dir() .. "/chat_settings.json"
 
 local chat_state = nil
 local chat_settings = nil

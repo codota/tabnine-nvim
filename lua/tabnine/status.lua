@@ -3,7 +3,7 @@ local fn = vim.fn
 local utils = require("tabnine.utils")
 
 local M = {}
-local DISABLED_FILE = utils.script_path() .. "/.disabled"
+local DISABLED_FILE = utils.module_dir() .. "/.disabled"
 local config = require("tabnine.config")
 local state = require("tabnine.state")
 local tabnine_binary = require("tabnine.binary")

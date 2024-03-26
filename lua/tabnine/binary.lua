@@ -8,7 +8,7 @@ local TabnineBinary = {}
 local config = require("tabnine.config")
 
 local api_version = "4.4.223"
-local binaries_path = utils.script_path() .. "/binaries"
+local binaries_path = utils.module_dir() .. "/binaries"
 
 local function arch_and_platform()
 	local os_uname = uv.os_uname()
