@@ -120,14 +120,17 @@ function M.set(array)
 	return uniqueValues
 end
 
-function M.select_range(range)
+---Selects a given range of text
+---@param range table
+---@param selection_mode? 'charwise'|'linewise'|'blockwise'|'v'|'V'|'<C-v>'
+function M.select_range(range, selection_mode)
 	local start_row, start_col, end_row, end_col = range[1][1], range[1][2], range[2][1], range[2][2]
 
 	local v_table = { charwise = "v", linewise = "V", blockwise = "<C-v>" }
 	selection_mode = selection_mode or "charwise"
 
 	-- Normalise selection_mode
-	if vim.tbl_contains(vim.tbl_keys(v_table), selection_mode) then selection_mode = v_table[selection_mode] end
+	selection_mode = v_table[selection_mode] or selection_mode
 
 	-- enter visual mode if normal or operator-pending (no) mode
 	-- Why? According to https://learnvimscriptthehardway.stevelosh.com/chapters/15.html
