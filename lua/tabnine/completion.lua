@@ -14,6 +14,8 @@ end
 
 function M.accept()
 	M.clear()
+	--- Don't error if no completion available!
+	if not state.rendered_completion or state.rendered_completion == "" then return end
 	local lines = utils.str_to_lines(state.rendered_completion)
 
 	if utils.starts_with(state.rendered_completion, "\n") then
