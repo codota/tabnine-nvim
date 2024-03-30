@@ -76,28 +76,26 @@ function ChatBinary:start()
 		end)
 	)
 
-	self.stdout:read_start(vim.schedule_wrap(function(error, chunk)
-		if chunk then
-			for _, line in pairs(utils.str_to_lines(chunk)) do
-				local message = vim.json.decode(line, { luanil = { object = true, array = true } })
-				local handler = self.registry[message.command]
-				if handler then
-					handler(message.data, function(payload)
-						-- if payload then
-						self:post_message({
-							id = message.id,
-							payload = payload,
-						})
-						-- end
-					end)
-				else
-					self:post_message({ id = message.id, error = "not_implemented" })
-				end
+	utils.read_lines_start(
+		self.stdout,
+		vim.schedule_wrap(function(line)
+			local message = vim.json.decode(line, { luanil = { object = true, array = true } })
+			local handler = self.registry[message.command]
+			if handler then
+				handler(message.data, function(payload)
+					self:post_message({
+						id = message.id,
+						payload = payload,
+					})
+				end)
+			else
+				self:post_message({ id = message.id, error = "not_implemented" })
 			end
-		elseif error then
-			print("chat binary read_start error", error)
-		end
-	end))
+		end),
+		vim.schedule_wrap(function(error)
+			print("error reading chat binary", error)
+		end)
+	)
 end
 
 function ChatBinary:new(o)
