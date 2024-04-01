@@ -75,20 +75,17 @@ function TabnineBinary:start()
 		uv.read_stop(self.stdout)
 	end)
 
-	uv.read_start(
+	utils.read_lines_start(
 		self.stdout,
-		vim.schedule_wrap(function(error, chunk)
-			if chunk then
-				for _, line in pairs(utils.str_to_lines(chunk)) do
-					local callback = table.remove(self.callbacks)
-					if not callback.cancelled then
-						local decoded = vim.json.decode(line, { luanil = { object = true, array = true } })
-						callback.callback(decoded)
-					end
-				end
-			elseif error then
-				print("tabnine binary read_start error", error)
+		vim.schedule_wrap(function(line)
+			local callback = table.remove(self.callbacks)
+			if not callback.cancelled then
+				local decoded = vim.json.decode(line, { luanil = { object = true, array = true } })
+				callback.callback(decoded)
 			end
+		end),
+		vim.schedule_wrap(function(error)
+			print("tabnine binary read_start error", error)
 		end)
 	)
 end
