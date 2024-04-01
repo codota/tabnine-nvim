@@ -157,4 +157,21 @@ function M.read_file_into_buffer(file_path)
 	return bufnr
 end
 
+function M.read_lines_start(stream, on_line, on_error)
+	local buffer = ""
+	stream:read_start(function(error, chunk)
+		buffer = buffer .. chunk
+		if error then
+			on_error(error)
+			return
+		end
+		while true do
+			local start_pos = buffer:find("\n")
+			if not start_pos then break end
+			on_line(buffer:sub(1, start_pos - 1))
+			buffer = buffer:sub(start_pos + 1)
+		end
+	end)
+end
+
 return M
