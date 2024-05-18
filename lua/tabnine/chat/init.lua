@@ -148,7 +148,7 @@ local function register_events(on_init)
 
 	chat_binary:register_event("get_basic_context", function(_, answer)
 		tabnine_binary:request({
-			FileMetadata = { path = vim.bo.filetype, },
+			FileMetadata = { path = vim.bo.filetype },
 		}, function(metadata)
 			answer({
 				fileUri = api.nvim_buf_get_name(0),

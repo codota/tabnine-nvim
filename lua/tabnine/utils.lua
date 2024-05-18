@@ -179,7 +179,7 @@ end
 ---@return vim.lsp.Client[]
 function M.buf_get_clients(bufnr)
 	bufnr = bufnr or 0
-	if vim.lsp.get_clients then return vim.lsp.get_clients({bufnr=bufnr}) end
+	if vim.lsp.get_clients then return vim.lsp.get_clients({ bufnr = bufnr }) end
 	return vim.lsp.buf_get_clients(bufnr)
 end
 
