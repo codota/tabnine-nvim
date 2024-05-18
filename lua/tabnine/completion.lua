@@ -1,7 +1,7 @@
 local M = {}
 local api = vim.api
 local fn = vim.fn
-local uv = vim.loop
+local uv = vim.uv or vim.loop
 local config = require("tabnine.config")
 local consts = require("tabnine.consts")
 local state = require("tabnine.state")

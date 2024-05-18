@@ -1,5 +1,5 @@
 local tabnine_binary = require("tabnine.binary")
-local uv = vim.loop
+local uv = vim.uv or vim.loop
 local lsp = vim.lsp
 local utils = require("tabnine.utils")
 
