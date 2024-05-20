@@ -160,11 +160,13 @@ end
 function M.read_lines_start(stream, on_line, on_error)
 	local buffer = ""
 	stream:read_start(function(error, chunk)
-		buffer = buffer .. chunk
 		if error then
 			on_error(error)
 			return
 		end
+		-- if there's no new chunk, wait until one is recieved.
+		if not chunk then return end
+		buffer = buffer .. chunk
 		while true do
 			local start_pos = buffer:find("\n")
 			if not start_pos then break end
