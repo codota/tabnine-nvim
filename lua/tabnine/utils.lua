@@ -176,4 +176,13 @@ function M.read_lines_start(stream, on_line, on_error)
 	end)
 end
 
+--- A wrapper around vim.lsp.get_clients which support nvim 0.10 and before
+---@param bufnr integer?
+---@return vim.lsp.Client[]
+function M.buf_get_clients(bufnr)
+	bufnr = bufnr or 0
+	if vim.lsp.get_clients then return vim.lsp.get_clients({ bufnr = bufnr }) end
+	return vim.lsp.buf_get_clients(bufnr)
+end
+
 return M

@@ -148,11 +148,11 @@ local function register_events(on_init)
 
 	chat_binary:register_event("get_basic_context", function(_, answer)
 		tabnine_binary:request({
-			FileMetadata = { path = api.nvim_buf_get_option(0, "filetype") },
+			FileMetadata = { path = vim.bo.filetype },
 		}, function(metadata)
 			answer({
 				fileUri = api.nvim_buf_get_name(0),
-				language = api.nvim_buf_get_option(0, "filetype"),
+				language = vim.bo.filetype,
 				metadata = metadata,
 			})
 		end)
