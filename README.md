@@ -175,6 +175,8 @@ $ # Arch
 $ pacman -S --needed gtk3 glib2 webkit2gtk-4.1 libsoup3
 ```
 
+A `shell.nix` is provided for nix/NixOS builds; instructions are contained within the file [here](chat/shell.nix).
+
 ## Commands
 
 - `:TabnineStatus` - to print Tabnine status
