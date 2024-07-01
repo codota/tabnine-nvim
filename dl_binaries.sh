@@ -28,6 +28,8 @@ case $(uname -s) in
 "Linux")
   if [ "$(uname -m)" = "x86_64" ]; then
     targets="x86_64-unknown-linux-musl"
+  elif [ "$(uname -m)" = "aarch64" ]; then
+    targets="aarch64-unknown-linux-musl"
   fi
   ;;
 esac
@@ -36,6 +38,7 @@ if [ -z "$targets" ]; then
   echo "Target detection failed. Installing all targets"
   targets='x86_64-apple-darwin
     x86_64-unknown-linux-musl
+    aarch64-unknown-linux-musl
     aarch64-apple-darwin'
 fi
 
