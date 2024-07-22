@@ -60,6 +60,7 @@ local function optional_args()
 end
 
 function TabnineBinary:start()
+	local config = config.get_config()
 	self.stdin = uv.new_pipe()
 	self.stdout = uv.new_pipe()
 	self.stderr = uv.new_pipe()
@@ -70,6 +71,8 @@ function TabnineBinary:start()
 			"--client-metadata",
 			"ide-restart-counter=" .. self.restart_counter,
 			"pluginVersion=" .. consts.plugin_version,
+			"--tls_config",
+			"insecure=" .. tostring(config.ignore_certificate_errors)
 		}, optional_args()),
 		stdio = { self.stdin, self.stdout, self.stderr },
 	}, function()
