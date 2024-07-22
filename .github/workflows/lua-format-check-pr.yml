@@ -3,6 +3,11 @@ on:
   pull_request:
     paths:
       - "**.lua"
+permissions:
+  contents: read
+  checks: write
+  issues: write
+  pull-requests: write
 jobs:
   format_code:
     runs-on: ubuntu-latest
@@ -13,3 +18,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           version: latest
           args: --check .
+      - name: suggester
+        uses: reviewdog/action-suggester@v1
+        with:
+          tool_name: stylua
