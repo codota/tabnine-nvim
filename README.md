@@ -128,6 +128,7 @@ require('tabnine').setup({
   suggestion_color = {gui = "#808080", cterm = 244},
   exclude_filetypes = {"TelescopePrompt", "NvimTree"},
   log_file_path = nil, -- absolute path to Tabnine log file
+  ignore_certificate_errors = false,
 })
 ```
 
@@ -246,7 +247,8 @@ require('tabnine').setup({
   codelens_enabled = true,
   exclude_filetypes = {"TelescopePrompt", "NvimTree"},
   log_file_path = nil, -- absolute path to Tabnine log file,
-  tabnine_enterprise_host = tabnine_enterprise_host
+  tabnine_enterprise_host = tabnine_enterprise_host,
+  ignore_certificate_errors = false,
 })
 ```
 
