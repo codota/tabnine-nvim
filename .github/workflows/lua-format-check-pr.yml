@@ -17,7 +17,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           version: latest
-          args: --check .
+          args: .
       - name: suggester
         uses: reviewdog/action-suggester@v1
         with:
