@@ -13,6 +13,7 @@ function M.set_config(o)
 		exclude_filetypes = { "TelescopePrompt", "NvimTree" },
 		log_file_path = nil,
 		tabnine_enterprise_host = nil,
+		ignore_certificate_errors = false,
 	}, o or {})
 end
 
