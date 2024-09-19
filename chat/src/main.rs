@@ -61,6 +61,7 @@ fn main() -> wry::Result<()> {
         .with_window_icon(Some(ICON.clone()))
         .build(&event_loop)?;
     let webview = WebViewBuilder::new(window)?
+        .with_devtools(true)
         .with_custom_protocol("wry".into(), |request| {
             let path = request.uri().path();
             // Read the file content from file path
