@@ -71,7 +71,7 @@ local function register_events(on_init)
 			Features = { dummy = true },
 		}, function(response)
 			answer({
-				enabledFeatures = response.enabled_features,
+				enabledFeatures = vim.tbl_extend("force", response.enabled_features, { "chat_inline_completions" }),
 			})
 		end)
 	end)
@@ -168,6 +168,7 @@ local function register_events(on_init)
 				return {
 					type = "Editor",
 					fileCode = file_code,
+					path = api.nvim_buf_get_name(0),
 					currentLineIndex = api.nvim_win_get_cursor(0)[1],
 				}
 			elseif contextType == "Diagnostics" then
@@ -190,7 +191,7 @@ local function register_events(on_init)
 
 	chat_binary:register_event("get_selected_code", function(_, answer)
 		local selected_code = utils.selected_text()
-		if selected_code:len() > 0 then
+		if selected_code and selected_code:len() > 0 then
 			answer({
 				code = selected_code,
 				startLine = vim.fn.getpos("'<")[2],
@@ -203,6 +204,12 @@ local function register_events(on_init)
 
 	chat_binary:register_event("get_symbols", function(request, answer)
 		if get_symbols_request then get_symbols_request() end
+
+		if #utils.buf_get_clients() == 0 then
+			answer({ workspaceSymbols = {}, documentSymbols = {} })
+			return
+		end
+
 		get_symbols_request = lsp.get_document_symbols(request.query, function(document_symbols)
 			lsp.get_workspace_symbols(request.query, function(workspace_symbols)
 				answer({
@@ -239,22 +246,84 @@ local function register_events(on_init)
 		end)
 	end)
 
+	chat_binary:register_event("navigate_to_location", function(request, answer)
+		vim.cmd("e " .. request.path)
+		answer({})
+	end)
+	chat_binary:register_event("create_new_file", function(request, answer)
+		vim.fn.writefile({ "" }, request.path)
+		answer({})
+	end)
+
+	chat_binary:register_event("get_file_content", function(request, answer)
+		local file_content = utils.lines_to_str(vim.fn.readfile(request.filePath))
+		answer({ content = file_content })
+	end)
+
+	chat_binary:register_event("browse_folder", function(_, answer)
+		vim.ui.input({
+			prompt = "Select folder:\n",
+			completion = "dir",
+		}, function(path)
+			answer({ path = path })
+		end)
+	end)
+
+	chat_binary:register_event("browse_file", function(_, answer)
+		vim.ui.input({
+			prompt = "Select a file:\n",
+			completion = "file",
+		}, function(path)
+			answer({ path = path, content = vim.fn.readfile(path) })
+		end)
+	end)
+	chat_binary:register_event("get_completions", function(request, answer)
+		local file_extension = vim.fn.expand("%:e")
+		tabnine_binary:request({
+			Autocomplete = {
+				filename = "tabnine-chat-input." .. file_extension,
+				before = request.before,
+				after = "",
+				region_includes_beginning = false,
+				region_includes_end = false,
+				max_num_results = 1,
+				offset = #request.before,
+				line = 0,
+				character = #request.before,
+				indentation_size = 0,
+				-- cached_only = false,
+			},
+		}, function(completion_results)
+			if
+				completion_results.results
+				and completion_results.results[1]
+				and completion_results.results[1].new_prefix
+			then
+				answer({ completions = { completion_results.results[1].new_prefix } })
+			else
+				answer({ completions = {} })
+			end
+		end)
+	end)
+
 	chat_binary:register_event("get_symbols_text", function(request, answer)
-		answer(vim.tbl_map(function(symbol)
-			local buf = utils.read_file_into_buffer(symbol.absolutePath)
-			local text = utils.lines_to_str(
-				api.nvim_buf_get_text(
-					buf,
-					symbol.range.startLine,
-					symbol.range.startCharacter,
-					symbol.range.endLine,
-					symbol.range.endCharacter,
-					{}
+		answer({
+			symbols = vim.tbl_map(function(symbol)
+				local buf = utils.read_file_into_buffer(symbol.absolutePath)
+				local text = utils.lines_to_str(
+					api.nvim_buf_get_text(
+						buf,
+						symbol.range.startLine,
+						symbol.range.startCharacter,
+						symbol.range.endLine,
+						symbol.range.endCharacter,
+						{}
+					)
 				)
-			)
-			api.nvim_buf_delete(buf, { force = true })
-			return { id = symbol.id, snippet = text }
-		end, request.symbols))
+				api.nvim_buf_delete(buf, { force = true })
+				return { id = symbol.id, snippet = text }
+			end, request.symbols),
+		})
 	end)
 
 	chat_binary:register_event("send_event", function(event)
