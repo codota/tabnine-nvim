@@ -14,22 +14,12 @@ local cancel_lsp_request = nil
 local buf_supports_symbols = nil
 
 function M.reload_buf_supports_symbols()
-	local clients = utils.buf_get_clients()
-
-	for _, client in ipairs(clients) do
-		if client.server_capabilities.documentSymbolProvider then
-			buf_supports_symbols = true
-			return
-		end
-	end
-
-	buf_supports_symbols = false
+	buf_supports_symbols = utils.buf_support_symbols()
 end
 
 function M.should_display()
 	return config.get_config().codelens_enabled
 		and state.active
-		and #utils.buf_get_clients() > 0
 		and not vim.tbl_contains(config.get_config().exclude_filetypes, vim.bo.filetype)
 		and buf_supports_symbols
 end

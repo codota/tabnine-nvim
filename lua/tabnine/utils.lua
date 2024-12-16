@@ -185,4 +185,14 @@ function M.buf_get_clients(bufnr)
 	return vim.lsp.buf_get_clients(bufnr)
 end
 
+function M.buf_support_symbols()
+	local clients = M.buf_get_clients()
+
+	for _, client in ipairs(clients) do
+		if client.server_capabilities.documentSymbolProvider then return true end
+	end
+
+	return false
+end
+
 return M

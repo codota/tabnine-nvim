@@ -205,7 +205,7 @@ local function register_events(on_init)
 	chat_binary:register_event("get_symbols", function(request, answer)
 		if get_symbols_request then get_symbols_request() end
 
-		if #utils.buf_get_clients() == 0 then
+		if not utils.buf_support_symbols() then
 			answer({ workspaceSymbols = {}, documentSymbols = {} })
 			return
 		end
