@@ -5,7 +5,6 @@ local utils = require("tabnine.utils")
 local api = vim.api
 local config = require("tabnine.config")
 local lsp = require("tabnine.lsp")
-local get_symbols_request = nil
 
 local M = { enabled = false }
 
@@ -203,14 +202,11 @@ local function register_events(on_init)
 	end)
 
 	chat_binary:register_event("get_symbols", function(request, answer)
-		if get_symbols_request then get_symbols_request() end
-
 		if not utils.buf_support_symbols() then
 			answer({ workspaceSymbols = {}, documentSymbols = {} })
 			return
 		end
-
-		get_symbols_request = lsp.get_document_symbols(request.query, function(document_symbols)
+		lsp.get_document_symbols(request.query, function(document_symbols)
 			lsp.get_workspace_symbols(request.query, function(workspace_symbols)
 				answer({
 					workspaceSymbols = vim.tbl_map(function(symbol)
