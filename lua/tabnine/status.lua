@@ -21,8 +21,10 @@ local function poll_service_level()
 					service_level = "pro"
 				elseif response and response.service_level == "Business" then
 					service_level = "enterprise"
+				elseif response and response.service_level == "Dev" then
+					service_level = "dev"
 				else
-					service_level = "starter"
+					service_level = "basic"
 				end
 			end)
 		end)
