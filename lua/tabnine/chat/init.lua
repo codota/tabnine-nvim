@@ -273,6 +273,27 @@ local function register_events(on_init)
 			answer({ path = path, content = vim.fn.readfile(path) })
 		end)
 	end)
+
+	chat_binary:register_event("browse_file_v2", function(_, answer)
+		vim.ui.input({
+			prompt = "Select an image:\n",
+			completion = "file",
+		}, function(path)
+			path = vim.fn.expand(path)
+			local mime_type = vim.fn.system("file --mime-type -b " .. vim.fn.shellescape(path)):gsub("%s+", "")
+			local file_name = vim.fn.fnamemodify(path, ":t")
+			local size_bytes = vim.fn.getfsize(path)
+			local binary_content = vim.fn.readblob(path)
+			local base64_content = vim.base64.encode(binary_content)
+			answer({
+				path = path,
+				mimeType = mime_type,
+				fileName = file_name,
+				sizeBytes = size_bytes,
+				base64Content = base64_content,
+			})
+		end)
+	end)
 	chat_binary:register_event("get_completions", function(request, answer)
 		local file_extension = vim.fn.expand("%:e")
 		tabnine_binary:request({
