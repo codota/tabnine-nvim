@@ -4,6 +4,7 @@ local tabnine_binary = require("tabnine.binary")
 local utils = require("tabnine.utils")
 local api = vim.api
 local config = require("tabnine.config")
+local diff = require("tabnine.diff")
 local lsp = require("tabnine.lsp")
 
 local M = { enabled = false }
@@ -140,9 +141,17 @@ local function register_events(on_init)
 			})
 		end)
 	end)
-	chat_binary:register_event("insert_at_cursor", function(message, _)
+	chat_binary:register_event("insert_at_cursor", function(message, answer)
 		local lines = utils.str_to_lines(message.code)
+
+		if message.diff then
+			diff.insert(message.diff)
+			answer({})
+			return
+		end
+
 		api.nvim_buf_set_text(0, fn.line("v") - 1, fn.col("v") - 1, fn.line(".") - 1, fn.col(".") - 1, lines)
+		answer({})
 	end)
 
 	chat_binary:register_event("get_basic_context", function(_, answer)

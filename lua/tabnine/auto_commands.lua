@@ -25,7 +25,6 @@ function M.setup()
 				ctermfg = config.get_config().suggestion_color.cterm,
 			})
 
-			-- For chat
 			api.nvim_set_hl(0, consts.tabnine_codelens_hl_group, {
 				fg = config.get_config().codelens_color.gui,
 				ctermfg = config.get_config().codelens_color.cterm,
