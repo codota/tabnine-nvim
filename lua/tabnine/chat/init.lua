@@ -177,7 +177,7 @@ local function register_events(on_init)
 					type = "Editor",
 					fileCode = file_code,
 					path = api.nvim_buf_get_name(0),
-					currentLineIndex = api.nvim_win_get_cursor(0)[1],
+					currentLineIndex = api.nvim_win_get_cursor(0)[1] - 1,
 				}
 			elseif contextType == "Diagnostics" then
 				return {
