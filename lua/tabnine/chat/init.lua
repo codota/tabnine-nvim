@@ -253,7 +253,15 @@ local function register_events(on_init)
 
 	chat_binary:register_event("navigate_to_location", function(request, answer, error)
 		if fn.filereadable(request.path) == 1 then
-			vim.cmd("e " .. fn.fnameescape(request.path))
+			local current_buffer_path = vim.fn.expand("%:p")
+			local requested_path = fn.fnamemodify(request.path, ":p")
+
+			if current_buffer_path ~= requested_path then
+				vim.cmd("new " .. fn.fnameescape(request.path))
+			else
+				vim.cmd("buffer " .. fn.bufnr(request.path))
+			end
+
 			answer({})
 		else
 			error("File not found")
