@@ -20,12 +20,8 @@ function M.setup()
 	api.nvim_create_user_command("TabnineFix", function()
 		codelens.run_under_cursor("/fix-code")
 	end, {})
-	api.nvim_create_user_command("TabnineAccept", function()
-		apply.accept()
-	end, {})
-	api.nvim_create_user_command("TabnineReject", function()
-		apply.reject()
-	end, {})
+	api.nvim_create_user_command("TabnineAccept", apply.accept, {})
+	api.nvim_create_user_command("TabnineReject", apply.reject, {})
 end
 
 return M
