@@ -60,6 +60,11 @@ Enable Tabnine
 Toggle enable/disable
 :TabnineToggle
 
+Accept Apply Changes
+:TabnineAccept
+
+Reject Apply Changes
+:TabnineReject
 ==============================================================================
 CONFIGURATION                                       *tabnine-nvim-configuration*
 

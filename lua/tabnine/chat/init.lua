@@ -3,6 +3,7 @@ local fn = vim.fn
 local tabnine_binary = require("tabnine.binary")
 local utils = require("tabnine.utils")
 local api = vim.api
+local apply = require("tabnine.chat.apply")
 local config = require("tabnine.config")
 local lsp = require("tabnine.lsp")
 
@@ -140,9 +141,17 @@ local function register_events(on_init)
 			})
 		end)
 	end)
-	chat_binary:register_event("insert_at_cursor", function(message, _)
+	chat_binary:register_event("insert_at_cursor", function(message, answer)
 		local lines = utils.str_to_lines(message.code)
+
+		if message.diff then
+			apply.open(message.diff)
+			answer({})
+			return
+		end
+
 		api.nvim_buf_set_text(0, fn.line("v") - 1, fn.col("v") - 1, fn.line(".") - 1, fn.col(".") - 1, lines)
+		answer({})
 	end)
 
 	chat_binary:register_event("get_basic_context", function(_, answer)
@@ -168,7 +177,7 @@ local function register_events(on_init)
 					type = "Editor",
 					fileCode = file_code,
 					path = api.nvim_buf_get_name(0),
-					currentLineIndex = api.nvim_win_get_cursor(0)[1],
+					currentLineIndex = api.nvim_win_get_cursor(0)[1] - 1,
 				}
 			elseif contextType == "Diagnostics" then
 				return {
@@ -242,18 +251,35 @@ local function register_events(on_init)
 		end)
 	end)
 
-	chat_binary:register_event("navigate_to_location", function(request, answer)
-		vim.cmd("e " .. request.path)
-		answer({})
+	chat_binary:register_event("navigate_to_location", function(request, answer, error)
+		if fn.filereadable(request.path) == 1 then
+			local current_buffer_path = vim.fn.expand("%:p")
+			local requested_path = fn.fnamemodify(request.path, ":p")
+
+			if current_buffer_path ~= requested_path then
+				vim.cmd("new " .. fn.fnameescape(request.path))
+			else
+				vim.cmd("buffer " .. fn.bufnr(request.path))
+			end
+
+			answer({})
+		else
+			error("File not found")
+		end
 	end)
+
 	chat_binary:register_event("create_new_file", function(request, answer)
-		vim.fn.writefile({ "" }, request.path)
+		fn.writefile({ "" }, request.path)
 		answer({})
 	end)
 
-	chat_binary:register_event("get_file_content", function(request, answer)
-		local file_content = utils.lines_to_str(vim.fn.readfile(request.filePath))
-		answer({ content = file_content })
+	chat_binary:register_event("get_file_content", function(request, answer, error)
+		if vim.fn.filereadable(request.filePath) == 1 then
+			local file_content = utils.lines_to_str(vim.fn.readfile(request.filePath))
+			answer({ content = file_content })
+		else
+			error("File not found")
+		end
 	end)
 
 	chat_binary:register_event("browse_folder", function(_, answer)
