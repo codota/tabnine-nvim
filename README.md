@@ -1,4 +1,4 @@
-[![Tabnine Chat Support](https://github.com/codota/tabnine-nvim/blob/master/chat/ticker.png)](#tabnine-chat---beta)
+[![Tabnine Chat Support](https://github.com/codota/tabnine-nvim/blob/master/chat/ticker.png)](#tabnine-chat)
 
 # tabnine-nvim
 Tabnine client for Neovim
@@ -14,7 +14,7 @@ Tabnine client for Neovim
   - [Windows](#windows)
 - [Activate (mandatory)](#activate-mandatory)
 - [Activate Tabnine Pro](#activate-tabnine-pro)
-- [Tabnine Chat - BETA](#tabnine-chat---beta)
+- [Tabnine Chat](#tabnine-chat)
 - [Commands](#commands)
   - [Tabnine Chat commands](#tabnine-chat-commands)
 - [`<Tab>` and `nvim-cmp`](#tab-and-nvim-cmp)
