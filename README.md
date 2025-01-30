@@ -1,5 +1,3 @@
-[![Tabnine Chat Support](https://github.com/codota/tabnine-nvim/blob/master/chat/ticker.png)](#tabnine-chat)
-
 # tabnine-nvim
 Tabnine client for Neovim
 
@@ -164,9 +162,9 @@ end, { expr = true })
 
 Sometimes Tabnine may fail to open the browser on Tabnine Hub, in this case use `:TabnineHubUrl` to get Tabnine Hub URL
 
-## Tabnine Chat - BETA
+## Tabnine Chat
 ![Tabnine Neovim chat](https://github.com/codota/tabnine-nvim/blob/master/examples/lua-chat.gif)
-Tabnine Chat is still in BETA and is available only for Tabnine Pro users. To make it work:
+Tabnine chat needs a webview to run, to use it:
 - You will need to build the chat from source, by executing: `cargo build --release` inside `chat/` directory.
 - You may be missing some dependencies to build the chat. To fix this, run the following command:
 ```shell
