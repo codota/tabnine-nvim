@@ -98,14 +98,10 @@ M.accept = function()
 		if start_line and end_line then
 			-- Replace only the comparable code portion with the new code
 			api.nvim_buf_set_lines(original_buf, start_line, end_line + 1, false, new_code)
-		else
-			print("Could not find the exact location of the comparable code in the original buffer.")
 		end
 
 		-- Close the diff windows
 		M.close()
-	else
-		print("Tabnine diff windows not found or are no longer valid.")
 	end
 end
 
@@ -128,8 +124,7 @@ M.reject = function()
 
 		-- Close the diff windows
 		M.close()
-	else
-		print("Tabnine diff windows not found or are no longer valid.")
 	end
 end
+
 return M
