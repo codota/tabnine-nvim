@@ -184,12 +184,16 @@ $ pacman -S --needed gtk3 glib2 webkit2gtk-4.1 libsoup3
 - `:TabnineToggle` - to toggle enable/disable
 - `:TabnineChat` - to launch Tabnine chat
 - `:TabnineLoginWithAuthToken` - to log in using auth token (for headless environments, where no browser is available)
+- `:TabnineAccept` - accept apply changes
+- `:TabnineReject` - reject apply changes
 
 ### Tabnine Chat commands
 - `:TabnineChat` - to open Tabnine Chat
 - `:TabnineFix` - to fix the function in scope
 - `:TabnineTest` - to generate tests for function in scope
 - `:TabnineExplain` - to explain the function in scope
+- `:TabnineAccept` - accept apply changes
+- `:TabnineReject` - reject apply changes
 
 ## `<Tab>` and `nvim-cmp`
 
