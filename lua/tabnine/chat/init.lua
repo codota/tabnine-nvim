@@ -3,8 +3,8 @@ local fn = vim.fn
 local tabnine_binary = require("tabnine.binary")
 local utils = require("tabnine.utils")
 local api = vim.api
+local apply = require("tabnine.apply")
 local config = require("tabnine.config")
-local diff = require("tabnine.diff")
 local lsp = require("tabnine.lsp")
 
 local M = { enabled = false }
@@ -145,7 +145,7 @@ local function register_events(on_init)
 		local lines = utils.str_to_lines(message.code)
 
 		if message.diff then
-			diff.insert(message.diff)
+			apply.insert(message.diff)
 			answer({})
 			return
 		end
@@ -251,18 +251,27 @@ local function register_events(on_init)
 		end)
 	end)
 
-	chat_binary:register_event("navigate_to_location", function(request, answer)
-		vim.cmd("e " .. request.path)
-		answer({})
+	chat_binary:register_event("navigate_to_location", function(request, answer, error)
+		if fn.filereadable(request.path) == 1 then
+			vim.cmd("e " .. fn.fnameescape(request.path))
+			answer({})
+		else
+			error("File not found")
+		end
 	end)
+
 	chat_binary:register_event("create_new_file", function(request, answer)
-		vim.fn.writefile({ "" }, request.path)
+		fn.writefile({ "" }, request.path)
 		answer({})
 	end)
 
-	chat_binary:register_event("get_file_content", function(request, answer)
-		local file_content = utils.lines_to_str(vim.fn.readfile(request.filePath))
-		answer({ content = file_content })
+	chat_binary:register_event("get_file_content", function(request, answer, error)
+		if vim.fn.filereadable(request.filePath) == 1 then
+			local file_content = utils.lines_to_str(vim.fn.readfile(request.filePath))
+			answer({ content = file_content })
+		else
+			error("File not found")
+		end
 	end)
 
 	chat_binary:register_event("browse_folder", function(_, answer)

@@ -87,6 +87,8 @@ function ChatBinary:start()
 						id = message.id,
 						payload = payload,
 					})
+				end, function(error)
+					self:post_message({ id = message.id, error = error })
 				end)
 			else
 				self:post_message({ id = message.id, error = "not_implemented" })
