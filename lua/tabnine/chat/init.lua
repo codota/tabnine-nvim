@@ -3,7 +3,7 @@ local fn = vim.fn
 local tabnine_binary = require("tabnine.binary")
 local utils = require("tabnine.utils")
 local api = vim.api
-local apply = require("tabnine.apply")
+local apply = require("tabnine.chat.apply")
 local config = require("tabnine.config")
 local lsp = require("tabnine.lsp")
 
@@ -145,7 +145,7 @@ local function register_events(on_init)
 		local lines = utils.str_to_lines(message.code)
 
 		if message.diff then
-			apply.insert(message.diff)
+			apply.open(message.diff)
 			answer({})
 			return
 		end

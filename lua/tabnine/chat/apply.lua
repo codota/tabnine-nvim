@@ -21,7 +21,7 @@ local function create_floating_window(width_percentage, height_percentage, col_o
 	return api.nvim_open_win(0, true, opts)
 end
 
-M.insert = function(diff)
+M.open = function(diff)
 	original_window = api.nvim_get_current_win()
 	if diff.comparableCode then
 		local current_filetype = vim.bo.filetype
@@ -103,18 +103,17 @@ M.accept = function()
 		end
 
 		-- Close the diff windows
-		M.close_diff_windows()
+		M.close()
 	else
 		print("Tabnine diff windows not found or are no longer valid.")
 	end
 end
 
-M.close_diff_windows = function()
+M.close = function()
 	if M.comparable_win and api.nvim_win_is_valid(M.comparable_win) then api.nvim_win_close(M.comparable_win, true) end
 	if M.new_win and api.nvim_win_is_valid(M.new_win) then api.nvim_win_close(M.new_win, true) end
 	M.comparable_win = nil
 	M.new_win = nil
-	vim.cmd("augroup TabnineDiffFloating | autocmd! | augroup END")
 end
 
 M.reject = function()
@@ -128,7 +127,7 @@ M.reject = function()
 		api.nvim_set_current_win(original_window)
 
 		-- Close the diff windows
-		M.close_diff_windows()
+		M.close()
 	else
 		print("Tabnine diff windows not found or are no longer valid.")
 	end

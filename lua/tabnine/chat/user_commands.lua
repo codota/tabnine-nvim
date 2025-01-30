@@ -1,6 +1,6 @@
 local M = {}
 local api = vim.api
-local apply = require("tabnine.apply")
+local apply = require("tabnine.chat.apply")
 local chat = require("tabnine.chat")
 local codelens = require("tabnine.chat.codelens")
 
