@@ -8,11 +8,17 @@ local M = {}
 
 local function workspace_folders()
   local config = config.get_config().workspace_folders
-  local lsp_folders = {}
+  local result = {}
 
-  if config.lsp and #utils.buf_get_clients() > 0 then lsp_folders = utils.set(lsp.buf.list_workspace_folders()) end
+  if config.lsp and #utils.buf_get_clients() > 0 then
+    vim.list_extend(result, utils.set(lsp.buf.list_workspace_folders()))
+  end
 
-  return vim.tbl_extend("keep", lsp_folders, config.paths or {}, config.get_paths and config.get_paths() or {})
+  if config.paths then vim.list_extend(result, config.paths) end
+
+  if config.get_paths then vim.list_extend(result, config.get_paths() or {}) end
+
+  return result
 end
 
 function M.update()

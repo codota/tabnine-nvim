@@ -11,7 +11,7 @@ local M = {}
 local current_symbols = {}
 local symbol_under_cursor = nil
 local cancel_lsp_request = nil
-local buf_supports_symbols = nil
+local buf_supports_symbols = false
 
 function M.reload_buf_supports_symbols()
 	buf_supports_symbols = utils.buf_support_symbols()
@@ -26,7 +26,6 @@ end
 
 function M.collect_symbols(on_collect)
 	if cancel_lsp_request then cancel_lsp_request() end
-
 	cancel_lsp_request = lsp.get_document_symbols("", function(symbols)
 		current_symbols = symbols
 		on_collect()

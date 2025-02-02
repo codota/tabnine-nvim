@@ -33,12 +33,7 @@ function M.setup()
 		pattern = "*",
 		callback = function()
 			workspace.update()
-
-			if codelens.should_display() then
-				pcall(codelens.collect_symbols, codelens.reload)
-			else
-				codelens.clear()
-			end
+			codelens.reload_buf_supports_symbols()
 		end,
 	})
 end
