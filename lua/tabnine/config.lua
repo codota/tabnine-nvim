@@ -2,7 +2,7 @@ local M = {}
 local config = {}
 
 function M.set_config(o)
-	config = vim.tbl_extend("force", {
+	config = vim.tbl_deep_extend("force", {
 		disable_auto_comment = false,
 		accept_keymap = "<Tab>",
 		dismiss_keymap = "<C-]>",
@@ -14,6 +14,11 @@ function M.set_config(o)
 		log_file_path = nil,
 		tabnine_enterprise_host = nil,
 		ignore_certificate_errors = false,
+		workspace_folders = {
+			paths = {},
+			lsp = true,
+			get_paths = nil,
+		},
 	}, o or {})
 end
 
