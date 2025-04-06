@@ -138,6 +138,7 @@ local function register_events(on_init)
 				username = state.user_name,
 				avatarUrl = state.user_avatar_url,
 				serviceLevel = state.service_level,
+				emailVerified = state.email_verified,
 			})
 		end)
 	end)
