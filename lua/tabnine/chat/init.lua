@@ -146,8 +146,7 @@ local function register_events(on_init)
 		local lines = utils.str_to_lines(message.code)
 
 		if message.diff then
-			apply.open(message.diff)
-			answer({})
+			apply.open(message.diff, answer)
 			return
 		end
 
@@ -374,6 +373,10 @@ local function register_events(on_init)
 		tabnine_binary:request({
 			Event = { name = event.eventName, properties = event.properties },
 		}, function() end)
+	end)
+
+	chat_binary:register_event("send_to_terminal", function(request, answer)
+		answer({ response = fn.system(request.text) })
 	end)
 end
 

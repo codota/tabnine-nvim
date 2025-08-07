@@ -1,6 +1,7 @@
 local api = vim.api
 local M = {}
 local original_window
+local diff_resolve_callback
 
 local function create_floating_window(width_percentage, height_percentage, col_offset)
 	local width = math.floor(vim.o.columns * width_percentage)
@@ -21,8 +22,9 @@ local function create_floating_window(width_percentage, height_percentage, col_o
 	return api.nvim_open_win(0, true, opts)
 end
 
-M.open = function(diff)
+M.open = function(diff, callback)
 	original_window = api.nvim_get_current_win()
+	diff_resolve_callback = callback
 	if diff.comparableCode then
 		local current_filetype = vim.bo.filetype
 
@@ -102,6 +104,8 @@ M.accept = function()
 
 		-- Close the diff windows
 		M.close()
+		-- Call the diff resolve callback with the new code
+		if diff_resolve_callback then diff_resolve_callback(true) end
 	end
 end
 
@@ -124,6 +128,7 @@ M.reject = function()
 
 		-- Close the diff windows
 		M.close()
+		if diff_resolve_callback then diff_resolve_callback(false) end
 	end
 end
 
