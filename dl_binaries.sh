@@ -2,6 +2,7 @@
 set -e
 
 TABNINE_UPDATE_SERVICE=${1:-"https://update.tabnine.com"}
+NODE_VERSION="v24.12.0"
 DEPENDS='unzip curl' # list of dependencies (commands)
 HAS_ALL_DEPS=1       # 1 = present, 0 = missing
 for dep in ${DEPENDS}; do
@@ -14,6 +15,9 @@ if [ "${HAS_ALL_DEPS}" -eq 0 ]; then # missing something.
   exit 1
 fi
 
+# Get script directory
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
 # This script downloads the binaries for the most recent version of TabNine.
 # Infrastructure detection heavily inspired by https://github.com/tzachar/cmp-tabnine/blob/main/install.sh
 version=${version:-$(curl -fsSL "$TABNINE_UPDATE_SERVICE/bundles/version")}
@@ -21,15 +25,19 @@ case $(uname -s) in
 "Darwin")
   if [ "$(uname -m)" = "arm64" ]; then
     targets="aarch64-apple-darwin"
+    node_installer_platform="macos-arm64"
   elif [ "$(uname -m)" = "x86_64" ]; then
     targets="x86_64-apple-darwin"
+    node_installer_platform="macos-x64"
   fi
   ;;
 "Linux")
   if [ "$(uname -m)" = "x86_64" ]; then
     targets="x86_64-unknown-linux-musl"
+    node_installer_platform="linux-x64"
   elif [ "$(uname -m)" = "aarch64" ]; then
     targets="aarch64-unknown-linux-musl"
+    node_installer_platform="linux-arm64"
   fi
   ;;
 esac
@@ -54,3 +62,20 @@ echo "$targets" | while read -r target; do
   rm "binaries/$path/TabNine.zip"
   chmod +x "binaries/$path/"*
 done
+
+# Download Node.js runtime using node-installer
+if [ -n "$node_installer_platform" ]; then
+  NODE_INSTALLER="$SCRIPT_DIR/node/installer/$node_installer_platform/tabnine-node-installer"
+  if [ -f "$NODE_INSTALLER" ]; then
+    echo "Downloading Node.js runtime using node-installer..."
+    chmod +x "$NODE_INSTALLER"
+    NODE_RUNTIME_DIR=$("$NODE_INSTALLER" "$TABNINE_UPDATE_SERVICE" "$NODE_VERSION" 2>/dev/null) || {
+      echo "Warning: Failed to download Node.js runtime. Some features may not work."
+    }
+    if [ -n "$NODE_RUNTIME_DIR" ]; then
+      echo "Node.js runtime installed at: $NODE_RUNTIME_DIR"
+    fi
+  else
+    echo "Warning: node-installer not found at $NODE_INSTALLER"
+  fi
+fi

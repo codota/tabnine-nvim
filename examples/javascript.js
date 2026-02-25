@@ -1,2 +1,0 @@
-// calculate average of array
-

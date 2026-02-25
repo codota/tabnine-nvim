@@ -7,13 +7,13 @@ local on_closed_callbacks = {}
 local function binary_name()
 	local os_uname = uv.os_uname()
 	if os_uname.sysname == "Windows_NT" then
-		return "tabnine_chat.exe"
+		return "tabnine_webview.exe"
 	else
-		return "tabnine_chat"
+		return "tabnine_webview"
 	end
 end
 
-local binary_path = utils.module_dir() .. "/chat/target/release/" .. binary_name()
+local binary_path = utils.module_dir() .. "/webview/target/release/" .. binary_name()
 
 function ChatBinary:available()
 	return vim.fn.executable(binary_path) == 1
@@ -80,6 +80,13 @@ function ChatBinary:start()
 		self.stdout,
 		vim.schedule_wrap(function(line)
 			local message = vim.json.decode(line, { luanil = { object = true, array = true } })
+
+			if message.command == "__debug__" then
+				local d = message.data or {}
+				vim.notify("[webview:" .. (d.level or "?") .. "] " .. (d.message or ""), vim.log.levels.WARN)
+				return
+			end
+
 			local handler = self.registry[message.command]
 			if handler then
 				handler(message.data, function(payload)
@@ -98,6 +105,8 @@ function ChatBinary:start()
 			print("error reading chat binary", error)
 		end)
 	)
+
+	self.stderr:read_start(function(_, _) end)
 end
 
 function ChatBinary:new(o)

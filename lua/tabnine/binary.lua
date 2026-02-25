@@ -1,11 +1,13 @@
 local uv = vim.uv or vim.loop
 local fn = vim.fn
 local json = vim.json
+local config = require("tabnine.config")
 local consts = require("tabnine.consts")
+local ports = require("tabnine.ports")
 local semver = require("tabnine.third_party.semver.semver")
 local utils = require("tabnine.utils")
+
 local TabnineBinary = {}
-local config = require("tabnine.config")
 
 local api_version = "4.4.223"
 local binaries_path = utils.module_dir() .. "/binaries"
@@ -52,15 +54,27 @@ local function binary_path()
 end
 
 local function optional_args()
-	local config = config.get_config()
+	local cfg = config.get_config()
 	local args = {}
-	if config.log_file_path then table.insert(args, "--log-file-path=" .. config.log_file_path) end
-	if config.tabnine_enterprise_host then table.insert(args, "--cloud2_url=" .. config.tabnine_enterprise_host) end
+	if cfg.log_file_path then table.insert(args, "--log-file-path=" .. cfg.log_file_path) end
+	if cfg.tabnine_enterprise_host then table.insert(args, "--cloud2_url=" .. cfg.tabnine_enterprise_host) end
 	return args
 end
 
 function TabnineBinary:start()
-	local config = config.get_config()
+	local cfg = config.get_config()
+	local env = vim.fn.environ()
+
+	local node_server_port = ports.get_node_server_port()
+	if node_server_port then
+		env["NODE_SERVER_PORT"] = tostring(node_server_port)
+	end
+
+	local rust_port = ports.get_rust_server_port()
+	if rust_port then
+		env["RUST_SERVER_PORT"] = tostring(rust_port)
+	end
+
 	self.stdin = uv.new_pipe()
 	self.stdout = uv.new_pipe()
 	self.stderr = uv.new_pipe()
@@ -72,9 +86,12 @@ function TabnineBinary:start()
 			"ide-restart-counter=" .. self.restart_counter,
 			"pluginVersion=" .. consts.plugin_version,
 			"--tls_config",
-			"insecure=" .. tostring(config.ignore_certificate_errors),
+			"insecure=" .. tostring(cfg.ignore_certificate_errors),
 		}, optional_args()),
 		stdio = { self.stdin, self.stdout, self.stderr },
+		env = vim.tbl_map(function(key)
+			return key .. "=" .. env[key]
+		end, vim.tbl_keys(env)),
 	}, function()
 		self.handle, self.pid = nil, nil
 		uv.read_stop(self.stdout)

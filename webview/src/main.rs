@@ -3,21 +3,19 @@ use once_cell::sync::Lazy;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::{
+    borrow::Cow,
     env,
     fs::{canonicalize, read},
     io::{self, Write},
     path::PathBuf,
     thread,
 };
-use wry::application::window::{Icon, Window};
-use wry::{
-    application::{
-        event::{Event, StartCause, WindowEvent},
-        event_loop::{ControlFlow, EventLoop},
-        window::WindowBuilder,
-    },
-    webview::WebViewBuilder,
+use tao::{
+    event::{Event, StartCause, WindowEvent},
+    event_loop::{ControlFlow, EventLoopBuilder},
+    window::{Icon, WindowBuilder},
 };
+use wry::WebViewBuilder;
 
 #[derive(Deserialize, Serialize)]
 #[serde(tag = "command", content = "data")]
@@ -53,48 +51,74 @@ static ICON: Lazy<Icon> = Lazy::new(|| {
     Icon::from_rgba(icon_rgba, icon_width, icon_height).unwrap()
 });
 
-fn main() -> wry::Result<()> {
-    // println!("{}", serde_json::to_string_pretty(&Message::Focus).unwrap());
-    let event_loop = EventLoop::with_user_event();
+fn mime_type(path: &str) -> &'static str {
+    if path.ends_with(".html") || path == "/" {
+        "text/html"
+    } else if path.ends_with(".js") {
+        "text/javascript"
+    } else if path.ends_with(".css") {
+        "text/css"
+    } else if path.ends_with(".json") {
+        "application/json"
+    } else if path.ends_with(".png") {
+        "image/png"
+    } else if path.ends_with(".svg") {
+        "image/svg+xml"
+    } else if path.ends_with(".woff") || path.ends_with(".woff2") {
+        "font/woff2"
+    } else {
+        "application/octet-stream"
+    }
+}
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let event_loop = EventLoopBuilder::<String>::with_user_event().build();
     let window = WindowBuilder::new()
         .with_title(WINDOW_TITLE)
         .with_window_icon(Some(ICON.clone()))
         .build(&event_loop)?;
-    let webview = WebViewBuilder::new(window)?
+
+    let builder = WebViewBuilder::new()
         .with_devtools(true)
         .with_clipboard(true)
-        .with_custom_protocol("wry".into(), |request| {
+        .with_custom_protocol("wry".into(), |_id, request| {
             let path = request.uri().path();
-            // Read the file content from file path
-            let content = if path == "/" {
-                INDEX_HTML.as_bytes().into()
+            let content: Cow<'static, [u8]> = if path == "/" {
+                Cow::Owned(INDEX_HTML.as_bytes().to_vec())
             } else {
-                read(canonicalize(
-                    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join(&path[1..]),
-                )?)?
-                .into()
+                let file_path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join(&path[1..]);
+                match canonicalize(&file_path).and_then(|p| read(p)) {
+                    Ok(bytes) => Cow::Owned(bytes),
+                    Err(_) => {
+                        return http::Response::builder()
+                            .status(404)
+                            .body(Cow::Borrowed(b"Not Found" as &[u8]))
+                            .unwrap();
+                    }
+                }
             };
 
-            let mimetype = if path.ends_with(".html") || path == "/" {
-                "text/html"
-            } else if path.ends_with(".js") {
-                "text/javascript"
-            } else {
-                unimplemented!();
-            };
-
-            wry::http::Response::builder()
-                .header(wry::http::header::CONTENT_TYPE, mimetype)
+            http::Response::builder()
+                .header(http::header::CONTENT_TYPE, mime_type(path))
                 .body(content)
-                .map_err(Into::into)
+                .unwrap()
         })
-        .with_ipc_handler(move |_window: &Window, req: String| {
+        .with_ipc_handler(move |req| {
             let mut lock = io::stdout().lock();
-            let _ = writeln!(lock, "{req}");
+            let _ = writeln!(lock, "{}", req.body());
         })
-        .with_url(BASE_URL)?
-        //.with_url("http://localhost:3000")?
-        .build()?;
+        .with_url(BASE_URL);
+
+    #[cfg(target_os = "linux")]
+    let webview = {
+        use tao::platform::unix::WindowExtUnix;
+        use wry::WebViewBuilderExtUnix;
+        let vbox = window.default_vbox().unwrap();
+        builder.build_gtk(vbox)?
+    };
+
+    #[cfg(not(target_os = "linux"))]
+    let webview = builder.build(&window)?;
 
     let proxy = event_loop.create_proxy();
     thread::spawn(move || loop {
@@ -114,7 +138,7 @@ fn main() -> wry::Result<()> {
             } => *control_flow = ControlFlow::Exit,
             Event::UserEvent(message) => match serde_json::from_str::<Message>(&message) {
                 Ok(Message::Focus) => {
-                    webview.window().set_focus();
+                    window.set_focus();
                     if env::consts::OS == "linux" {
                         let _ = std::process::Command::new("wmctrl")
                             .args(["-a", WINDOW_TITLE])
@@ -122,7 +146,7 @@ fn main() -> wry::Result<()> {
                     }
                 }
                 Ok(Message::SetOnTop(on_top)) => {
-                    webview.window().set_always_on_top(on_top);
+                    window.set_always_on_top(on_top);
                 }
                 _ => {
                     let _ =

@@ -195,4 +195,14 @@ function M.buf_support_symbols()
 	return false
 end
 
+function M.find_free_port(callback)
+	local uv = vim.uv or vim.loop
+	local server = uv.new_tcp()
+	server:bind("127.0.0.1", 0)
+	local addr = server:getsockname()
+	local port = addr and addr.port
+	server:close()
+	callback(port)
+end
+
 return M

@@ -12,9 +12,9 @@ Tabnine client for Neovim
   - [Windows](#windows)
 - [Activate (mandatory)](#activate-mandatory)
 - [Activate Tabnine Pro](#activate-tabnine-pro)
-- [Tabnine Chat](#tabnine-chat)
+- [Tabnine Agent](#tabnine-agent)
 - [Commands](#commands)
-  - [Tabnine Chat commands](#tabnine-chat-commands)
+  - [Tabnine Agent commands](#tabnine-agent-commands)
 - [`<Tab>` and `nvim-cmp`](#tab-and-nvim-cmp)
 - [lualine integration](#lualine-integration)
 - [Other statusline integrations](#other-statusline-integrations)
@@ -168,16 +168,44 @@ end, { expr = true })
 
 Sometimes Tabnine may fail to open the browser on Tabnine Hub, in this case use `:TabnineHubUrl` to get Tabnine Hub URL
 
-## Tabnine Chat
+## Tabnine Agent
 ![Tabnine Neovim chat](https://github.com/codota/tabnine-nvim/blob/master/examples/lua-chat.gif)
-Tabnine chat needs a webview to run, to use it:
-- You will need to build the chat from source, by executing: `cargo build --release` inside `chat/` directory.
-- You may be missing some dependencies to build the chat. To fix this, run the following command:
+
+Tabnine Agent requires a webview component and a Node.js server to run.
+
+### Building the Webview
+
+1. Install the required dependencies:
 ```shell
-$ # Debian/Ubuntu
-$ sudo apt-get install -y libgtk-3-dev libglib2.0-dev libjavascriptcoregtk-4.1-dev libsoup-3.0-dev libwebkit2gtk-4.1-dev
-$ # Arch
-$ pacman -S --needed gtk3 glib2 webkit2gtk-4.1 libsoup3
+# Debian/Ubuntu
+sudo apt-get install -y libgtk-3-dev libglib2.0-dev libjavascriptcoregtk-4.1-dev libsoup-3.0-dev libwebkit2gtk-4.1-dev
+
+# Arch
+pacman -S --needed gtk3 glib2 webkit2gtk-4.1 libsoup3
+
+# macOS (dependencies included with system)
+```
+
+2. Build the webview binary (requires Rust stable):
+```shell
+cd webview/
+cargo build --release
+# Or if using nightly by default:
+rustup run stable cargo build --release
+```
+
+This creates the `tabnine_webview` binary in `webview/target/release/`.
+
+### Project Structure
+
+```
+tabnine-nvim/
+├── node/
+│   ├── installer/     # Node.js runtime installer (per-platform binaries)
+│   └── server/        # Node.js proxy server for chat communication
+├── webview/           # Rust webview binary source (wry-based)
+├── binaries/          # TabNine completion engine (downloaded)
+└── lua/tabnine/       # Neovim plugin Lua code
 ```
 
 ## Commands
@@ -186,18 +214,23 @@ $ pacman -S --needed gtk3 glib2 webkit2gtk-4.1 libsoup3
 - `:TabnineDisable` - to disable Tabnine
 - `:TabnineEnable` - to enable Tabnine
 - `:TabnineToggle` - to toggle enable/disable
-- `:TabnineChat` - to launch Tabnine chat
+- `:TabnineAgent` - to launch Tabnine Agent
 - `:TabnineLoginWithAuthToken` - to log in using auth token (for headless environments, where no browser is available)
 - `:TabnineAccept` - accept apply changes
 - `:TabnineReject` - reject apply changes
 
-### Tabnine Chat commands
-- `:TabnineChat` - to open Tabnine Chat
+### Tabnine Agent commands
+- `:TabnineAgent` - to open Tabnine Agent
+- `:TabnineAgentClose` - to close Tabnine Agent
+- `:TabnineAgentClear` - to clear the current conversation
+- `:TabnineAgentNew` - to start a new conversation
 - `:TabnineFix` - to fix the function in scope
 - `:TabnineTest` - to generate tests for function in scope
 - `:TabnineExplain` - to explain the function in scope
 - `:TabnineAccept` - accept apply changes
 - `:TabnineReject` - reject apply changes
+
+> **Note:** The old `TabnineChat*` commands are deprecated and will show a warning. Please use the new `TabnineAgent*` commands instead.
 
 ## `<Tab>` and `nvim-cmp`
 
