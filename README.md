@@ -1,5 +1,5 @@
 # tabnine-nvim
-Tabnine client for Neovim
+Tabnine client for Neovim (**not officially supported by the Tabnine team**)
 
 ![Tabnine Neovim client](https://github.com/codota/tabnine-nvim/blob/master/examples/javascript.gif)
 
