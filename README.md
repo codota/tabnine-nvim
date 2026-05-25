@@ -208,6 +208,8 @@ tabnine-nvim/
 └── lua/tabnine/       # Neovim plugin Lua code
 ```
 
+A `shell.nix` is provided for nix/NixOS builds; instructions are contained within the file [here](chat/shell.nix).
+
 ## Commands
 
 - `:TabnineStatus` - to print Tabnine status
