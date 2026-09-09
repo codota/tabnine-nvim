@@ -10,16 +10,16 @@ permissions:
   pull-requests: write
 jobs:
   format_code:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-stepsecurity-x64
     steps:
-      - uses: actions/checkout@v4
-      - uses: JohnnyMorganz/stylua-action@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: JohnnyMorganz/stylua-action@479972f01e665acfcba96ada452c36608bdbbb5e # v4.1.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           version: latest
           args: .
       - name: suggester
-        uses: reviewdog/action-suggester@v1
+        uses: step-security/action-suggester@854bdfbbb12a23c87d847a6a435eb2e83453407e # v1.24.3
         with:
           tool_name: stylua
           fail_on_error: true
