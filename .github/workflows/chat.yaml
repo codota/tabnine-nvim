@@ -8,7 +8,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-stepsecurity-x64
     strategy:
       matrix:
         target: [x86_64-unknown-linux-musl]
@@ -16,12 +16,12 @@ jobs:
     steps:
       - name: add gtk
         run: sudo apt-get install -y libgtk2.0-dev libglib2.0-dev
-      - uses: actions/checkout@v4
-      - uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: step-security/actions-rs-toolchain@40a2f87e50bed6faa2d050e99810b226b75d8c8a # v1.0.7
         with:
           toolchain: 1.70.0
           target: ${{ matrix.target }}
-      - uses: ClementTsang/cargo-action@v0.0.3
+      - uses: ClementTsang/cargo-action@3a7eb8bd7347b80ca95ab635409efd17d12156c2 # v0.0.3
         with:
           command: build
           args: --release --target=${{ matrix.target }}
